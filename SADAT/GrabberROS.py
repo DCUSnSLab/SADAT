@@ -60,7 +60,7 @@ class GrabberROS:
             cnt += 1
         #print(dataset)
         self.log.enQueueDataNew(dataset)
-        print("callback",self.Signal.value)
+        #print("callback",self.Signal.value)
         if self.Signal.value == 1:
             print("Set Signal 1")
             self.disconnectSignal()
