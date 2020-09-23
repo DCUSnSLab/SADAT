@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 
 import SnSimulator
 from gui.menuExit import menuExit
-from gui.menuFiles import menuLoadSim, menuLogPlay
+from gui.menuFiles import menuLoadSim, menuLogPlay, menuLogPlayROS
 from gui.menuSim import menuSim
 
 from multiprocessing import Manager
@@ -122,8 +122,12 @@ class MyApp(QMainWindow):
 
         #File Menu
         filemenu = menubar.addMenu('&File')
+
         filemenu.addAction(menuLoadSim('Load log files..', self))
-        filemenu.addAction(menuLogPlay('Log Play',self))
+        # Add LogPlay
+        logplaymenu = filemenu.addMenu('&Log Play')
+        logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
+        logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
         filemenu.addAction(menuExit('exit', self))
 
         #Simulation Menu

@@ -1,7 +1,7 @@
 import json
 
 from LogP import LogP
-
+from sensor_msgs.msg import LaserScan
 
 class LidarLog(LogP):
     motorpwm = 0
@@ -25,6 +25,19 @@ class LidarLog(LogP):
         data['quality'] = scandata.quality
         data['angle'] = scandata.angle
         data['distance'] = scandata.distance
+        data['timestamp'] = timestamp
+        return data
+
+    def makeDatafromROS(self, angle, range, cnt, timestamp):
+        data = {}
+        if cnt == 0:
+            data['start_flag'] = True
+        else:
+            data['start_flag'] = False
+
+        data['quality'] = None
+        data['angle'] = angle
+        data['distance'] = range
         data['timestamp'] = timestamp
         return data
 

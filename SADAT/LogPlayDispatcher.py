@@ -35,8 +35,10 @@ class LogPlayDispatcher(Dispatcher):
         logplaydata = self.Log.getQueueLoggingData()
         prevt = 0
         total = 0
+        cnt = 0
         for dataset in iter(logplaydata.get, 'interrupt'):
-            print('datalen - ',len(dataset))
+            #print('datalen - ',len(dataset),cnt)
+            cnt += 1
             for data in dataset:
                 start_flag = data['start_flag']
                 timestamp = data['timestamp']

@@ -108,7 +108,8 @@ class Grabber:
             self.lidar.set_motor_pwm(0)
 
     def disconnect(self):
-        self.lidar.disconnect()
+        if self.lidar is not None:
+            self.lidar.disconnect()
 
 
 if __name__ == '__main__':

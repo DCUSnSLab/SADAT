@@ -30,3 +30,16 @@ class menuLogPlay(QAction):
     def trig(self):
         self.parent.simulator.setAction(Mode.MODE_LOG)
         print("PlayLogging")
+
+class menuLogPlayROS(QAction):
+
+    def __init__(self, name, parent):
+        super().__init__(name, parent)
+        self.parent = parent
+        self.triggered.connect(self.trig)
+        self.setShortcut('Ctrl+R')
+        self.setStatusTip('Logging with ROS')
+
+    def trig(self):
+        self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
+        print("PlayLogging")
