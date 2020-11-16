@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtGui import QPainter, QPen
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QGridLayout, QPushButton, QWidget, QLabel, QLineEdit, QTextEdit
 from PyQt5.QtCore import Qt
 
 import SnSimulator
@@ -65,10 +65,60 @@ class MyAppEventManager():
     def __init__(self):
         pass
 
+class MyWG(QWidget):
+
+    def __init__(self, parent):
+        super(MyWG, self).__init__(parent)
+        self.pr = parent
+        self.initUI()
+
+    def initUI(self):
+        grid = QGridLayout()
+        self.setLayout(grid)
+
+        grid.addWidget(QLineEdit(), 0, 1)
+        self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
+        self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
+
+        self.pr.statusBar()
+        self.pr.statusBar().setStyleSheet("background-color : white")
+        self.pr.initMenubar()
+        self.pr.initToolbar()
+        self.pr.initplanview()
+        self.pr.setStyleSheet("""QMenuBar {
+                 background-color: Gray;
+                 color: white;
+                }
+
+             QMenuBar::item {
+                 background: Gray;
+                 color: white;
+             }""")
+
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+        self.pr.modeChanger(GUI_GROUP.ALL, False)
+
+        # grid = QGridLayout()
+        # self.setLayout(grid)
+        #
+        # grid.addWidget(QLabel('Title:'), 0, 0)
+        # grid.addWidget(QLabel('Author:'), 1, 0)
+        # grid.addWidget(QLabel('Review:'), 2, 0)
+        #
+        # grid.addWidget(QLineEdit(), 0, 1)
+        # grid.addWidget(QLineEdit(), 1, 1)
+        # grid.addWidget(QTextEdit(), 2, 1)
+
+        self.setWindowTitle('QGridLayout')
+        self.setGeometry(300, 300, 300, 200)
+        self.show()
+
 class MyApp(QMainWindow):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super(MyApp, self).__init__(parent)
 
         #for Planview Size and Position
         self.panviewSize = 10
@@ -90,34 +140,35 @@ class MyApp(QMainWindow):
         self.simulator = SnSimulator.SnSimulator(Manager(), self)
         self.simulator.setVelocity(self.velocity)
 
+        self.form_widget = MyWG(self)
+        self.setCentralWidget(self.form_widget)
         self.initUI()
 
     def initUI(self):
         #init gui group
-        self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
-        self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
-
-        self.statusBar()
-        self.statusBar().setStyleSheet("background-color : white")
-        self.initMenubar()
-        self.initToolbar()
-        self.initplanview()
-
-        self.setStyleSheet("""QMenuBar {
-                 background-color: Gray;
-                 color: white;
-                }
-
-             QMenuBar::item {
-                 background: Gray;
-                 color: white;
-             }""")
-
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        self.setPalette(p)
-        self.modeChanger(GUI_GROUP.ALL, False)
-        self.setWindowTitle('Lidar Cluster')
+        # self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
+        # self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
+        #
+        # self.statusBar()
+        # self.statusBar().setStyleSheet("background-color : white")
+        # self.initMenubar()
+        # self.initToolbar()
+        # self.initplanview()
+        # self.setStyleSheet("""QMenuBar {
+        #          background-color: Gray;
+        #          color: white;
+        #         }
+        #
+        #      QMenuBar::item {
+        #          background: Gray;
+        #          color: white;
+        #      }""")
+        #
+        # p = self.palette()
+        # p.setColor(self.backgroundRole(), Qt.black)
+        # self.setPalette(p)
+        # self.modeChanger(GUI_GROUP.ALL, False)
+        self.setWindowTitle('SADAT')
         #self.setStyleSheet("background-color: dimgray;")
         self.setGeometry(300, 300, 1500, 1000)
         self.show()
@@ -169,7 +220,13 @@ class MyApp(QMainWindow):
 
 
     def initplanview(self):
-        pass
+        grid_layout = QGridLayout()
+        self.setLayout(grid_layout)
+
+        for x in range(3):
+            for y in range(3):
+                button = QPushButton(str(str(3 * x + y)))
+                grid_layout.addWidget(button, x, y)
 
     def paintEvent(self, e):
         qp = QPainter()
