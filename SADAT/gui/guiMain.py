@@ -74,12 +74,12 @@ class MyWG(QWidget):
 
     def initUI(self):
         self.group=QGroupBox("Evaluation")
-        self.group.setStyleSheet("color:black;"
-                                 "background-color: white;")
+        self.group.setStyleSheet("color:white;"
+                                 "background-color: gray;")
         fInnerLayOut=QVBoxLayout()
         self.buttonGroup=QGroupBox("Vehicle Button")
-        self.buttonGroup.setStyleSheet("color:green;"
-                                       "background-color: gray")
+        self.buttonGroup.setStyleSheet("color:black;"
+                                       "background-color: white")
         self.pushButton1 = QPushButton("전진")
         self.pushButton2 = QPushButton("후진")
         self.pushButton3 = QPushButton("좌회전")
@@ -94,8 +94,8 @@ class MyWG(QWidget):
         eInnerLayOut.addWidget(self.pushButton5)
         self.buttonGroup.setLayout(eInnerLayOut)
         self.ExGroup=QGroupBox("None")
-        self.ExGroup.setStyleSheet("color:green;"
-                                   "background-color: gray")
+        self.ExGroup.setStyleSheet("color:black;"
+                                   "background-color: white")
         fInnerLayOut.addWidget(self.buttonGroup)
         fInnerLayOut.addWidget(self.ExGroup,1)
         self.group.setLayout(fInnerLayOut)
