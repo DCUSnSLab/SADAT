@@ -69,30 +69,30 @@ class MyAppEventManager():
         pass
 
 '''현재 진행중인 드래그 앤 드롭 이벤트'''
-class DragAndDrop(QPushButton):
-    def __init__(self,parent):
-        QPushButton.__init__(self, parent)
-        self.offset = 0
-
-    def mouseMoveEvent(self, e):
-        if e.pr.paintEvent(self) != Qt.RightButton:
-            return
-
-        #마우스 데이터 전송을 위해 MIME 객체를 선언
-        #데이터 타입, 보낼 데이터를 byte형으로 저장한다.
-        mime_data = QMimeData()
-        mime_data.setData("application/hotspot", b"%d %d" % (e.x(), e.y()))
-
-        drag = QDrag(self)
-        # MIME 타입데이터를 Drag에 설정
-        drag.setMimeData(mime_data)
-        # 드래그시 위젯의 모양 유지를 위해 QPixmap에 모양을 렌더링
-        pixmap = QPixmap(self.size())
-        self.render(pixmap)
-        drag.setPixmap(pixmap)
-
-        drag.setHotSpot(e.pos() - self.rect().topLeft())
-        drag.exec_(Qt.MoveAction)
+# class DragAndDrop(QPushButton):
+#     def __init__(self,parent):
+#         QPushButton.__init__(self, parent)
+#         self.offset = 0
+#
+#     def mouseMoveEvent(self, e):
+#         if e.pr.paintEvent(self) != Qt.RightButton:
+#             return
+#
+#         #마우스 데이터 전송을 위해 MIME 객체를 선언
+#         #데이터 타입, 보낼 데이터를 byte형으로 저장한다.
+#         mime_data = QMimeData()
+#         mime_data.setData("application/hotspot", b"%d %d" % (e.x(), e.y()))
+#
+#         drag = QDrag(self)
+#         # MIME 타입데이터를 Drag에 설정
+#         drag.setMimeData(mime_data)
+#         # 드래그시 위젯의 모양 유지를 위해 QPixmap에 모양을 렌더링
+#         pixmap = QPixmap(self.size())
+#         self.render(pixmap)
+#         drag.setPixmap(pixmap)
+#
+#         drag.setHotSpot(e.pos() - self.rect().topLeft())
+#         drag.exec_(Qt.MoveAction)
 
 '''MyWG클래스는 레이아웃을 나누기 위해 생성한 클래스'''
 class MyWG(QWidget):
@@ -100,25 +100,25 @@ class MyWG(QWidget):
     def __init__(self, parent):
         super(MyWG, self).__init__(parent)      #MyApp클래스를 상속 하면서 MyApp클래스의 함수에 접근 가능하게 됨
         self.pr = parent
-        self.btn=DragAndDrop(self.pr.initplanview())
+        #self.btn=DragAndDrop(self.pr.initplanview())
         self.initUI()
-        self.btn.show()
+        #self.btn.show()
 
     '''현재 진행중인 작업'''
-    def dragEnterEvent(self, e:QDragEnterEvent):
-        e.accept()
-
-    def dropEvent(self, e:QDropEvent):
-        position = e.pos()
-
-        # 보내온 데이터를 받기
-        # 그랩 당시의 마우스 위치값을 함께 계산하여 위젯 위치 보정
-        offset = e.mimeData().data("application/hotspot")
-        x, y = offset.data().decode('utf-8').split()
-        self.btn.move(position - QPoint(int(x), int(y)))
-
-        e.setDropAction(Qt.MoveAction)
-        e.accept()
+    # def dragEnterEvent(self, e:QDragEnterEvent):
+    #     e.accept()
+    #
+    # def dropEvent(self, e:QDropEvent):
+    #     position = e.pos()
+    #
+    #     # 보내온 데이터를 받기
+    #     # 그랩 당시의 마우스 위치값을 함께 계산하여 위젯 위치 보정
+    #     offset = e.mimeData().data("application/hotspot")
+    #     x, y = offset.data().decode('utf-8').split()
+    #     self.btn.move(position - QPoint(int(x), int(y)))
+    #
+    #     e.setDropAction(Qt.MoveAction)
+    #     e.accept()
 
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
@@ -162,7 +162,7 @@ class MyWG(QWidget):
         self.pr.statusBar().setStyleSheet("background-color : white")
         self.pr.initMenubar()
         self.pr.initToolbar()
-        #self.pr.initplanview()
+        self.pr.initplanview()
         self.pr.setStyleSheet("""QMenuBar {
                  background-color: Gray;
                  color: white;
@@ -187,7 +187,10 @@ class MyApp(QMainWindow):
 
     def __init__(self, parent=None):
         super(MyApp, self).__init__(parent)
-
+        self.statusbar=self.statusBar()
+        print(self.hasMouseTracking())
+        self.setMouseTracking(True)
+        print(self.hasMouseTracking())
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
         self.relx = 0               #라이다 데이터의 x축 좌표를 조정
@@ -312,12 +315,16 @@ class MyApp(QMainWindow):
         # if e.buttons() == Qt.LeftButton:
         #     if mevent.eventMouse(e.globalX(), e.globalY()):
 
+    '''내가 수정 진행부분'''
     def mouseMoveEvent(self, e):
-        if e.buttons()==Qt.LeftButton:
-            return
-        mime_data=QMimeData()
-        drag=QDrag(self)
-        drag.setMimeData(mime_data)
+        txt="Mouse 위치 x = {0}, y = {1}".format(e.x(),e.y())
+        self.statusbar.showMessage(txt)
+        print(e.globalX(), e.globalY())
+        # if e.buttons()==Qt.LeftButton:
+        #     return
+        # mime_data=QMimeData()
+        # drag=QDrag(self)
+        # drag.setMimeData(mime_data)
 
     def dragEnterEvent(self,e:QDragEnterEvent):
         e.accept
@@ -364,7 +371,7 @@ class MyApp(QMainWindow):
 
         self.updatePosition()
 
-    def updatePosition(self):
+    def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         # print(len(x))
         self.xpos.clear()
         self.ypos.clear()
