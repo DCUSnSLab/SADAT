@@ -196,8 +196,11 @@ class MyApp(QMainWindow):
         self.relx = 0               #라이다 데이터의 x축 좌표를 조정
         self.rely = 0               #라이다 데이터의 y축 좌표를 조정
 
+        self.pressX=0
+        self.pressY=0
+
         #frame rate
-        self.velocity = 0          #초기 라이다 데이터 값(비율)
+        self.velocity = 15          #초기 라이다 데이터 값(비율)
 
         #init gui group
         self.guiGroup = {}
@@ -319,19 +322,26 @@ class MyApp(QMainWindow):
     def mouseMoveEvent(self, e):
         txt="Mouse 위치 x = {0}, y = {1}".format(e.x(),e.y())
         self.statusbar.showMessage(txt)
-        print(e.globalX(), e.globalY())
+        #print(e.globalX(), e.globalY())
         # if e.buttons()==Qt.LeftButton:
         #     return
         # mime_data=QMimeData()
         # drag=QDrag(self)
         # drag.setMimeData(mime_data)
 
+    def mousePressEvent(self, e):
+        self.pressX=e.globalX()
+        self.pressY=e.globalY()
+
+    def mouseReleaseEvent(self, e):
+        self.relx = e.globalX()-self.pressX
+        self.rely=e.globalY()-self.pressY
+
     def dragEnterEvent(self,e:QDragEnterEvent):
         e.accept
 
     def dropEvent(self,e:QDropEvent):
-        position=e.pos()
-        self.pr.initPainter().move(position)
+
 
         e.setDropAction()
         e.accept()
