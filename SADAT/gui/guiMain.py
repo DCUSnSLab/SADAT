@@ -64,35 +64,9 @@ class GUI_CONTROLLER:
             self.toolbar['Pause'].setVisible(False)
             self.toolbar['Resume'].setVisible(True)
 
-class MyAppEventManager():
+class MyAppEventManager():          #아직 해당 함수의 기능은 없는거 같음
     def __init__(self):
         pass
-
-'''현재 진행중인 드래그 앤 드롭 이벤트'''
-# class DragAndDrop(QPushButton):
-#     def __init__(self,parent):
-#         QPushButton.__init__(self, parent)
-#         self.offset = 0
-#
-#     def mouseMoveEvent(self, e):
-#         if e.pr.paintEvent(self) != Qt.RightButton:
-#             return
-#
-#         #마우스 데이터 전송을 위해 MIME 객체를 선언
-#         #데이터 타입, 보낼 데이터를 byte형으로 저장한다.
-#         mime_data = QMimeData()
-#         mime_data.setData("application/hotspot", b"%d %d" % (e.x(), e.y()))
-#
-#         drag = QDrag(self)
-#         # MIME 타입데이터를 Drag에 설정
-#         drag.setMimeData(mime_data)
-#         # 드래그시 위젯의 모양 유지를 위해 QPixmap에 모양을 렌더링
-#         pixmap = QPixmap(self.size())
-#         self.render(pixmap)
-#         drag.setPixmap(pixmap)
-#
-#         drag.setHotSpot(e.pos() - self.rect().topLeft())
-#         drag.exec_(Qt.MoveAction)
 
 '''MyWG클래스는 레이아웃을 나누기 위해 생성한 클래스'''
 class MyWG(QWidget):
@@ -100,25 +74,7 @@ class MyWG(QWidget):
     def __init__(self, parent):
         super(MyWG, self).__init__(parent)      #MyApp클래스를 상속 하면서 MyApp클래스의 함수에 접근 가능하게 됨
         self.pr = parent
-        #self.btn=DragAndDrop(self.pr.initplanview())
         self.initUI()
-        #self.btn.show()
-
-    '''현재 진행중인 작업'''
-    # def dragEnterEvent(self, e:QDragEnterEvent):
-    #     e.accept()
-    #
-    # def dropEvent(self, e:QDropEvent):
-    #     position = e.pos()
-    #
-    #     # 보내온 데이터를 받기
-    #     # 그랩 당시의 마우스 위치값을 함께 계산하여 위젯 위치 보정
-    #     offset = e.mimeData().data("application/hotspot")
-    #     x, y = offset.data().decode('utf-8').split()
-    #     self.btn.move(position - QPoint(int(x), int(y)))
-    #
-    #     e.setDropAction(Qt.MoveAction)
-    #     e.accept()
 
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
@@ -188,14 +144,14 @@ class MyApp(QMainWindow):
     def __init__(self, parent=None):
         super(MyApp, self).__init__(parent)
         self.statusbar=self.statusBar()
-        print(self.hasMouseTracking())
         self.setMouseTracking(True)
+        self.setAcceptDrops(True)
         print(self.hasMouseTracking())
+
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
         self.relx = 0               #라이다 데이터의 x축 좌표를 조정
         self.rely = 0               #라이다 데이터의 y축 좌표를 조정
-
         self.pressX=0
         self.pressY=0
 
@@ -212,7 +168,7 @@ class MyApp(QMainWindow):
         self.ypos = []
 
         # init Simulator Manager
-        self.simulator = SnSimulator.SnSimulator(Manager(), self)
+        self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
 
         self.form_widget = MyWG(self)
@@ -226,6 +182,7 @@ class MyApp(QMainWindow):
         self.show()
 
     def initMenubar(self):
+        #create MenuBar
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
         self.statusBar()
@@ -243,9 +200,9 @@ class MyApp(QMainWindow):
 
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
-        toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')
-        toolpause = toolbarPlay('Pause', self, self.simulator.PauseMode)
-        toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)
+        toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
+        toolpause = toolbarPlay('Pause', self, self.simulator.PauseMode)            #중지
+        toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)         #재생
         self.toolvel = toolbarEditor('10', self, self.simulator.setVelocity)
         self.toolvel.setText(str(self.simulator.getVelocity()))
 
@@ -271,7 +228,7 @@ class MyApp(QMainWindow):
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
 
-    def initplanview(self):
+    def initplanview(self):         #현재 이 함수의 기능은 못 찾겠음,, tool을 보아하니 아직 레이아웃 버튼이 안보임
         grid_layout = QGridLayout()
         self.setLayout(grid_layout)
 
@@ -280,15 +237,15 @@ class MyApp(QMainWindow):
                 button = QPushButton(str(str(3 * x + y)))
                 grid_layout.addWidget(button, x, y)
 
-    def paintEvent(self, e):
+    def paintEvent(self, e):        #레이다 데이터를 출력해주는 함수
         qp = QPainter()
         qp.begin(self)
         self.draw_point(qp)
         qp.end()
 
     #event
-    def wheelEvent(self, e):
-        wvalue = e.angleDelta().y()
+    def wheelEvent(self, e):            #whellEvent 함수, 마우스 휠을 조정해 panview 사이즈 조정 가능
+        wvalue = e.angleDelta().y()     #wvalue는 delta의 값을 이용해서 마우스 휠의 y축 즉, 위 아래 값을 알 수 있음
         div = 0.025
         max = 0.6
         min = 0.05
@@ -311,23 +268,26 @@ class MyApp(QMainWindow):
         if self.gcontrol.getCurrentMode() is not GUI_CONTROLLER.PLAYMODE:
             self.updatePosition()
 
-    def mouseMoveEvent(self, e):
+    '''def mouseMoveEvent(self, e):
         pass
         # mevent = self.mouseEventHndl.moveEvent
         #
         # if e.buttons() == Qt.LeftButton:
-        #     if mevent.eventMouse(e.globalX(), e.globalY()):
+        #     if mevent.eventMouse(e.globalX(), e.globalY()):'''
 
-    '''내가 수정 진행부분'''
     def mouseMoveEvent(self, e):
         txt="Mouse 위치 x = {0}, y = {1}".format(e.x(),e.y())
         self.statusbar.showMessage(txt)
-        #print(e.globalX(), e.globalY())
-        # if e.buttons()==Qt.LeftButton:
-        #     return
-        # mime_data=QMimeData()
-        # drag=QDrag(self)
-        # drag.setMimeData(mime_data)
+
+        if e.buttons()!=Qt.LeftButton:
+            return
+        mime_data=QMimeData()
+        drag=QDrag(self)
+        drag.setMimeData(mime_data)
+        drag.exec_(Qt.MoveAction)
+
+    def dragEnterEvent(self, e):
+        e.accept()
 
     def mousePressEvent(self, e):
         self.pressX=e.globalX()
@@ -335,30 +295,28 @@ class MyApp(QMainWindow):
 
     def mouseReleaseEvent(self, e):
         self.relx = e.globalX()-self.pressX
-        self.rely=e.globalY()-self.pressY
+        self.rely = e.globalY()-self.pressY
+        self.ex=self.relx
+        self.ey=self.rely
 
-    def dragEnterEvent(self,e:QDragEnterEvent):
-        e.accept
-
-    def dropEvent(self,e:QDropEvent):
-
-
-        e.setDropAction()
+    def dropEvent(self, e):
+        position=self.updatePosition()
+        self.move(self.relx,self.rely)
+        e.setDropAction(Qt.MoveAction)
         e.accept()
 
     def draw_point(self, qp):
         #draw paint
         qp.setPen(QPen(Qt.white, 1))
 
-
         for idx,item in enumerate(self.xpos):
             #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
-            xp = int(self.xpos[idx])+150    #
-            yp = int(self.ypos[idx])+100
+            xp = int(self.xpos[idx])+150    #xp는 레이다 좌표의 현재 x좌표 위치를 나타냄
+            yp = int(self.ypos[idx])+100    #yp는 레이다 좌표의 현재 y좌표 위치를 나타냄
             xw = xp + 1
             yw = yp + 1
             #print(self.panviewSize, xp, yp)
-            qp.drawEllipse(xp, yp, 1, 1)
+            qp.drawEllipse(xp, yp, 1, 1)    #여기서 상수가 1은 레이다 포인터의 x축 크기 y축 크기를 나타냄. 숫자가 클 수록 원의 크기가 커짐
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -366,16 +324,16 @@ class MyApp(QMainWindow):
                 for actions in self.guiGroup[modedata]:
                     actions.setEnabled(isTrue)
 
-    def setStatus(self, str):
+    def setStatus(self, str):               #setStatus함수는 tool창에 제일 하단에 있는 상태바 메세지를 출력함
         self.statusBar().showMessage(str)
 
     #Callback Event
 
-    def sliderMoved(self):
+    def sliderMoved(self):                  #sliderMoved 함수는 tool의 슬라이드 바를 움직임
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
 
-    def changePosition(self, data):
+    def changePosition(self, data):     #changePosition 함수는
         self.prevx = data[0]
         self.prevy = data[1]
 
@@ -383,32 +341,32 @@ class MyApp(QMainWindow):
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         # print(len(x))
-        self.xpos.clear()
-        self.ypos.clear()
+        self.xpos.clear()           #x좌표 초기화
+        self.ypos.clear()           #y좌표 초기화
 
         for idx, item in enumerate(self.prevx):
+            #현재 추측으로는 append 함수가 리스트에 맨 마지막에 값을 추가하는 것이기 때문에 아래 값들도 리스트에 계속 추가되어서 드래그가 자연스럽게 안되는거 같은데,,,
             self.xpos.append((self.prevx[idx] / self.panviewSize) + (self.width() / 2) + self.relx)
             self.ypos.append((self.prevy[idx] / self.panviewSize) + (self.height() / 2) + self.rely)
 
         self.update()
 
-    def playbackstatus(self, pbinfo):
-        if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:
+    def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
+        if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
             self.gcontrol.getSlider().setSliderRange(pbinfo.maxLength)
             self.velocity = pbinfo.setfps
             self.simulator.setVelocity(self.velocity)
             self.toolvel.setText(str(self.simulator.getVelocity()))
-
             self.modeChanger(GUI_GROUP.LOGPLAY_MODE, True)
+
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_PLAY:
             self.gcontrol.getSlider().setValue(pbinfo.currentIdx)
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_SETVALUE:
             pass
-        stxt = 'current idx - %d'%pbinfo.currentIdx
+        stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
         #print("pbInfo : ", pbinfo.mode, pbinfo.maxLength, pbinfo.currentIdx)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
