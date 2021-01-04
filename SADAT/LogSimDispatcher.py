@@ -5,13 +5,12 @@ import time
 from Dispatcher import Dispatcher
 from log.makeRPLidarLog import makeRPLidarLog
 from sensor.SenAdptMgr import AttachedSensorName
-from sensor.SensorCategory import SensorCategory
-from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
+from sensor.SourceManager import SourceManager
 
 
 class LogSimDispatcher(Dispatcher):
 
-    def __init__(self, srcmgr, opensrc=""):
+    def __init__(self, srcmgr:SourceManager, opensrc=""):
         super().__init__()
         self.sourcemanager = srcmgr
         self.opensrc = opensrc

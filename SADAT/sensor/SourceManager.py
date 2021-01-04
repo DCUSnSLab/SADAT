@@ -1,7 +1,11 @@
 from enum import Enum
+from multiprocessing import Manager
+
+from sensor.Sensor import Sensor
+
 
 class SourceManager:
-    def __init__(self, manager):
+    def __init__(self, manager:Manager):
         self.ActualSensor = dict()
         self.VirtualSensor = dict()
         self.AllSensors = dict()
@@ -17,7 +21,7 @@ class SourceManager:
     def addVirtualSensor(self, sens, man):
         self.__addSensor(self.VirtualSensor, sens, man)
 
-    def __addSensor(self, sendict, sensor, man):
+    def __addSensor(self, sendict:dict, sensor:Sensor, man:Manager):
         if (sensor.sensorName in sendict) is False:
             sensor.setupDataManager(man)
             sendict[sensor.sensorName] = sensor
@@ -25,13 +29,13 @@ class SourceManager:
         else:
             print("error SensorName: %s already in SensorList" % sensor.sensorName)
 
-    def getSensorbyName(self, name):
+    def getSensorbyName(self, name:str):
         if name in self.AllSensors:
             return self.AllSensors[name]
         else:
             return None
 
-    def simEvent(self, evalue):
+    def simEvent(self, evalue:list):
         self.dataLoadQueue.put(evalue)
         self.dataLoadQueue.put('interrupt')
 
