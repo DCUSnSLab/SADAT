@@ -4,6 +4,7 @@ from LidarLog import LidarLog
 from ModeLog import ModeLog
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
+from externalmodules.ext_module_manager import extModuleManager
 from gui.guiMain import GUI_CONTROLLER
 from sensor.SenAdptMgr import SenAdptMgr
 from sensor.SourceManager import SourceManager
@@ -28,6 +29,9 @@ class SnSimulator:
         self.procs = {}
         self.pvthread = None
         self.lpthread = None
+
+        #externalModules
+        self.extModManager = extModuleManager()
 
         self.Velocity = 0
 
@@ -91,7 +95,7 @@ class SnSimulator:
 
     def defineProcess(self):
         # init planview thread
-        self.pvthread = taskPlanview(self.guiApp, self.simlog)
+        self.pvthread = taskPlanview(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
         self.pvthread.start()
 
