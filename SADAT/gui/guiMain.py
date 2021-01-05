@@ -154,6 +154,8 @@ class MyApp(QMainWindow):
         self.rely = 0               #라이다 데이터의 y축 좌표를 조정
         self.pressX=0
         self.pressY=0
+        self.xp=0
+        self.yp=0
 
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
@@ -189,7 +191,9 @@ class MyApp(QMainWindow):
 
         #File Menu
         filemenu = menubar.addMenu('&File')
+        #filemenu.addAction(self.OnOpenDocument('Load log files..', self))
         filemenu.addAction(menuLoadSim('Load log files..', self))
+        #self.Open_Button.clicked.connect(self.OnOpenDocument3)
         filemenu.addAction(menuLogPlay('Log Play',self))
         filemenu.addAction(menuExit('exit', self))
 
@@ -198,6 +202,16 @@ class MyApp(QMainWindow):
         simmenu.addAction(menuSim('Play',self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
+    # def OnOpenDocument(self):
+    #     name=QFileDialog.getOpenFileName(self,'log file',"","All Files(*);; Python Files(*.py)", '/home')
+    #     if name[0]:
+    #         f=open(name[0],'r')
+    #         flines=f.readlines()
+    #
+    #         for line in flines:
+    #             print(line)
+    #     else:
+    #         QMessageBox.about(self,"Waring","파일 선택 ㄴ")
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
         toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
@@ -237,7 +251,7 @@ class MyApp(QMainWindow):
                 button = QPushButton(str(str(3 * x + y)))
                 grid_layout.addWidget(button, x, y)
 
-    def paintEvent(self, e):        #레이다 데이터를 출력해주는 함수
+    def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
         qp.begin(self)
         self.draw_point(qp)
@@ -275,48 +289,49 @@ class MyApp(QMainWindow):
         # if e.buttons() == Qt.LeftButton:
         #     if mevent.eventMouse(e.globalX(), e.globalY()):'''
 
+    # def dragEnterEvent(self, e):
+    #     print('drag')
+    #     e.accept()
+    #
+    # def dropEvent(self, e):
+    #     print('drop')
+    #     e.setDropAction()
+    #     e.accept()
+
     def mouseMoveEvent(self, e):
-        txt="Mouse 위치 x = {0}, y = {1}".format(e.x(),e.y())
-        self.statusbar.showMessage(txt)
-
-        if e.buttons()!=Qt.LeftButton:
-            return
-        mime_data=QMimeData()
-        drag=QDrag(self)
-        drag.setMimeData(mime_data)
-        drag.exec_(Qt.MoveAction)
-
-    def dragEnterEvent(self, e):
-        e.accept()
+        if e.buttons()==Qt.LeftButton:
+            self.relx = e.globalX() - self.pressX
+            self.rely = e.globalY() - self.pressY
+            self.updatePosition()
+            print('mousemove')
 
     def mousePressEvent(self, e):
-        self.pressX=e.globalX()
-        self.pressY=e.globalY()
+        self.pressX = e.globalX()
+        self.pressY = e.globalY()
+
+        print('press')
+
 
     def mouseReleaseEvent(self, e):
         self.relx = e.globalX()-self.pressX
         self.rely = e.globalY()-self.pressY
-        self.ex=self.relx
-        self.ey=self.rely
-
-    def dropEvent(self, e):
-        position=self.updatePosition()
-        self.move(self.relx,self.rely)
-        e.setDropAction(Qt.MoveAction)
-        e.accept()
+        print('release')
+        self.updatePosition()
 
     def draw_point(self, qp):
         #draw paint
+        self.xp
+        self.yp
         qp.setPen(QPen(Qt.white, 1))
-
         for idx,item in enumerate(self.xpos):
             #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
-            xp = int(self.xpos[idx])+150    #xp는 레이다 좌표의 현재 x좌표 위치를 나타냄
-            yp = int(self.ypos[idx])+100    #yp는 레이다 좌표의 현재 y좌표 위치를 나타냄
-            xw = xp + 1
-            yw = yp + 1
+            self.xp = int(self.xpos[idx])+150    #xp는 레이다 좌표의 현재 x좌표 위치를 나타냄
+            self.yp = int(self.ypos[idx])+100    #yp는 레이다 좌표의 현재 y좌표 위치를 나타냄
+            # xw = xp + 1
+            # yw = yp + 1
             #print(self.panviewSize, xp, yp)
-            qp.drawEllipse(xp, yp, 1, 1)    #여기서 상수가 1은 레이다 포인터의 x축 크기 y축 크기를 나타냄. 숫자가 클 수록 원의 크기가 커짐
+            qp.drawEllipse(self.xp, self.yp, 1, 1)    #여기서 상수가 1은 레이다 포인터의 x축 크기 y축 크기를 나타냄. 숫자가 클 수록 원의 크기가 커짐
+            print(self.xp,self.yp)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -333,19 +348,17 @@ class MyApp(QMainWindow):
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
 
-    def changePosition(self, data):     #changePosition 함수는
+    def changePosition(self, data):     #changePosition 함수는 레이다 데이터의 값을 받아와 포지션을 계속 변화 시킴
         self.prevx = data[0]
         self.prevy = data[1]
-
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         # print(len(x))
-        self.xpos.clear()           #x좌표 초기화
-        self.ypos.clear()           #y좌표 초기화
+        self.xpos.clear()
+        self.ypos.clear()           #리스트에 저장되어 있는 y좌표 초기화
 
         for idx, item in enumerate(self.prevx):
-            #현재 추측으로는 append 함수가 리스트에 맨 마지막에 값을 추가하는 것이기 때문에 아래 값들도 리스트에 계속 추가되어서 드래그가 자연스럽게 안되는거 같은데,,,
             self.xpos.append((self.prevx[idx] / self.panviewSize) + (self.width() / 2) + self.relx)
             self.ypos.append((self.prevy[idx] / self.panviewSize) + (self.height() / 2) + self.rely)
 
