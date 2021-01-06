@@ -203,7 +203,7 @@ class MyApp(QMainWindow):
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
     # def OnOpenDocument(self):
-    #     name=QFileDialog.getOpenFileName(self,'log file',"","All Files(*);; Python Files(*.py)", '/home')
+    #     name=QFileDialog.getOpenFileName(self,'Open file','./')
     #     if name[0]:
     #         f=open(name[0],'r')
     #         flines=f.readlines()
