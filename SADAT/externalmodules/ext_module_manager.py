@@ -9,21 +9,22 @@
 3. 시나리오 설정 및 시나리오 별 모듈을 동작시켜 상태 분석 및 각 기능 개선
 4.
 '''
-from externalmodules import flow_wrapper
 from externalmodules.default.senario import senarioBasic
+from externalmodules.ext_scheduler import extScheduler
 
 
 class extModuleManager():
     def __init__(self):
-        self.__selSenario = None
+        self.__selectedScheduler = None
         self.modAdapter = None
+        #temperary
         self.setSenario(senario=senarioBasic())
 
     def doModules(self, rawdata):
-        self.__selSenario.insertRawData(rawdata)
-        for mod in self.__selSenario.getModules():
+        self.__selectedScheduler.insertRawData(rawdata)
+        for mod in self.__selectedScheduler.getModules():
             mod.do()
 
-    def setSenario(self, senario:flow_wrapper):
-        self.__selSenario = senario
-        self.__selSenario.initFlowWrapper()
+    def setSenario(self, senario:extScheduler):
+        self.__selectedScheduler = senario
+        self.__selectedScheduler.initextScheduler()

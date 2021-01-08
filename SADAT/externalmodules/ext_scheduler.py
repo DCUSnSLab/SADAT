@@ -5,18 +5,19 @@ from externalmodules.extModule import extModule
 1. 외부 모듈 시나리오 모듈 래퍼
 2. 이곳에서 정한 순서대로 외부모듈 동작됨
 '''
-class FlowWrapper(metaclass=ABCMeta):
+class extScheduler(metaclass=ABCMeta):
     def __init__(self):
         self._modules = list()
         self._rawdata = dict()
         self._dataset = dict()
 
-    def initFlowWrapper(self):
+    def initextScheduler(self):
         self.dataConstruction()
         self.modConstruction()
 
     def _addModules(self, modlist):
         for mod in modlist:
+            mod.addScheduler(self)
             self._addModule(mod)
 
     def _addModule(self, mod:extModule):

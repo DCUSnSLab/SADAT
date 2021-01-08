@@ -1,12 +1,20 @@
 from dadatype.dtype_tracker import dtype_tracker
 from externalmodules.default.tracker import trackerBasic
 from externalmodules.extModule import extModule
-from externalmodules.flow_wrapper import FlowWrapper
+from externalmodules.ext_scheduler import extScheduler
+from enum import Enum
 
+class senarioBasicDataset(Enum):
+    TRACK = 1
+    CAMTRACK = 2
 
-class senarioBasic(FlowWrapper):
+class senarioBasic(extScheduler):
     def __init__(self):
         super().__init__()
+        #set dataset to to be new data for viewing in planview
+        self._dataset[senarioBasicDataset.TRACK] = list()
+        self._dataset[senarioBasicDataset.CAMTRACK] = list()
+
         print('init senario basic')
 
     def dataConstruction(self):
