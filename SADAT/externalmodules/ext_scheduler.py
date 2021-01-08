@@ -1,4 +1,6 @@
 from abc import *
+
+from dadatype.dtype_rplidar import dtype_rplidar
 from externalmodules.extModule import extModule
 
 '''
@@ -39,10 +41,25 @@ class extScheduler(metaclass=ABCMeta):
 
     def insertRawData(self, data):
         #Temporary.. exchange data type from raw data to dtype_rplidar
-        posx = data[0]
-        posy = data[1]
-        tstmp = data[2]
-        print(data)
+        key = 'rplidar'
+        if key in self._rawdata:
+            self._dataset[key].clear()
+        else:
+            self._dataset[key] = list()
+
+        for idx in range(0, len(data[0]), 1):
+            # print(idx)
+            #print(data)
+            posx = data[0]
+            posy = data[1]
+            tstmp = data[2]
+            # print(posx[0])
+            pdata = dtype_rplidar(idx, posx[idx], posy[idx])
+            self._dataset[key].append(pdata)
+        # posx = data[0]
+        # posy = data[1]
+        # tstmp = data[2]
+        #print(data)
 
     @abstractmethod
     def dataConstruction(self):

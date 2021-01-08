@@ -11,14 +11,11 @@ class senarioBasicDataset(Enum):
 class senarioBasic(extScheduler):
     def __init__(self):
         super().__init__()
-        #set dataset to to be new data for viewing in planview
-        self._dataset[senarioBasicDataset.TRACK] = list()
-        self._dataset[senarioBasicDataset.CAMTRACK] = list()
-
         print('init senario basic')
 
     def dataConstruction(self):
-        self._addDataset('tracker', dtype_tracker())
+        self._addDataset(senarioBasicDataset.TRACK, list())
+        self._addDataset(senarioBasicDataset.CAMTRACK, list()) #temporary
         self.sprint('data Construction loaded')
         for key in self._dataset.keys():
             self.sprint(key)

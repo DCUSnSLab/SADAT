@@ -2,6 +2,5 @@ from dadatype.datawrapper import DataWrapper
 
 
 class dtype_rplidar(DataWrapper):
-    def __init__(self, posx=0, posy=0, startflag=0):
-        super().__init__(posx, posy)
-        self.startflag = startflag
+    def __init__(self, id, posx=0.0, posy=0.0, startflag=False):
+        super().__init__(posx=posx, posy=posy, id=id)
