@@ -202,16 +202,6 @@ class MyApp(QMainWindow):
         simmenu.addAction(menuSim('Play',self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
-    # def OnOpenDocument(self):
-    #     name=QFileDialog.getOpenFileName(self,'Open file','./')
-    #     if name[0]:
-    #         f=open(name[0],'r')
-    #         flines=f.readlines()
-    #
-    #         for line in flines:
-    #             print(line)
-    #     else:
-    #         QMessageBox.about(self,"Waring","파일 선택 ㄴ")
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
         toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
@@ -282,22 +272,6 @@ class MyApp(QMainWindow):
         if self.gcontrol.getCurrentMode() is not GUI_CONTROLLER.PLAYMODE:
             self.updatePosition()
 
-    '''def mouseMoveEvent(self, e):
-        pass
-        # mevent = self.mouseEventHndl.moveEvent
-        #
-        # if e.buttons() == Qt.LeftButton:
-        #     if mevent.eventMouse(e.globalX(), e.globalY()):'''
-
-    # def dragEnterEvent(self, e):
-    #     print('drag')
-    #     e.accept()
-    #
-    # def dropEvent(self, e):
-    #     print('drop')
-    #     e.setDropAction()
-    #     e.accept()
-
     def mouseMoveEvent(self, e):
         if e.buttons()==Qt.LeftButton:
             self.relx = e.globalX() - self.pressX
@@ -310,7 +284,6 @@ class MyApp(QMainWindow):
         self.pressY = e.globalY()
 
         print('press')
-
 
     def mouseReleaseEvent(self, e):
         self.relx = e.globalX()-self.pressX
