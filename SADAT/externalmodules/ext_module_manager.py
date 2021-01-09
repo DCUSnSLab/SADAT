@@ -20,10 +20,10 @@ class extModuleManager():
         #temperary
         self.setSenario(senario=senarioBasic())
 
-    def doModules(self, rawdata):
+    def doTask(self, rawdata):
+        self.__selectedScheduler.resetData()
         self.__selectedScheduler.insertRawData(rawdata)
-        for mod in self.__selectedScheduler.getModules():
-            mod.do()
+        self.__selectedScheduler.doTask()
 
     def setSenario(self, senario:extScheduler):
         self.__selectedScheduler = senario

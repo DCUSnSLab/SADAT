@@ -6,4 +6,5 @@ class trackerBasic(extModule):
         super().__init__('trackerBasic')
 
     def do(self):
-        print('do ExtModules -->', self.getName())
+        pass
+        #print('do ExtModules -->', self.getName())
