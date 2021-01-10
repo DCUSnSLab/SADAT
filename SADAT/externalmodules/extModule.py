@@ -29,6 +29,9 @@ class extModule():
     def _addData(self, datakey, data, dictkey=None):
         self._scheduler.addData(datakey, data, dictkey)
 
+    def _copyAllData(self, datakey, data):
+        self._scheduler.copyAllData(datakey, data)
+
     def _getDataKeys(self):
         return self._scheduler.getDataKeys()
 

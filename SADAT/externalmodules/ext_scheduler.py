@@ -53,13 +53,28 @@ class extScheduler(metaclass=ABCMeta):
         elif isinstance(dset, dict) and dictkey is not None:
             dset[dictkey] = data
         elif isinstance(dset, int):
-            dset = data
+            self._dataset[datakey] = data
         elif isinstance(dset, float):
-            dset = data
+            self._dataset[datakey] = data
         elif isinstance(dset, str):
-            dset = data
+            self._dataset[datakey] = data
         else:
-            dset = None
+            self._dataset[datakey] = None
+
+    def copyAllData(self, datakey, data):
+        """Copy All data
+        This method is the reverse of `get_config`,
+        capable of instantiating the same layer from the config
+        dictionary. It does not handle layer connectivity
+        (handled by Network), nor weights (handled by `set_weights`).
+        Args:
+            datakey: A Python dictionary, typically the
+                key of data.
+            data: actual data list, type will be various.
+        """
+        dset = self._dataset[datakey]
+        if type(data) == type(dset):
+            self._dataset[datakey] = data
 
     def getDataKeys(self):
         return self._dataset.keys()

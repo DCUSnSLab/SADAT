@@ -1,6 +1,6 @@
 '''
 외부 모듈은 총 2가지 방법으로 제어될 수 있음
-1. taskPlanview 에서 realtime으로 외부 모듈 동작
+1. taskPostPlan 에서 realtime으로 외부 모듈 동작
 2. LogSimDispatcher에서 시뮬레이션 데이터를 load할 때 외부 모듈 동작
 
 외부모듈의 목적
@@ -28,3 +28,6 @@ class extModuleManager():
     def setSenario(self, senario:extScheduler):
         self.__selectedScheduler = senario
         self.__selectedScheduler.initextScheduler()
+
+    def getDataset(self):
+        return self.__selectedScheduler.getAllDataset()

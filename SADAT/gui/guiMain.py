@@ -211,6 +211,9 @@ class MyApp(QMainWindow):
         self.xpos = []
         self.ypos = []
 
+        self.prevx = list()
+        self.prevy = list()
+
         # init Simulator Manager
         self.simulator = SnSimulator.SnSimulator(Manager(), self)
         self.simulator.setVelocity(self.velocity)
@@ -376,9 +379,13 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        self.prevx = data[0]
-        self.prevy = data[1]
-
+        self.prevx = data['rawdata'][0]
+        self.prevy = data['rawdata'][1]
+        # key = list(data.keys())
+        # if(len(data[key[3]]) > 0):
+        #     print('raw: ',data['rawdata'][0][0],end=" ")
+        #     key3 = data[key[3]]
+        #     print('dataset: ',key3[0].posx)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)

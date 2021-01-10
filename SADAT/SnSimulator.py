@@ -11,7 +11,7 @@ from sensor.SourceManager import SourceManager
 from simMode import Mode
 
 from taskLoopPlay import taskLoopPlay
-from taskPlanview import taskPlanview
+from task_post_plan import taskPostPlan
 
 
 class SnSimulator:
@@ -94,8 +94,8 @@ class SnSimulator:
             print("Clean, process length :", len(self.processes))
 
     def defineProcess(self):
-        # init planview thread
-        self.pvthread = taskPlanview(self.guiApp, self.simlog, self.extModManager)
+        # init taskPostPlan thread
+        self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
         self.pvthread.start()
 
