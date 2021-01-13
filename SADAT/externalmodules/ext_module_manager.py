@@ -31,3 +31,6 @@ class extModuleManager():
 
     def getDataset(self):
         return self.__selectedScheduler.getAllDataset()
+
+    def getRawData(self):
+        return self.__selectedScheduler.getAllRawDataset()

@@ -211,9 +211,6 @@ class MyApp(QMainWindow):
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
 
-        self.xpos = []
-        self.ypos = []
-
         self.prevx = list()
         self.prevy = list()
 
@@ -361,20 +358,16 @@ class MyApp(QMainWindow):
 
         rx = 150
         ry = 100
-        for idx,item in enumerate(self.xpos):
-            #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
-            xp = int(self.xpos[idx])+rx    #
-            yp = int(self.ypos[idx])+ry
-            qp.drawEllipse(xp, yp, 1, 1)
 
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
-                xp = int(idata.posx) + rx
-                yp = int(idata.posy) + ry
-                if ikey is senarioBasicDataset.TRACK:
-                    qp.drawRect(xp,yp,10,10)
-                else:
-                    qp.drawEllipse(xp, yp, 6, 6)
+                for tdata in idata.pos_xy:
+                    xp = int(tdata[0]) + rx
+                    yp = int(tdata[1]) + ry
+                    if ikey is senarioBasicDataset.TRACK:
+                        qp.drawRect(xp,yp,10,10)
+                    else:
+                        qp.drawEllipse(xp, yp, 6, 6)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -394,26 +387,10 @@ class MyApp(QMainWindow):
     def changePosition(self, data):
         self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
         self.planviewmanager.updateview(data)
-        self.prevx = data['rawdata'][0]
-        self.prevy = data['rawdata'][1]
-
-        # key = list(data.keys())
-        # if(len(data[key[1]]) > 0):
-        #     print('raw: ',data['rawdata'][0][0],end=" ")
-        #     key3 = data[key[1]]
-        #     print('dataset: ',type(key3[0]), key3[0].posx)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
-        # print(len(x))
-        self.xpos.clear()
-        self.ypos.clear()
         self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
-
-        for idx, item in enumerate(self.prevx):
-            self.xpos.append((self.prevx[idx] / self.panviewSize) + (self.width() / 2) + self.relx)
-            self.ypos.append((self.prevy[idx] / self.panviewSize) + (self.height() / 2) + self.rely)
-
         self.update()
 
     def playbackstatus(self, pbinfo):

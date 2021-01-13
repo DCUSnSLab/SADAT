@@ -1,3 +1,8 @@
+from time import time
+
+from dadatype.dtype_rplidar import dtype_rplidar
+from dadatype.dtype_test import dtype_test
+from dadatype.grp_rplidar import grp_rplidar
 from sensor.SensorCategory import SensorCategory
 from sensor.vSensor import vSensor
 
@@ -13,20 +18,17 @@ class RPLidar2Dv(vSensor):
         # cnt = 0
         # print(len(rawdata))
         for rdata in inputdata:
-            tempXY = []
             tempX = []
             tempY = []
 
             tempX, tempY = self._inputdataArray(rdata)
-            tempXY.append(tempX)
-            tempXY.append(tempY)
-            tempXY.append(rdata.timestamp[0])
-            tempXY.append(rdata.start_flag[0])
-            self._addSimData(tempXY)
-            #self.Log.enQueueData(tempXY)
-            # if cnt % 100 == 0:
-            #     print(cnt)
-            # cnt += 1
+            X_Y = [(i, tempX[i], tempY[i]) for i in range(len(tempX))]
+            lgrp = grp_rplidar(rdata.timestamp[0], X_Y, rdata.start_flag[0])
 
-        # print("End Read Data")
-        #self.addData(self.INTERRUPT_MSG)
+            self._addSimData(lgrp)
+
+            # tempXY.append(tempX)
+            # tempXY.append(tempY)
+            # tempXY.append(rdata.timestamp[0])
+            # tempXY.append(rdata.start_flag[0])
+            # self._addSimData(tempXY)
