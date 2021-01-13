@@ -21,12 +21,12 @@ class menuLoadSim(QAction,QWidget):
         self.parent.simulator.setAction(Mode.MODE_SIM)
         print("PlaySim")
 
-    # def OnOpenDocument(self):
-    #     print('connect')
-    #     fname = QFileDialog.getOpenFileName(self,'Open file','/Users/yuri/SADAT/Data')
-    #
-    #     #self.trig
-    #     print(fname)
+    def OnOpenDocument(self):
+        print('connect')
+        fname = QFileDialog.getOpenFileName(self,'Open file','/Users/yuri/SADAT/Data')
+
+        #self.trig
+        print(fname)
 
 class menuLogPlay(QAction):
 

@@ -64,7 +64,7 @@ class GUI_CONTROLLER:
             self.toolbar['Pause'].setVisible(False)
             self.toolbar['Resume'].setVisible(True)
 
-class MyAppEventManager():          #아직 해당 함수의 기능은 없는거 같음
+class MyAppEventManager():          #아직 해당 클래의 기능은 없는거 같음
     def __init__(self):
         pass
 
@@ -108,12 +108,10 @@ class MyWG(QWidget):
         layout=QVBoxLayout()
         layout.addWidget(self.group)
         self.setLayout(layout)
-        self.setFixedSize(300, 730)         #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정, 창 기본 크기 문제
+        self.setFixedSize(300, 730)         #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
 
         self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
-
-
         self.pr.statusBar()
         self.pr.statusBar().setStyleSheet("background-color : white")
         self.pr.initMenubar()
@@ -134,7 +132,6 @@ class MyWG(QWidget):
         self.pr.setPalette(p)
         #self.setPalette(p)
         self.pr.modeChanger(GUI_GROUP.ALL, False)
-
         self.setWindowTitle('QGridLayout')
         self.setGeometry(300, 300, 300, 200)
         self.show()
@@ -280,21 +277,22 @@ class MyApp(QMainWindow):
             print('mousemove')
 
     def mousePressEvent(self, e):
+        self.updatePosition()
         self.pressX = e.globalX()
         self.pressY = e.globalY()
-
-        print('press')
+        #self.updatePosition()
+        #print('press')
 
     def mouseReleaseEvent(self, e):
         self.relx = e.globalX()-self.pressX
         self.rely = e.globalY()-self.pressY
-        print('release')
-        self.updatePosition()
+        #self.updatePosition()
+        #print('release')
 
     def draw_point(self, qp):
         #draw paint
-        self.xp
-        self.yp
+        self.xp= self.relx
+        self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
         for idx,item in enumerate(self.xpos):
             #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
@@ -304,7 +302,7 @@ class MyApp(QMainWindow):
             # yw = yp + 1
             #print(self.panviewSize, xp, yp)
             qp.drawEllipse(self.xp, self.yp, 1, 1)    #여기서 상수가 1은 레이다 포인터의 x축 크기 y축 크기를 나타냄. 숫자가 클 수록 원의 크기가 커짐
-            print(self.xp,self.yp)
+            #print(self.xp,self.yp)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
