@@ -89,21 +89,8 @@ class extScheduler(metaclass=ABCMeta):
         return self._dataset
 
     def insertRawData(self, data):
-        #Temporary.. exchange data type from raw data to dtype_rplidar
-        key = self.tempRawKey
-        if key in self._rawdata:
-            self._rawdata[key].clear()
-        else:
-            self._rawdata[key] = list()
-
-        for idx in range(0, len(data[0]), 1):
-            # print(idx)
-            #print(data)
-            posx = data[0]
-            posy = data[1]
-            tstmp = data[2]
-            pdata = dtype_rplidar(idx, posx[idx], posy[idx])
-            self._rawdata[key].append(pdata)
+        for rdata in data:
+            self._rawdata[rdata[0]] = rdata[1]
 
     def getRawDataKeys(self):
         return self._rawdata.keys()

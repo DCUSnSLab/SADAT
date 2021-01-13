@@ -1,5 +1,6 @@
 class DataWrapper():
-    def __init__(self, posx, posy, dtypecate, id=-1):
+    __slots__ = ('id', 'posx', 'posy', 'dtypecate')
+    def __init__(self, id, posx, posy, dtypecate):
         self.id = id
         self.dtypecate=dtypecate
         self.posx = posx

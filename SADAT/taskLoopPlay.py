@@ -112,13 +112,13 @@ class taskLoopPlay(QThread):
                     for data in lq:
                         #self.originData[lss].append(data)
                         tcnt += 1
-                        if prevtime < int(data[2]):
+                        if prevtime < int(data.getTimeStamp()):
                             #print("frame per sec :",tcnt)
                             fps += tcnt
                             fpscnt += 1
                             tcnt = 0
 
-                        prevtime = int(data[2])
+                        prevtime = int(data.getTimeStamp())
                         #print(data[2], data[3])
                         #time.sleep(1 / self.vel)
 
@@ -133,7 +133,8 @@ class taskLoopPlay(QThread):
                 self.pbInfo.setfps = fps if self.pbInfo.setfps < fps else self.pbInfo.setfps
                 self.signal.emit(self.pbInfo)
                 self.guiApp.setStatus("Log data Load Completed")
-                self.simlog.enQueuePlayData(self.originData[lss][self.playidx])
+                #self.simlog.enQueuePlayData(self.originData[lss][self.playidx])
+                self.simlog.enQueuePlayData([(key, val[self.playidx]) for key, val in self.originData.items()])
 
             elif td == self.PLAYMODE_PLAY:
                 self.pbInfo.mode = self.PLAYMODE_PLAY
@@ -142,7 +143,7 @@ class taskLoopPlay(QThread):
                         break
                     self.pbInfo.currentIdx = self.playidx
                     #data.append(self.pbInfo)
-                    self.simlog.enQueuePlayData(self.originData[AttachedSensorName.RPLidar2DVirtual][self.playidx])
+                    self.simlog.enQueuePlayData([(key, val[self.playidx]) for key, val in self.originData.items()])
                     self.signal.emit(self.pbInfo)
                     time.sleep(1 / self.vel)
                     self.playidx += 1
@@ -150,7 +151,7 @@ class taskLoopPlay(QThread):
             elif td == self.PLAYMODE_SETVALUE:
                 self.pbInfo.mode = self.PLAYMODE_SETVALUE
                 self.pbInfo.currentIdx = self.playidx
-                self.simlog.enQueuePlayData(self.originData[AttachedSensorName.RPLidar2DVirtual][self.playidx])
+                self.simlog.enQueuePlayData([(key, val[self.playidx]) for key, val in self.originData.items()])
                 self.signal.emit(self.pbInfo)
                 # for idx, data in enumerate(self.originData):
                 #     self.pbInfo.currentIdx = idx
