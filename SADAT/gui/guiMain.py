@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
+from dadatype.dtype_cate import DataTypeCategory
+from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -14,6 +16,7 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from views.planview_manager import planviewManager, guiInfo
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -218,6 +221,9 @@ class MyApp(QMainWindow):
         self.simulator = SnSimulator.SnSimulator(Manager(), self)
         self.simulator.setVelocity(self.velocity)
 
+        #planview manager
+        self.planviewmanager = planviewManager()
+
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()
@@ -353,15 +359,22 @@ class MyApp(QMainWindow):
         #draw paint
         qp.setPen(QPen(Qt.white, 1))
 
-
+        rx = 150
+        ry = 100
         for idx,item in enumerate(self.xpos):
             #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
-            xp = int(self.xpos[idx])+150    #
-            yp = int(self.ypos[idx])+100
-            xw = xp + 1
-            yw = yp + 1
-            #print(self.panviewSize, xp, yp)
+            xp = int(self.xpos[idx])+rx    #
+            yp = int(self.ypos[idx])+ry
             qp.drawEllipse(xp, yp, 1, 1)
+
+        for ikey, values in self.planviewmanager.getObjects():
+            for idata in values:
+                xp = int(idata.posx) + rx
+                yp = int(idata.posy) + ry
+                if ikey is senarioBasicDataset.TRACK:
+                    qp.drawRect(xp,yp,10,10)
+                else:
+                    qp.drawEllipse(xp, yp, 6, 6)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -379,19 +392,23 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
+        self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
+        self.planviewmanager.updateview(data)
         self.prevx = data['rawdata'][0]
         self.prevy = data['rawdata'][1]
+
         # key = list(data.keys())
-        # if(len(data[key[3]]) > 0):
+        # if(len(data[key[1]]) > 0):
         #     print('raw: ',data['rawdata'][0][0],end=" ")
-        #     key3 = data[key[3]]
-        #     print('dataset: ',key3[0].posx)
+        #     key3 = data[key[1]]
+        #     print('dataset: ',type(key3[0]), key3[0].posx)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         # print(len(x))
         self.xpos.clear()
         self.ypos.clear()
+        self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
 
         for idx, item in enumerate(self.prevx):
             self.xpos.append((self.prevx[idx] / self.panviewSize) + (self.width() / 2) + self.relx)
