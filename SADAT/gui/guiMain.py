@@ -278,15 +278,15 @@ class MyApp(QMainWindow):
 
     def mousePressEvent(self, e):
         self.updatePosition()
-        self.pressX = e.globalX()
-        self.pressY = e.globalY()
-        #self.updatePosition()
+        self.pressX = e.globalX()-self.relx
+        self.pressY = e.globalY()-self.rely
+        self.updatePosition()
         #print('press')
 
     def mouseReleaseEvent(self, e):
         self.relx = e.globalX()-self.pressX
         self.rely = e.globalY()-self.pressY
-        #self.updatePosition()
+        self.updatePosition()
         #print('release')
 
     def draw_point(self, qp):
