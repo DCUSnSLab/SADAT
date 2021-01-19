@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
+from dadatype.dtype_cate import DataTypeCategory
+from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -14,6 +16,7 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from views.planview_manager import planviewManager, guiInfo
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -163,12 +166,15 @@ class MyApp(QMainWindow):
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
 
-        self.xpos = []
-        self.ypos = []
+        self.prevx = list()
+        self.prevy = list()
 
         # init Simulator Manager
         self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
+
+        #planview manager
+        self.planviewmanager = planviewManager()
 
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
@@ -294,15 +300,18 @@ class MyApp(QMainWindow):
         self.xp= self.relx
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
-        for idx,item in enumerate(self.xpos):
-            #qp.drawPoint(int(self.xpos[idx]), int(self.ypos[idx]))
-            self.xp = int(self.xpos[idx])+150    #xp는 레이다 좌표의 현재 x좌표 위치를 나타냄
-            self.yp = int(self.ypos[idx])+100    #yp는 레이다 좌표의 현재 y좌표 위치를 나타냄
-            # xw = xp + 1
-            # yw = yp + 1
-            #print(self.panviewSize, xp, yp)
-            qp.drawEllipse(self.xp, self.yp, 1, 1)    #여기서 상수가 1은 레이다 포인터의 x축 크기 y축 크기를 나타냄. 숫자가 클 수록 원의 크기가 커짐
-            #print(self.xp,self.yp)
+        rx = 150
+        ry = 100
+
+        for ikey, values in self.planviewmanager.getObjects():
+            for idata in values:
+                for tdata in idata.pos_xy:
+                    xp = int(tdata[0]) + rx
+                    yp = int(tdata[1]) + ry
+                    if ikey is senarioBasicDataset.TRACK:
+                        qp.drawRect(xp,yp,10,10)
+                    else:
+                        qp.drawEllipse(xp, yp, 6, 6)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -319,20 +328,13 @@ class MyApp(QMainWindow):
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
 
-    def changePosition(self, data):     #changePosition 함수는 레이다 데이터의 값을 받아와 포지션을 계속 변화 시킴
-        self.prevx = data[0]
-        self.prevy = data[1]
+    def changePosition(self, data):
+        self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
+        self.planviewmanager.updateview(data)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
-        # print(len(x))
-        self.xpos.clear()
-        self.ypos.clear()           #리스트에 저장되어 있는 y좌표 초기화
-
-        for idx, item in enumerate(self.prevx):
-            self.xpos.append((self.prevx[idx] / self.panviewSize) + (self.width() / 2) + self.relx)
-            self.ypos.append((self.prevy[idx] / self.panviewSize) + (self.height() / 2) + self.rely)
-
+        self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
         self.update()
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
@@ -351,6 +353,9 @@ class MyApp(QMainWindow):
         self.statusBar().showMessage(stxt)
         self.update()
         #print("pbInfo : ", pbinfo.mode, pbinfo.maxLength, pbinfo.currentIdx)
+
+    def closeEvent(self, event):
+        sys.exit()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
