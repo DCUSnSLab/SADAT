@@ -1,6 +1,6 @@
 from enum import Enum
 
-from views.dataview import DataView
+from views.DataView import DataView
 from views.viewpointcloud import viewPointCloud
 from views.viewtrack import viewTrack
 
