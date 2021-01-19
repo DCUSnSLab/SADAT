@@ -280,7 +280,6 @@ class MyApp(QMainWindow):
             self.relx = e.globalX() - self.pressX
             self.rely = e.globalY() - self.pressY
             self.updatePosition()
-            print('mousemove')
 
     def mousePressEvent(self, e):
         self.updatePosition()
