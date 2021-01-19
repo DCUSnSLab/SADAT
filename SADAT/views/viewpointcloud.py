@@ -1,4 +1,4 @@
-from views.dataview import DataView
+from views.DataView import DataView
 
 
 class viewPointCloud(DataView):
