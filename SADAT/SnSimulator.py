@@ -1,16 +1,17 @@
 import sys
 from multiprocessing import Manager, Process
-from PyQt5.QtWidgets import QApplication
 from LidarLog import LidarLog
 from ModeLog import ModeLog
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
+from externalmodules.ext_module_manager import extModuleManager
 from gui.guiMain import GUI_CONTROLLER
+from sensor.SenAdptMgr import SenAdptMgr
+from sensor.SourceManager import SourceManager
 from simMode import Mode
-import time
 
 from taskLoopPlay import taskLoopPlay
-from taskPlanview import taskPlanview
+from task_post_plan import taskPostPlan
 
 
 class SnSimulator:
@@ -19,16 +20,25 @@ class SnSimulator:
     def __init__(self, manager, gapp=None):
         self.guiApp = gapp
         self.manager = manager
+
+        #sensor devices
+        self.srcmanager = SourceManager(manager)
+        self.senadapter = SenAdptMgr(self.srcmanager, manager)
         self.rawlog = LidarLog(manager)
         self.simlog = SimLog(manager)
         self.procs = {}
         self.pvthread = None
         self.lpthread = None
 
+        #externalModules
+        self.extModManager = extModuleManager()
+
         self.Velocity = 0
 
         self.plugins = None
 
+        #for test
+        self.srcmanager.printSensorList()
         self.loadPlugin()
         self.defineProcess()
 
@@ -100,19 +110,19 @@ class SnSimulator:
             print("Clean, process length :", len(self.processes))
 
     def defineProcess(self):
-        # init planview thread
-        self.pvthread = taskPlanview(self.guiApp, self.simlog)
+        # init taskPostPlan thread
+        self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
         self.pvthread.start()
 
-        self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager)
+        self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
         self.lpthread.signal.connect(self.guiApp.playbackstatus)
         self.lpthread.setVelocity(60)
         self.lpthread.start()
 
         # init log process
         self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog)
-        self.procs[Mode.MODE_SIM] = ModeSimulation(self.simlog)
+        self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         print(self.procs)
 
     def addProcess(self, procdata):

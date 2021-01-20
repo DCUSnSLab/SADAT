@@ -1,3 +1,5 @@
+import sys
+
 from PyQt5.QtWidgets import qApp, QAction
 
 class menuExit(QAction):
@@ -10,5 +12,4 @@ class menuExit(QAction):
         self.setStatusTip('Exit application')
 
     def trig(self):
-        self.prt.simulator.cleanProcess()
-        qApp.quit()
+        sys.exit()
