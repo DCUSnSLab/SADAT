@@ -119,7 +119,6 @@ class MyWG(QWidget):
         self.pr.statusBar().setStyleSheet("background-color : white")
         self.pr.initMenubar()
         self.pr.initToolbar()
-        #self.pr.initplanview()
         self.pr.setStyleSheet("""QMenuBar {
                  background-color: Gray;
                  color: white;
@@ -233,16 +232,6 @@ class MyApp(QMainWindow):
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
 
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
-
-
-    # def initplanview(self):         #현재 이 함수의 기능은 못 찾겠음,, tool을 보아하니 아직 레이아웃 버튼이 안보임
-    #     grid_layout = QGridLayout()
-    #     self.setLayout(grid_layout)
-    #
-    #     for x in range(3):
-    #         for y in range(3):
-    #             button = QPushButton(str(str(3 * x + y)))
-    #             grid_layout.addWidget(button, x, y)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
