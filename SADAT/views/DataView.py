@@ -17,15 +17,24 @@ class DataView:
     def updatePlanviewPos(self, guiinfo):
         self.pos_xy.clear()
         self.guiinfo = guiinfo
-
         if self.viewType.name != 'POINT_CLOUD':
-            posxy = self.__getPos(self.rawdata.posx, self.rawdata.posy)
+            posxy = self._getPos(self.rawdata.posx, self.rawdata.posy)
             self.pos_xy.append(posxy)
         else:
-            self.pos_xy = [self.__getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
+            self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
 
-    def __getPos(self, posx, posy):
+        self._updatePlanviewSub()
+
+    def _updatePlanviewSub(self):
+        pass
+
+    def _getPos(self, posx, posy):
         rposx = (posx / self.guiinfo.planviewsize) + (self.guiinfo.wwidth / 2) + self.guiinfo.relx
         rposy = (posy / self.guiinfo.planviewsize) + (self.guiinfo.wheight / 2) + self.guiinfo.rely
 
         return rposx, rposy
+
+    def _getSize(self, w, h):
+        w = w / self.guiinfo.planviewsize
+        h = h / self.guiinfo.planviewsize
+        return w,h

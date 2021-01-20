@@ -8,6 +8,8 @@ class trackerBasic(extModule):
         super().__init__('trackerBasic')
 
     def do(self):
-        tdata = dtype_tracker(0, 300, 10, 20, 50)
+        tdata = dtype_tracker(0, 0, 0, 10, 10)
         self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
+        tdata2 = dtype_tracker(1, 10, 0, 10, 10)
+        self._addData(datakey=senarioBasicDataset.TRACK, data=tdata2)
         #print('do ExtModules -->', self.getName())
