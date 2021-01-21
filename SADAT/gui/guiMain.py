@@ -308,7 +308,7 @@ class MyApp(QMainWindow):
                     xp = int(tdata[0]) + rx
                     yp = int(tdata[1]) + ry
                     if ikey is senarioBasicDataset.TRACK:
-                        qp.drawRect(xp,yp,idata.width,idata.height)
+                        qp.drawRect(xp, yp, 20, 20)
                     else:
                         qp.drawEllipse(xp, yp, 6, 6)
 
