@@ -89,29 +89,35 @@ class MyWG(QWidget):
         self.buttonGroup.setStyleSheet("color:black;"
                                        "background-color: white;")
         #레이아웃에 있는 제어 버튼
-        self.pushButton1 = QPushButton("전진")
-        self.pushButton2 = QPushButton("후진")
-        self.pushButton3 = QPushButton("좌회전")
-        self.pushButton4 = QPushButton("우회전")
-        self.pushButton5 = QPushButton("멈춤")
+        self.pushButton1 = QPushButton("Advance")
+        self.pushButton1.setMaximumSize(100,70)
+        self.pushButton2 = QPushButton("Back uo")
+        self.pushButton2.setMaximumSize(100, 70)
+        self.pushButton3 = QPushButton("Turn Left")
+        self.pushButton3.setMaximumSize(100, 70)
+        self.pushButton4 = QPushButton("Turn Right")
+        self.pushButton4.setMaximumSize(100,70)
+        self.pushButton5 = QPushButton("Stop")
+        self.pushButton5.setMaximumSize(100, 70)
 
-        eInnerLayOut=QVBoxLayout()
-        eInnerLayOut.addWidget(self.pushButton1)
-        eInnerLayOut.addWidget(self.pushButton2)
-        eInnerLayOut.addWidget(self.pushButton3)
-        eInnerLayOut.addWidget(self.pushButton4)
-        eInnerLayOut.addWidget(self.pushButton5)
+        eInnerLayOut=QGridLayout()
+        eInnerLayOut.addWidget(self.pushButton1,0,1)
+        eInnerLayOut.addWidget(self.pushButton2,2,1)
+        eInnerLayOut.addWidget(self.pushButton3,1,0)
+        eInnerLayOut.addWidget(self.pushButton4,1,2)
+        eInnerLayOut.addWidget(self.pushButton5,1,1)
         self.buttonGroup.setLayout(eInnerLayOut)
         self.ExGroup=QGroupBox("None")
         self.ExGroup.setStyleSheet("color:black;"
                                    "background-color: white")
-        fInnerLayOut.addWidget(self.buttonGroup)
-        fInnerLayOut.addWidget(self.ExGroup,1)
+        fInnerLayOut.addWidget(self.buttonGroup,35)
+        fInnerLayOut.addWidget(self.ExGroup,100)
         self.group.setLayout(fInnerLayOut)
         layout=QVBoxLayout()
         layout.addWidget(self.group)
         self.setLayout(layout)
-        self.setFixedSize(300, 730)         #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
+
+        self.setFixedSize(350,930)        #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
 
         self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
@@ -132,10 +138,7 @@ class MyWG(QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
-        #self.setPalette(p)
         self.pr.modeChanger(GUI_GROUP.ALL, False)
-        self.setWindowTitle('QGridLayout')
-        self.setGeometry(300, 300, 300, 200)
         self.show()
 
 class MyApp(QMainWindow):
