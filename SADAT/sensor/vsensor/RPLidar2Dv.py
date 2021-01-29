@@ -1,6 +1,6 @@
 from time import time
 
-from dadatype.dtype_rplidar import dtype_rplidar
+#from dadatype.dtype_rplidar import dtype_rplidar
 from dadatype.dtype_test import dtype_test
 from dadatype.grp_rplidar import grp_rplidar
 from sensor.SensorCategory import SensorCategory

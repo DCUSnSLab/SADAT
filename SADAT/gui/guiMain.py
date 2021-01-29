@@ -5,8 +5,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-from dadatype.dtype_cate import DataTypeCategory
-from externalmodules.default.dataset_enum import senarioBasicDataset
+#from dadatype.dtype_cate import DataTypeCategory
+#from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -17,6 +17,7 @@ from multiprocessing import Manager
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from views.planview_manager import planviewManager, guiInfo
+from views.DataView import DataView
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -117,7 +118,7 @@ class MyWG(QWidget):
         layout.addWidget(self.group)
         self.setLayout(layout)
 
-        self.setFixedSize(350,930)        #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
+        self.setFixedSize(350,730)        #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
 
         self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
@@ -181,6 +182,8 @@ class MyApp(QMainWindow):
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()
+
+        self.dataview = DataView()
 
     def initUI(self):
         self.setWindowTitle('SADAT')
@@ -281,11 +284,12 @@ class MyApp(QMainWindow):
         #print('press')
 
     def mouseReleaseEvent(self, e):
-        self.relx = e.globalX()-self.pressX
-        self.rely = e.globalY()-self.pressY
+        # self.relx = e.globalX()-self.pressX
+        # self.rely = e.globalY()-self.pressY
         self.updatePosition()
         #print('release')
 
+    #qp를 넘겨주어야 함
     def draw_point(self, qp):
         #draw paint
         self.xp= self.relx
@@ -299,10 +303,7 @@ class MyApp(QMainWindow):
                 for tdata in idata.pos_xy:
                     xp = int(tdata[0]) + rx
                     yp = int(tdata[1]) + ry
-                    if ikey is senarioBasicDataset.TRACK:
-                        qp.drawRect(xp,yp,10,10)
-                    else:
-                        qp.drawEllipse(xp, yp, 6, 6)
+                    self.dataview._draw(qp, xp, yp, ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:

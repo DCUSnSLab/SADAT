@@ -1,3 +1,5 @@
+from externalmodules.default.dataset_enum import senarioBasicDataset
+
 class DataView:
     def __init__(self, rawdata=None):
         self.rawdata = rawdata
@@ -23,6 +25,12 @@ class DataView:
             self.pos_xy.append(posxy)
         else:
             self.pos_xy = [self.__getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
+
+    def _draw(self, qp, xp, yp, ikey):
+        if ikey is senarioBasicDataset.TRACK:
+            qp.drawRect(xp, yp, 10, 10)
+        else:
+            qp.drawEllipse(xp, yp, 6, 6)
 
     def __getPos(self, posx, posy):
         rposx = (posx / self.guiinfo.planviewsize) + (self.guiinfo.wwidth / 2) + self.guiinfo.relx

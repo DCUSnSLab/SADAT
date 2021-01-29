@@ -12,6 +12,7 @@ class guiInfo():
 
 class planviewManager():
     def __init__(self):
+        super(planviewManager)
         self.objects = dict()
         self.guiinfo = None
 
@@ -23,11 +24,16 @@ class planviewManager():
     def updateposinfo(self, guiinfo):
         self.guiinfo = guiinfo
 
+
+    #이 부분 체크해서 이 함수 밑에 드로우 함수 만들기
     def updateAllpos(self, guiinfo):
         self.updateposinfo(guiinfo)
         for object in self.objects.values():
             for objitem in object:
                 objitem.updatePlanviewPos(guiinfo)
+
+    def draw(self,qp):
+        pass
 
     #match the view with data of dtype using dtypecategory
     def __addView(self, values, isPointCloud):
