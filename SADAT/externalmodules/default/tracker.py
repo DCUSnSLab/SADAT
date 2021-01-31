@@ -24,8 +24,8 @@ class trackerBasic(extModule):
         # tracker_list = mytracker.getlidardata(self)
         tracker_list = self.tracker.getlidardata(self)
 
-        for tracker_x, tracker_y in tracker_list:
-            tdata = dtype_tracker(0, tracker_x, tracker_y, 10, 10)
+        for idx, tracker_x, tracker_y in tracker_list:
+            tdata = dtype_tracker(idx, tracker_x, tracker_y, 10, 10)
             self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
         # TODO mytracker.getlidardata의 리턴값을 tracker_x, tracker_y, (x, y), (x, y) 로 수정하여야 함.
         # mytracker 코드에서 height, width 값을 가져오도록 되어있는데,
