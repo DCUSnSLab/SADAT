@@ -1,6 +1,9 @@
 import platform
 import time
 import datetime as pydatetime
+
+import numpy
+
 from LidarLog import LidarLog
 from multiprocessing import Manager
 import rospy
@@ -8,6 +11,10 @@ from sensor_msgs.msg import LaserScan
 from numpy import inf
 import math
 from multiprocessing import Value
+
+from log.makeRPLidarLog import RPLidarLogType
+from sensor.SenAdptMgr import AttachedSensorName
+
 
 def get_now():
     return pydatetime.datetime.now()
@@ -24,6 +31,7 @@ class GrabberROS:
         self.lidar = None
         self.node = "GrabberROS"
         self.Signal = Value('i', 0)
+        self.senstype = AttachedSensorName.RPLidar2DA3
 
     def connect(self):
         pass
@@ -46,20 +54,33 @@ class GrabberROS:
 
     def lidarcallback(self, msg):
         # print(len(msg.ranges))
-        dataset = []
         angle_min = msg.angle_min
         angle_max = msg.angle_max
         angle_inc = msg.angle_increment
         #print(angle_min, angle_max, angle_inc)
         cnt = 0
+
+        rpdata = RPLidarLogType()
+        distance = list()
+        angle = list()
+        timestamp = 0
+
         for data in msg.ranges:
             range = data
             if data == inf:
                 range = 0
-            dataset.append(self.log.makeDatafromROS(math.degrees(angle_min+(angle_inc * cnt)), range*1000, cnt, get_now_timestamp()))
+            rosdata = self.log.makeDatafromROS(math.degrees(angle_min+(angle_inc * cnt)), range*1000, cnt, get_now_timestamp())
+            distance.append(rosdata['distance'])
+            angle.append(rosdata['angle'])
+            timestamp = rosdata['timestamp']
             cnt += 1
-        #print(dataset)
-        self.log.enQueueDataNew(dataset)
+
+        rpdata.distance = numpy.array(distance)
+        rpdata.angle = numpy.array(angle)
+        rpdata.timestamp = timestamp
+        rpdata.start_flag = True
+        senddata = {self.senstype:rpdata}
+        self.log.enQueueDataNew(senddata)
         #print("callback",self.Signal.value)
         if self.Signal.value == 1:
             print("Set Signal 1")

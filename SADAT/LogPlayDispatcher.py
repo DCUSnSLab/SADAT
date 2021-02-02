@@ -4,14 +4,15 @@ import time
 from PyQt5.QtCore import pyqtSignal
 
 from Dispatcher import Dispatcher
+from sensor.SenAdptMgr import AttachedSensorName
 
 
 class LogPlayDispatcher(Dispatcher):
 
-    def __init__(self, log):
+    def __init__(self, log, srcmgr):
         super().__init__()
         self.Log = log
-        self._rawdata = None
+        self.sourcemanager = srcmgr
         print("LogPlayDispatcher Init")
         print(self.guiApp)
 
@@ -37,46 +38,16 @@ class LogPlayDispatcher(Dispatcher):
         total = 0
         cnt = 0
         for dataset in iter(logplaydata.get, 'interrupt'):
-            #print('datalen - ',len(dataset),cnt)
-            cnt += 1
-            for data in dataset:
-                start_flag = data['start_flag']
-                timestamp = data['timestamp']
+            for key in dataset:
+                data = dataset[key]
+                if key in self.sourcemanager.AllSensors.keys():
+                    sensor = self.sourcemanager.AllSensors[key]
+                    sensor.doWork(data)
 
-                if start_flag is True:
-                    tgap = timestamp - prevt
-                    prevt = timestamp
-                    total += scan_cnt
-                    #print('scntbyCycle-', scan_cnt, total, tgap)
-                    if len(tempX) > 0:
 
-                        # insert XY coord
-                        tempXY.append(tempX)
-                        tempXY.append(tempY)
-                        tempXY.append(timestamp)
-                        tempXY.append(start_flag)
 
-                        # insert XY into shared log
-                        self.Log.enQueueData(tempXY)
-
-                        # print(self.Log.getQueueData().qsize(), tempXY[0][0], tempXY[1][0])
-                        # self.signal.emit(tempXY)
-                        # print(self.Log.getQueueData())
-                        # print(innercnt)
-
-                    scan_cnt = 0
-                    tempX = []
-                    tempY = []
-                    tempXY = []
-                    self.inputdata(data, tempX, tempY)
-
-                else:
-                    #pass
-                    self.inputdata(data, tempX, tempY)
-                scan_cnt += 1
-
-                tempdata = str(scan_cnt)+','+str(data['start_flag'])+','+str(data['angle'])+','+str(data['distance'])
-                self.testrawdata.append(tempdata)
+                #tempdata = str(scan_cnt)+','+str(data['start_flag'])+','+str(data['angle'])+','+str(data['distance'])
+                #self.testrawdata.append(tempdata)
 
         # for test
         # with open('../../LogPlayDisrawdata.json', 'w') as outfile:

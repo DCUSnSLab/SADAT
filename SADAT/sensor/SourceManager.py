@@ -13,7 +13,9 @@ class SourceManager:
         self.dataLoadQueue = manager.Queue()
 
     def init(self):
-        pass
+        self.ActualSensor.clear()
+        self.VirtualSensor.clear()
+        self.AllSensors.clear()
 
     def addActualSensor(self, sens, man):
         self.__addSensor(self.ActualSensor, sens, man)

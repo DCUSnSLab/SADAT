@@ -121,7 +121,7 @@ class SnSimulator:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog)
+        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         print(self.procs)
 

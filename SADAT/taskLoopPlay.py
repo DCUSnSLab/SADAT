@@ -82,10 +82,12 @@ class taskLoopPlay(QThread):
         for td in iter(self.task.get, 'stop'):
             #Realtime Play Mode
             if td == self.PLAYMODE_LOGPLAY:
-                lq = self.simlog.getQueueData()
+                lq = self.sourcemanager.getSensorbyName(AttachedSensorName.RPLidar2DA3).getRealtimeDataQueue()
                 print("store origin data")
                 for data in iter(lq.get, 'interrupt'):
-                    self.simlog.enQueuePlayData(data)
+                    ldata = list()
+                    ldata.append(tuple((AttachedSensorName.RPLidar2DA3, data)))
+                    self.simlog.enQueuePlayData(ldata)
 
 
             #Sim Mode

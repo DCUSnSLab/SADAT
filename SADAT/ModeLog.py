@@ -6,12 +6,12 @@ from simMode import Mode
 
 
 class ModeLog(Mode):
-    def __init__(self, log, simlog):
+    def __init__(self, log, simlog, srcmgr):
         super().__init__(log)
         #init grabber
         self.grabber = None
         self.logger = Logger(self.log, simlog)
-        self.dispatcher = LogPlayDispatcher(simlog)
+        self.dispatcher = LogPlayDispatcher(simlog, srcmgr)
 
     def makeProcess(self):
         print("MakeProcess : Log Type :",self.currentMode)
