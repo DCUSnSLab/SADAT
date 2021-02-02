@@ -252,6 +252,7 @@ class MyApp(QMainWindow):
 
     #event
     def wheelEvent(self, e):            #whellEvent 함수, 마우스 휠을 조정해 panview 사이즈 조정 가능
+
         wvalue = e.angleDelta().y()     #wvalue는 delta의 값을 이용해서 마우스 휠의 y축 즉, 위 아래 값을 알 수 있음
         div = 0.025
         max = 0.6
@@ -274,6 +275,14 @@ class MyApp(QMainWindow):
 
         if self.gcontrol.getCurrentMode() is not GUI_CONTROLLER.PLAYMODE:
             self.updatePosition()
+
+        print("whellEvent Called")
+        print("wvalue", wvalue)
+        print("div", div)
+        print("dv", dv)
+        print("panview", self.panviewSize)
+        print("max", max)
+        print("min", min)
 
     def mouseMoveEvent(self, e):
         if e.buttons()==Qt.LeftButton:
@@ -299,17 +308,17 @@ class MyApp(QMainWindow):
         self.xp= self.relx
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
-        rx = 150
-        ry = 100
 
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
                 for tdata in idata.pos_xy:
-                    xp = int(tdata[0]) + rx
-                    yp = int(tdata[1]) + ry
+                    xp = int(tdata[0])
+                    yp = int(tdata[1])
                     if ikey is senarioBasicDataset.TRACK:
-                        qp.drawText(xp, yp, "Test label")
-                        qp.drawRect(xp, yp, 20, 20)
+                        qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), "Cluster_" + str(idata.rawdata.id))
+                        # qp.drawRect(xp, yp, 20, 20)
+                        # qp.drawRect(xp, yp, idata.rawdata.width, idata.rawdata.height)
+                        qp.drawRect(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), int(idata.rawdata.width / self.panviewSize), int(idata.rawdata.height / self.panviewSize))
                     else:
                         qp.drawEllipse(xp, yp, 6, 6)
 
