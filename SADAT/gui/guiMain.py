@@ -284,8 +284,6 @@ class MyApp(QMainWindow):
         #print('press')
 
     def mouseReleaseEvent(self, e):
-        # self.relx = e.globalX()-self.pressX
-        # self.rely = e.globalY()-self.pressY
         self.updatePosition()
         #print('release')
 
@@ -295,15 +293,13 @@ class MyApp(QMainWindow):
         self.xp= self.relx
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
-        rx = 150
-        ry = 100
 
-        for ikey, values in self.planviewmanager.getObjects():
+        xp=None
+        yp=None
+
+        for ikey, values in self.planviewmanager.getObjects(): #planview man~에서 할 수 있도록
             for idata in values:
-                for tdata in idata.pos_xy:
-                    xp = int(tdata[0]) + rx
-                    yp = int(tdata[1]) + ry
-                    self.dataview._draw(qp, xp, yp, ikey)
+                idata.draw(qp,xp,yp,ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:

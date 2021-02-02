@@ -12,7 +12,6 @@ class guiInfo():
 
 class planviewManager():
     def __init__(self):
-        super(planviewManager)
         self.objects = dict()
         self.guiinfo = None
 
@@ -73,7 +72,7 @@ class planviewManager():
 
         return ispc, objval
 
-    def getObjectList(self):
+    def getObjectList(self):        #key값 가져옴
         return list(self.objects.keys())
 
     def getObject(self, key):

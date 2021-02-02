@@ -7,3 +7,4 @@ class viewTrack(DataView):
 
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
+
