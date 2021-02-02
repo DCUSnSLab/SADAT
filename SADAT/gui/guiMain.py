@@ -276,14 +276,6 @@ class MyApp(QMainWindow):
         if self.gcontrol.getCurrentMode() is not GUI_CONTROLLER.PLAYMODE:
             self.updatePosition()
 
-        print("whellEvent Called")
-        print("wvalue", wvalue)
-        print("div", div)
-        print("dv", dv)
-        print("panview", self.panviewSize)
-        print("max", max)
-        print("min", min)
-
     def mouseMoveEvent(self, e):
         if e.buttons()==Qt.LeftButton:
             self.relx = e.globalX() - self.pressX
@@ -316,8 +308,6 @@ class MyApp(QMainWindow):
                     yp = int(tdata[1])
                     if ikey is senarioBasicDataset.TRACK:
                         qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), "Cluster_" + str(idata.rawdata.id))
-                        # qp.drawRect(xp, yp, 20, 20)
-                        # qp.drawRect(xp, yp, idata.rawdata.width, idata.rawdata.height)
                         qp.drawRect(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), int(idata.rawdata.width / self.panviewSize), int(idata.rawdata.height / self.panviewSize))
                     else:
                         qp.drawEllipse(xp, yp, 6, 6)

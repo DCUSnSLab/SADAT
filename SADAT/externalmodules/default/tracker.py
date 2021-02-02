@@ -10,8 +10,7 @@ from sensor.SenAdptMgr import AttachedSensorName
 class trackerBasic(extModule):
     def __init__(self):
         super().__init__('trackerBasic')
-        self.tracker = mytracker.Tracker(60, 2)
-        # self.track_xy = mytracker.dbscanClustering(60, 2) # eps, min_samples
+        self.tracker = mytracker.Tracker(100, 2)
 
     def getRawDatabyKey(self, key):
         return self._getRawDatabyKey(key)
@@ -20,17 +19,8 @@ class trackerBasic(extModule):
         return self._getData()
 
     def do(self):
-        # tracker_x, tracker_y, height, width = mytracker.getlidardata(self)
-        # tracker_list = mytracker.getlidardata(self)
         tracker_list = self.tracker.getlidardata(self)
 
         for tracker_x, tracker_y, idx, minX, maxX, minY, maxY in tracker_list:
             tdata = dtype_tracker(idx, minX, maxX, minY, maxY, tracker_x, tracker_y, maxX - minX, maxY - minY)
             self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
-        # TODO mytracker.getlidardata의 리턴값을 tracker_x, tracker_y, (x, y), (x, y) 로 수정하여야 함.
-        # mytracker 코드에서 height, width 값을 가져오도록 되어있는데,
-        # 제대로 된 Tracker 구현 이후 생성된 Tracker의 좌하단, 우상단 좌표값을 가져오는 코드로
-        # 수정 진행하여야 함.
-        # tdata = dtype_tracker(0, 10, 10, 50, 50)
-        # self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
-        #print('do ExtModules -->', self.getName())
