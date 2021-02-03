@@ -38,7 +38,7 @@ class LogPlayDispatcher(Dispatcher):
         total = 0
         cnt = 0
         for dataset in iter(logplaydata.get, 'interrupt'):
-            for key in dataset:
+            for key in dataset.keys():
                 data = dataset[key]
                 if key in self.sourcemanager.AllSensors.keys():
                     sensor = self.sourcemanager.AllSensors[key]

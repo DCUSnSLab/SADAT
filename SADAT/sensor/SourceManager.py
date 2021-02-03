@@ -31,6 +31,9 @@ class SourceManager:
         else:
             print("error SensorName: %s already in SensorList" % sensor.sensorName)
 
+    def getActualSensors(self):
+        return self.ActualSensor
+
     def getSensorbyName(self, name:str):
         if name in self.AllSensors:
             return self.AllSensors[name]
