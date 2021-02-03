@@ -4,7 +4,7 @@ from dadatype.dtype_cate import DataTypeCategory
 
 
 class grp_rplidar():
-    def __init__(self, timestamp=0, pnt=None, start_flag=False):
+    def __init__(self, timestamp=0, pnt=list(), start_flag=False):
         self.__timestamp = timestamp
         self.__pntxy = pnt
         self.__start_flag = start_flag

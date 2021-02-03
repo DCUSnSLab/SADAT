@@ -14,14 +14,13 @@ class senarioBasic(extScheduler):
     def dataConstruction(self):
         self._initDataset(senarioBasicDataset.TRACK, list())
         self._initDataset(senarioBasicDataset.CAMTRACK, list()) #temporary
-        self._initDataset(senarioBasicDataset.DELAYEDPOINTS, list())
 
         self.sprint('data Construction loaded')
         for key in self._dataset.keys():
             self.sprint(key)
 
     def modConstruction(self):
-        self._addModules([delayedPoints(), trackerBasic()])
+        self._addModules([trackerBasic()])
         self.sprint('load Modules')
         for mod in self._modules:
             self.sprint(mod.getName())
