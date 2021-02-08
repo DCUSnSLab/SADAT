@@ -1,9 +1,7 @@
 from dadatype.dtype_tracker import dtype_tracker
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from externalmodules.extModule import extModule
-import mytracker # Project Structure에서 Tracker Project를 추가하여야 함
-
-from random import *
+import mytracker # Project Structure에서 Tracker Project를 추가하여야 합니다.
 
 from sensor.SenAdptMgr import AttachedSensorName
 
