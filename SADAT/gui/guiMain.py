@@ -6,7 +6,7 @@ from PyQt5.QtCore import *
 
 import SnSimulator
 #from dadatype.dtype_cate import DataTypeCategory
-#from externalmodules.default.dataset_enum import senarioBasicDataset
+from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -108,11 +108,23 @@ class MyWG(QWidget):
         eInnerLayOut.addWidget(self.pushButton4,1,2)
         eInnerLayOut.addWidget(self.pushButton5,1,1)
         self.buttonGroup.setLayout(eInnerLayOut)
-        self.ExGroup=QGroupBox("None")
-        self.ExGroup.setStyleSheet("color:black;"
+
+        self.CheckGroup=QGroupBox("Check Box")
+        self.CheckGroup.setStyleSheet("color:black;"
                                    "background-color: white")
+
+        self.checkBox1 = QCheckBox("TRACK")
+        self.checkBox2 = QCheckBox("CAMRTACK")
+        self.checkBox3 = QCheckBox("DELAYDPOINTS")
+
+        rInnerLayOut = QVBoxLayout()
+        rInnerLayOut.addWidget(self.checkBox1)
+        rInnerLayOut.addWidget(self.checkBox2)
+        rInnerLayOut.addWidget(self.checkBox3)
+        self.CheckGroup.setLayout(rInnerLayOut)
+
         fInnerLayOut.addWidget(self.buttonGroup,35)
-        fInnerLayOut.addWidget(self.ExGroup,100)
+        fInnerLayOut.addWidget(self.CheckGroup,100)
         self.group.setLayout(fInnerLayOut)
         layout=QVBoxLayout()
         layout.addWidget(self.group)
@@ -141,6 +153,10 @@ class MyWG(QWidget):
         self.pr.setPalette(p)
         self.pr.modeChanger(GUI_GROUP.ALL, False)
         self.show()
+
+    def check_box(self):
+        if self.checkBox1.pressed():
+            self.pr.draw_point()
 
 class MyApp(QMainWindow):
 
@@ -297,7 +313,7 @@ class MyApp(QMainWindow):
         xp=None
         yp=None
 
-        for ikey, values in self.planviewmanager.getObjects(): #planview man~에서 할 수 있도록
+        for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
                 idata.draw(qp,xp,yp,ikey)
 
