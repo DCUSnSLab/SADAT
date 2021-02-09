@@ -12,8 +12,10 @@ class dtype_tracker(DataWrapper):
         self.minY = minY
         self.maxY = maxY
 
-        self.subX = subX
-        self.subY = subY
+        # 변수명 변경 필요
+        # width -> subX, height -> subY
+        self.width = subX
+        self.height = subY
 
         self.acc = 0
         self.speed = 0
