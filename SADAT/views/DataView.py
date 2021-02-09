@@ -3,8 +3,8 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 class DataView:
     def __init__(self, rawdata=None):
         self.rawdata = rawdata
-        self.isVisible = False
-        self.viewType = None
+        self.isVisible = False          #이거
+        self.viewType = None            #
 
         self.guiinfo = None
         self.pos_xy = list()
@@ -26,14 +26,10 @@ class DataView:
             self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
 
     def draw(self,qp, xp, yp, ikey):
-        for tdata in self.pos_xy:
-            xp=int(tdata[0])
-            yp=int(tdata[1])
+        self.drawIndividual(qp,xp,yp,ikey)
 
-            if ikey is senarioBasicDataset.TRACK:
-                qp.drawRect(xp,yp,10,10)
-            else:
-                qp.drawEllipse(xp,yp,6,6)
+    def drawIndividual(self,qp,xp,yp,ikey):
+        pass
 
     def _getPos(self, posx, posy):
         rposx = (posx / self.guiinfo.planviewsize) + (self.guiinfo.wwidth / 2) + self.guiinfo.relx

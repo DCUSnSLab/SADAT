@@ -80,6 +80,7 @@ class MyWG(QWidget):
         self.pr = parent
         self.initUI()
 
+
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
         self.group=QGroupBox("Evaluation")          #레이아웃의 그룹 이름
@@ -113,6 +114,7 @@ class MyWG(QWidget):
         self.CheckGroup.setStyleSheet("color:black;"
                                    "background-color: white")
 
+        #리스트로 만들고 DataView에서 값을 받아 올 수 있도
         self.checkBox1 = QCheckBox("TRACK")
         self.checkBox2 = QCheckBox("CAMRTACK")
         self.checkBox3 = QCheckBox("DELAYDPOINTS")
@@ -155,8 +157,12 @@ class MyWG(QWidget):
         self.show()
 
     def check_box(self):
-        if self.checkBox1.pressed():
-            self.pr.draw_point()
+        if self.checkBox1.isChecked():
+            print("checkbox1")
+        if self.checkBox2.isChecked():
+            print("checkbox2")
+        if self.checkBox3.isChecked():
+            print("checkbox2")
 
 class MyApp(QMainWindow):
 
@@ -200,6 +206,10 @@ class MyApp(QMainWindow):
         self.initUI()
 
         self.dataview = DataView()
+        # self.ExTrack()
+
+    # def ExTrack(self):
+    #     self.simulator.Ex()
 
     def initUI(self):
         self.setWindowTitle('SADAT')
