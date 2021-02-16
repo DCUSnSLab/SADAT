@@ -25,6 +25,7 @@ class RPLidar2Dv(vSensor):
             X_Y = [(i, tempX[i], tempY[i]) for i in range(len(tempX))]
             lgrp = grp_rplidar(rdata.timestamp[0], X_Y, rdata.start_flag[0])
 
+            #lgrp.caldistance()
             self._addSimData(lgrp)
 
             # tempXY.append(tempX)

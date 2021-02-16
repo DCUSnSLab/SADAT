@@ -301,15 +301,28 @@ class MyApp(QMainWindow):
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
 
+        # check coordinates
+        # qp.drawText(300, 300, "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
                 for tdata in idata.pos_xy:
                     xp = int(tdata[0])
                     yp = int(tdata[1])
+                    color = QColor()
                     if ikey is senarioBasicDataset.TRACK:
+                        # color = QColor()
+                        color.setNamedColor(idata.rawdata.color)
+                        qp.setPen(color)
+
+                        # 생성된 군집 id 출력
                         qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), "Cluster_" + str(idata.rawdata.id))
+                        # 생성된 군집 중심좌표까지의 거리 출력
+                        qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2) + 100, yp - int((idata.rawdata.height / self.panviewSize) / 2), str(idata.rawdata.distance))
                         qp.drawRect(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), int(idata.rawdata.width / self.panviewSize), int(idata.rawdata.height / self.panviewSize))
                     else:
+                        # color = QColor()
+                        color.setNamedColor("#ffffff")
+                        qp.setPen(color)
                         qp.drawEllipse(xp, yp, 6, 6)
 
     def modeChanger(self, mode, isTrue):
