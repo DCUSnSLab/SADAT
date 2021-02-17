@@ -26,7 +26,11 @@ class DataView:
             self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
 
     def draw(self,qp, xp, yp, ikey):
-        self.drawIndividual(qp,xp,yp,ikey)
+        for tdata in self.pos_xy:
+            xp=int(tdata[0])
+            yp=int(tdata[1])
+
+            self.drawIndividual(qp,xp,yp,ikey)
 
     def drawIndividual(self,qp,xp,yp,ikey):
         pass

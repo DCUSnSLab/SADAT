@@ -72,6 +72,38 @@ class MyAppEventManager():          #아직 해당 클래의 기능은 없는거
     def __init__(self):
         pass
 
+class CheckableComboBox(QComboBox):
+    def __init__(self):
+        super(CheckableComboBox, self).__init__()
+        self.view().pressed.connect(self.handle_item_pressed)
+        self.setModel(QStandardItemModel(self))
+        self.setFixedSize(200,100)
+        self.move(0,20)
+        self.resize(50,50)
+
+        #self.setGeometry(300,300,200,100)
+
+    def handle_item_pressed(self, index):
+        item = self.model().itemFromIndex(index)
+
+        if item.checkState() == Qt.Checked:
+            item.setCheckState(Qt.Unchecked)
+        else:
+            item.setCheckState(Qt.Checked)
+        self.check_items()
+
+    def item_checked(self, index):
+        item = self.model().item(index, 0)
+
+        return item.checkState() == Qt.Checked
+
+    def check_items(self):
+        checkedItems = []
+
+        for i in range(self.count()):
+            if self.item_checked(i):
+                checkedItems.append(i)
+
 '''MyWG클래스는 레이아웃을 나누기 위해 생성한 클래스'''
 class MyWG(QWidget):
 
@@ -80,89 +112,13 @@ class MyWG(QWidget):
         self.pr = parent
         self.initUI()
 
-
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
-        self.group=QGroupBox("Evaluation")          #레이아웃의 그룹 이름
-        self.group.setStyleSheet("color:black;"
-                                 "background-color:white;")
-        fInnerLayOut=QVBoxLayout()
-        self.buttonGroup=QGroupBox("Vehicle Button")
-        self.buttonGroup.setStyleSheet("color:black;"
-                                       "background-color: white;")
-        #레이아웃에 있는 제어 버튼
-        self.pushButton1 = QPushButton("Advance")
-        self.pushButton1.setMaximumSize(100,70)
-        self.pushButton2 = QPushButton("Back uo")
-        self.pushButton2.setMaximumSize(100, 70)
-        self.pushButton3 = QPushButton("Turn Left")
-        self.pushButton3.setMaximumSize(100, 70)
-        self.pushButton4 = QPushButton("Turn Right")
-        self.pushButton4.setMaximumSize(100,70)
-        self.pushButton5 = QPushButton("Stop")
-        self.pushButton5.setMaximumSize(100, 70)
-
-        eInnerLayOut=QGridLayout()
-        eInnerLayOut.addWidget(self.pushButton1,0,1)
-        eInnerLayOut.addWidget(self.pushButton2,2,1)
-        eInnerLayOut.addWidget(self.pushButton3,1,0)
-        eInnerLayOut.addWidget(self.pushButton4,1,2)
-        eInnerLayOut.addWidget(self.pushButton5,1,1)
-        self.buttonGroup.setLayout(eInnerLayOut)
-
-        self.CheckGroup=QGroupBox("Check Box")
-        self.CheckGroup.setStyleSheet("color:black;"
-                                   "background-color: white")
-
-        #리스트로 만들고 DataView에서 값을 받아 올 수 있도
-        self.checkBox1 = QCheckBox("TRACK")
-        self.checkBox2 = QCheckBox("CAMRTACK")
-        self.checkBox3 = QCheckBox("DELAYDPOINTS")
-
-        rInnerLayOut = QVBoxLayout()
-        rInnerLayOut.addWidget(self.checkBox1)
-        rInnerLayOut.addWidget(self.checkBox2)
-        rInnerLayOut.addWidget(self.checkBox3)
-        self.CheckGroup.setLayout(rInnerLayOut)
-
-        fInnerLayOut.addWidget(self.buttonGroup,35)
-        fInnerLayOut.addWidget(self.CheckGroup,100)
-        self.group.setLayout(fInnerLayOut)
-        layout=QVBoxLayout()
-        layout.addWidget(self.group)
-        self.setLayout(layout)
-
-        self.setFixedSize(350,730)        #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
-
-        self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
-        self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
-        self.pr.statusBar()
-        self.pr.statusBar().setStyleSheet("background-color : white")
-        self.pr.initMenubar()
-        self.pr.initToolbar()
-        self.pr.setStyleSheet("""QMenuBar {
-                 background-color: Gray;
-                 color: white;
-                }
-
-             QMenuBar::item {
-                 background: Gray;
-                 color: white;
-             }""")
-
+        self.pr.planviewmanager = planviewManager()
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
-        self.pr.modeChanger(GUI_GROUP.ALL, False)
         self.show()
-
-    def check_box(self):
-        if self.checkBox1.isChecked():
-            print("checkbox1")
-        if self.checkBox2.isChecked():
-            print("checkbox2")
-        if self.checkBox3.isChecked():
-            print("checkbox2")
 
 class MyApp(QMainWindow):
 
@@ -172,6 +128,8 @@ class MyApp(QMainWindow):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
+        self.DockDemo()
+        self.ComboBox()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -198,22 +156,96 @@ class MyApp(QMainWindow):
         self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
 
-        #planview manager
-        self.planviewmanager = planviewManager()
-
-        self.form_widget = MyWG(self)
-        self.setCentralWidget(self.form_widget)
         self.initUI()
-
         self.dataview = DataView()
-        # self.ExTrack()
 
-    # def ExTrack(self):
-    #     self.simulator.Ex()
+    def DockDemo(self):
+        self.items=QDockWidget('Dockable',self)
+        self.listWidget=QGroupBox()
+        self.listWidget.setStyleSheet("color:black;"
+                                      "background-color:white;")
+        fInnerLayout=QVBoxLayout()
+        self.buttonGroup=QGroupBox("Vehicle Button")
+        self.buttonGroup.setStyleSheet("color:black;"
+                                      "background-color:white;")
+
+        #제어버튼
+        self.pushButton1 = QPushButton("Advance")
+        self.pushButton1.setMaximumSize(100,70)
+        self.pushButton2 = QPushButton("Back up")
+        self.pushButton2.setMaximumSize(100, 70)
+        self.pushButton3 = QPushButton("Turn Left")
+        self.pushButton3.setMaximumSize(100, 70)
+        self.pushButton4 = QPushButton("Turn Right")
+        self.pushButton4.setMaximumSize(100,70)
+        self.pushButton5 = QPushButton("Stop")
+        self.pushButton5.setMaximumSize(100, 70)
+
+        sInnerLayout=QGridLayout()
+        sInnerLayout.addWidget(self.pushButton1,0,1)
+        sInnerLayout.addWidget(self.pushButton2,2,1)
+        sInnerLayout.addWidget(self.pushButton3,1,0)
+        sInnerLayout.addWidget(self.pushButton4,1,2)
+        sInnerLayout.addWidget(self.pushButton5,1,1)
+        self.buttonGroup.setLayout(sInnerLayout)
+
+        self.CheckGroup=QGroupBox("Check Box")
+        self.CheckGroup.setStyleSheet("color:black;"
+                                   "background-color: white")
+
+        fInnerLayout.addWidget(self.buttonGroup,35)
+        fInnerLayout.addWidget(self.CheckGroup,100)
+        self.listWidget.setLayout(fInnerLayout)
+        layout=QVBoxLayout()
+        layout.addWidget(self.listWidget)
+
+        self.items.setWidget(self.listWidget)
+        self.items.setFloating(False)
+        self.setCentralWidget(MyWG(self))
+        self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
+
+    def ComboBox(self):
+        myWidget=QWidget()
+        ComboBoxLayout = QVBoxLayout()
+        myWidget.setLayout(ComboBoxLayout)
+        self.setCentralWidget(myWidget)
+        self.combo = CheckableComboBox()
+
+        for i in range(3):
+            self.combo.addItem("Combobox Item " + str(i))
+            item = self.combo.model().item(i, 0)
+            item.setCheckState(Qt.Unchecked)
+
+        ComboBoxLayout.addWidget(self.combo)
+        # ComboBoxLayout.setGeometry(340,10,150,100)
+        #self.show()
 
     def initUI(self):
+        # self.form_widget = MyWG(self)
+        # self.setCentralWidget(self.form_widget)
         self.setWindowTitle('SADAT')
         #self.setStyleSheet("background-color: dimgray;")
+        self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
+        self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
+        self.statusBar()
+        self.statusBar().setStyleSheet("background-color : white")
+        self.initMenubar()
+        self.initToolbar()
+        self.setStyleSheet("""QMenuBar {
+                         background-color: Gray;
+                         color: white;
+                        }
+
+                     QMenuBar::item {
+                         background: Gray;
+                         color: white;
+                     }""")
+
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+        self.modeChanger(GUI_GROUP.ALL, False)
+
         self.setGeometry(300, 300, 1500, 1000)
         self.show()
 
@@ -264,6 +296,20 @@ class MyApp(QMainWindow):
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
 
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
+
+        #ComboBoxLayout.addWidget(self)
+
+    # def ComboBox(self):         #이 부분은 회의를 통해,, 조금 더 구체적으로 어떻게 할것인지 들어야할듯,,!!
+    #     cb=QComboBox(self)
+    #     # pass
+    #     # cb=QComboBox(self)
+    #     # cb.addItem('Track')
+    #     # cb.addItem('Point')
+    #     # cb.addItem('DelayPoint')
+    #     cb.setGeometry(340,10,150,100)
+
+    def ComboName(self):        #여기서 DataView.py의 객체를 받아와서 콤보박스에서 이름들을 활성화 시킬 예정
+        pass
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
