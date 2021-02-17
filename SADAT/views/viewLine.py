@@ -1,8 +1,8 @@
 from views.DataView import DataView
 
-class viewTrack(DataView):
-    def __init__(self, tdata=None):
-        super().__init__(rawdata=tdata)
+class viewLine(DataView):
+    def __init__(self,lidata=None):
+        super().__init__(rawdata=lidata)
 
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
@@ -12,4 +12,4 @@ class viewTrack(DataView):
             xp=int(tdata[0])
             yp=int(tdata[1])
 
-            qp.drawRect(xp,yp,10,10)
+            qp.drawLine(xp,yp,10,10)

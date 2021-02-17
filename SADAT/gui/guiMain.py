@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-from dadatype.dtype_cate import DataTypeCategory
+#from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
@@ -17,6 +17,7 @@ from multiprocessing import Manager
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from views.planview_manager import planviewManager, guiInfo
+from views.DataView import DataView
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -79,6 +80,7 @@ class MyWG(QWidget):
         self.pr = parent
         self.initUI()
 
+
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
         self.group=QGroupBox("Evaluation")          #레이아웃의 그룹 이름
@@ -89,29 +91,48 @@ class MyWG(QWidget):
         self.buttonGroup.setStyleSheet("color:black;"
                                        "background-color: white;")
         #레이아웃에 있는 제어 버튼
-        self.pushButton1 = QPushButton("전진")
-        self.pushButton2 = QPushButton("후진")
-        self.pushButton3 = QPushButton("좌회전")
-        self.pushButton4 = QPushButton("우회전")
-        self.pushButton5 = QPushButton("멈춤")
+        self.pushButton1 = QPushButton("Advance")
+        self.pushButton1.setMaximumSize(100,70)
+        self.pushButton2 = QPushButton("Back uo")
+        self.pushButton2.setMaximumSize(100, 70)
+        self.pushButton3 = QPushButton("Turn Left")
+        self.pushButton3.setMaximumSize(100, 70)
+        self.pushButton4 = QPushButton("Turn Right")
+        self.pushButton4.setMaximumSize(100,70)
+        self.pushButton5 = QPushButton("Stop")
+        self.pushButton5.setMaximumSize(100, 70)
 
-        eInnerLayOut=QVBoxLayout()
-        eInnerLayOut.addWidget(self.pushButton1)
-        eInnerLayOut.addWidget(self.pushButton2)
-        eInnerLayOut.addWidget(self.pushButton3)
-        eInnerLayOut.addWidget(self.pushButton4)
-        eInnerLayOut.addWidget(self.pushButton5)
+        eInnerLayOut=QGridLayout()
+        eInnerLayOut.addWidget(self.pushButton1,0,1)
+        eInnerLayOut.addWidget(self.pushButton2,2,1)
+        eInnerLayOut.addWidget(self.pushButton3,1,0)
+        eInnerLayOut.addWidget(self.pushButton4,1,2)
+        eInnerLayOut.addWidget(self.pushButton5,1,1)
         self.buttonGroup.setLayout(eInnerLayOut)
-        self.ExGroup=QGroupBox("None")
-        self.ExGroup.setStyleSheet("color:black;"
+
+        self.CheckGroup=QGroupBox("Check Box")
+        self.CheckGroup.setStyleSheet("color:black;"
                                    "background-color: white")
-        fInnerLayOut.addWidget(self.buttonGroup)
-        fInnerLayOut.addWidget(self.ExGroup,1)
+
+        #리스트로 만들고 DataView에서 값을 받아 올 수 있도
+        self.checkBox1 = QCheckBox("TRACK")
+        self.checkBox2 = QCheckBox("CAMRTACK")
+        self.checkBox3 = QCheckBox("DELAYDPOINTS")
+
+        rInnerLayOut = QVBoxLayout()
+        rInnerLayOut.addWidget(self.checkBox1)
+        rInnerLayOut.addWidget(self.checkBox2)
+        rInnerLayOut.addWidget(self.checkBox3)
+        self.CheckGroup.setLayout(rInnerLayOut)
+
+        fInnerLayOut.addWidget(self.buttonGroup,35)
+        fInnerLayOut.addWidget(self.CheckGroup,100)
         self.group.setLayout(fInnerLayOut)
         layout=QVBoxLayout()
         layout.addWidget(self.group)
         self.setLayout(layout)
-        self.setFixedSize(300, 730)         #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
+
+        self.setFixedSize(350,730)        #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
 
         self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
@@ -119,7 +140,6 @@ class MyWG(QWidget):
         self.pr.statusBar().setStyleSheet("background-color : white")
         self.pr.initMenubar()
         self.pr.initToolbar()
-        self.pr.initplanview()
         self.pr.setStyleSheet("""QMenuBar {
                  background-color: Gray;
                  color: white;
@@ -133,11 +153,16 @@ class MyWG(QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
-        #self.setPalette(p)
         self.pr.modeChanger(GUI_GROUP.ALL, False)
-        self.setWindowTitle('QGridLayout')
-        self.setGeometry(300, 300, 300, 200)
         self.show()
+
+    def check_box(self):
+        if self.checkBox1.isChecked():
+            print("checkbox1")
+        if self.checkBox2.isChecked():
+            print("checkbox2")
+        if self.checkBox3.isChecked():
+            print("checkbox2")
 
 class MyApp(QMainWindow):
 
@@ -179,6 +204,12 @@ class MyApp(QMainWindow):
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()
+
+        self.dataview = DataView()
+        # self.ExTrack()
+
+    # def ExTrack(self):
+    #     self.simulator.Ex()
 
     def initUI(self):
         self.setWindowTitle('SADAT')
@@ -234,16 +265,6 @@ class MyApp(QMainWindow):
 
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
-
-    def initplanview(self):         #현재 이 함수의 기능은 못 찾겠음,, tool을 보아하니 아직 레이아웃 버튼이 안보임
-        grid_layout = QGridLayout()
-        self.setLayout(grid_layout)
-
-        for x in range(3):
-            for y in range(3):
-                button = QPushButton(str(str(3 * x + y)))
-                grid_layout.addWidget(button, x, y)
-
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
         qp.begin(self)
@@ -290,40 +311,23 @@ class MyApp(QMainWindow):
         #print('press')
 
     def mouseReleaseEvent(self, e):
-        self.relx = e.globalX()-self.pressX
-        self.rely = e.globalY()-self.pressY
         self.updatePosition()
         #print('release')
 
+    #qp를 넘겨주어야 함
     def draw_point(self, qp):
         #draw paint
         self.xp= self.relx
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
+        xp=None
+        yp=None
 
         # check coordinates
         # qp.drawText(300, 300, "qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
-                for tdata in idata.pos_xy:
-                    xp = int(tdata[0])
-                    yp = int(tdata[1])
-                    color = QColor()
-                    if ikey is senarioBasicDataset.TRACK:
-                        # color = QColor()
-                        color.setNamedColor(idata.rawdata.color)
-                        qp.setPen(color)
-
-                        # 생성된 군집 id 출력
-                        qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), "Cluster_" + str(idata.rawdata.id))
-                        # 생성된 군집 중심좌표까지의 거리 출력
-                        qp.drawText(xp - int((idata.rawdata.width / self.panviewSize) / 2) + 100, yp - int((idata.rawdata.height / self.panviewSize) / 2), str(idata.rawdata.distance))
-                        qp.drawRect(xp - int((idata.rawdata.width / self.panviewSize) / 2), yp - int((idata.rawdata.height / self.panviewSize) / 2), int(idata.rawdata.width / self.panviewSize), int(idata.rawdata.height / self.panviewSize))
-                    else:
-                        # color = QColor()
-                        color.setNamedColor("#ffffff")
-                        qp.setPen(color)
-                        qp.drawEllipse(xp, yp, 6, 6)
+                idata.draw(qp,xp,yp,ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:

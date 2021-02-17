@@ -23,6 +23,10 @@ class extScheduler(metaclass=ABCMeta):
             if mod.isEnabled():
                 mod.do()
 
+    def doTask2(self):
+        pass
+        #DisAct_Track()
+
     def _addModules(self, modlist):
         for mod in modlist:
             mod.addScheduler(self)

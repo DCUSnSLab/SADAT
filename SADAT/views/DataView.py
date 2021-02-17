@@ -1,8 +1,10 @@
+from externalmodules.default.dataset_enum import senarioBasicDataset
+
 class DataView:
     def __init__(self, rawdata=None):
         self.rawdata = rawdata
-        self.isVisible = False
-        self.viewType = None
+        self.isVisible = False          #이거
+        self.viewType = None            #
 
         self.guiinfo = None
         self.pos_xy = list()
@@ -23,9 +25,10 @@ class DataView:
         else:
             self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
 
-        self._updatePlanviewSub()
+    def draw(self,qp, xp, yp, ikey):
+        self.drawIndividual(qp,xp,yp,ikey)
 
-    def _updatePlanviewSub(self):
+    def drawIndividual(self,qp,xp,yp,ikey):
         pass
 
     def _getPos(self, posx, posy):
