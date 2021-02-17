@@ -21,7 +21,7 @@ class DataView:
             posxy = self._getPos(self.rawdata.posx, self.rawdata.posy)
             self.pos_xy.append(posxy)
         else:
-            self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
+            self.pos_xy = [self._getPos(pntdata[0],pntdata[1]) for pntdata in self.rawdata.getPoints()]
 
         self._updatePlanviewSub()
 
