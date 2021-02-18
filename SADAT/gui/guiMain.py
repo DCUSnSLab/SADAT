@@ -128,8 +128,8 @@ class MyApp(QMainWindow):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
-        self.DockDemo()
-        self.ComboBox()
+        self.DockingWidget()
+        #self.ComboBox()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -159,7 +159,7 @@ class MyApp(QMainWindow):
         self.initUI()
         self.dataview = DataView()
 
-    def DockDemo(self):
+    def DockingWidget(self):
         self.items=QDockWidget('Dockable',self)
         self.listWidget=QGroupBox()
         self.listWidget.setStyleSheet("color:black;"
@@ -208,7 +208,7 @@ class MyApp(QMainWindow):
         myWidget=QWidget()
         ComboBoxLayout = QVBoxLayout()
         myWidget.setLayout(ComboBoxLayout)
-        self.setCentralWidget(myWidget)
+        #self.setCentralWidget(myWidget)
         self.combo = CheckableComboBox()
 
         for i in range(3):
@@ -231,6 +231,7 @@ class MyApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color : white")
         self.initMenubar()
         self.initToolbar()
+        self.ComboToolbar()
         self.setStyleSheet("""QMenuBar {
                          background-color: Gray;
                          color: white;
@@ -280,7 +281,7 @@ class MyApp(QMainWindow):
         self.toolbar.addAction(toolpause)
         self.toolbar.addAction(toolresume)
         self.toolbar.addWidget(self.toolvel)
-        self.toolbar.setStyleSheet("color: black")
+        #self.toolbar.setStyleSheet("color: white")
 
         #slider
         slider = toolbarSlider(Qt.Horizontal, self)
@@ -297,19 +298,20 @@ class MyApp(QMainWindow):
 
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
-        #ComboBoxLayout.addWidget(self)
+    def ComboToolbar(self):
+        self.toolbar=self.addToolBar('Ex')
+        self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
+        self.comboText=QLabel('Object')
+        self.combo = CheckableComboBox()
+        self.combo.setFixedHeight(25)
 
-    # def ComboBox(self):         #이 부분은 회의를 통해,, 조금 더 구체적으로 어떻게 할것인지 들어야할듯,,!!
-    #     cb=QComboBox(self)
-    #     # pass
-    #     # cb=QComboBox(self)
-    #     # cb.addItem('Track')
-    #     # cb.addItem('Point')
-    #     # cb.addItem('DelayPoint')
-    #     cb.setGeometry(340,10,150,100)
+        for i in range(3):
+            self.combo.addItem("Combobox Item " + str(i))
+            item = self.combo.model().item(i, 0)
+            item.setCheckState(Qt.Unchecked)
 
-    def ComboName(self):        #여기서 DataView.py의 객체를 받아와서 콤보박스에서 이름들을 활성화 시킬 예정
-        pass
+        self.toolbar.addWidget(self.comboText)
+        self.toolbar.addWidget(self.combo)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()

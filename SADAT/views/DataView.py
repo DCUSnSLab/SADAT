@@ -29,7 +29,6 @@ class DataView:
         for tdata in self.pos_xy:
             xp=int(tdata[0])
             yp=int(tdata[1])
-
             self.drawIndividual(qp,xp,yp,ikey)
 
     def drawIndividual(self,qp,xp,yp,ikey):

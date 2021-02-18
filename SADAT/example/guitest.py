@@ -1,36 +1,23 @@
 import sys
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5 import QtCore, QtWidgets
 
-class DockDemo(QMainWindow):
-    def __init__(self,parent=None):
-        super(DockDemo, self).__init__(parent)
-        layout=QHBoxLayout()
-        bar=self.menuBar()
-        file=bar.addMenu('File')
-        file.addAction('New')
-        file.addAction('Save')
-        file.addAction('quit')
 
-        self.items=QDockWidget('Dockable',self)
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent)
+        self.initUI()
 
-        self.listWidget=QListWidget()
-        self.listWidget.addItem('Item1')
-        self.listWidget.addItem('Item2')
-        self.listWidget.addItem('Item3')
-        self.listWidget.addItem('Item4')
+    def initUI(self):
+        self.toolbar = QtWidgets.QToolBar("Example")
+        self.addToolBar(QtCore.Qt.BottomToolBarArea, self.toolbar)
 
-        self.items.setWidget(self.listWidget)
-        self.items.setFloating(False)
-        self.setCentralWidget(QTextEdit())
-        self.addDockWidget(Qt.RightDockWidgetArea,self.items)
+        self.toolbar.addAction("action 1")
+        self.toolbar.addAction("action 2")
 
-        self.setLayout(layout)
-        self.setWindowTitle('Dock')
 
-if __name__ == '__main__':
-    app=QApplication(sys.argv)
-    demo=DockDemo()
-    demo.show()
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    w = MainWindow()
+    w.resize(640, 480)
+    w.show()
     sys.exit(app.exec_())
