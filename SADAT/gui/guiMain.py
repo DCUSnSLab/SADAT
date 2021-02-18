@@ -375,6 +375,7 @@ class MyApp(QMainWindow):
             for idata in values:
                 idata.draw(qp,xp,yp,ikey)
 
+
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
             if mode is GUI_GROUP.ALL or modedata is mode:

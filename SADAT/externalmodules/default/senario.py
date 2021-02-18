@@ -21,7 +21,8 @@ class senarioBasic(extScheduler):
             self.sprint(key)
 
     def modConstruction(self):
-        self._addModules([delayedPoints(), trackerBasic()])
+        #self._addModules([delayedPoints(), trackerBasic()])
+        self._addModules([trackerBasic()])
         self.sprint('load Modules')
         for mod in self._modules:
             self.sprint(mod.getName())

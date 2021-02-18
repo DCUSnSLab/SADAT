@@ -23,15 +23,21 @@ class DataView:
             posxy = self._getPos(self.rawdata.posx, self.rawdata.posy)
             self.pos_xy.append(posxy)
         else:
-            self.pos_xy = [self._getPos(px, py) for idx, px, py in self.rawdata.getPoints()]
+            self.pos_xy = [self._getPos(pntdata[0],pntdata[1]) for pntdata in self.rawdata.getPoints()]
 
-    def draw(self,qp, xp, yp, ikey):
+        self._updatePlanviewSub()
+
+    def _updatePlanviewSub(self):
+        pass
+
+    def draw(self, qp, xp, yp, ikey):
         for tdata in self.pos_xy:
-            xp=int(tdata[0])
-            yp=int(tdata[1])
-            self.drawIndividual(qp,xp,yp,ikey)
+            xp = int(tdata[0])
+            yp = int(tdata[1])
 
-    def drawIndividual(self,qp,xp,yp,ikey):
+            self.drawIndividual(qp, xp, yp, ikey)
+
+    def drawIndividual(self, qp, xp, yp, ikey):
         pass
 
     def _getPos(self, posx, posy):
