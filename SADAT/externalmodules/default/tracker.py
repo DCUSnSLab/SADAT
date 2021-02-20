@@ -25,12 +25,13 @@ class trackerBasic(extModule):
         # tdata = dtype_tracker(0, 0, 0, 0, 0, 0, 0, 0, 0, "#ff00ff")
         # self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
 
-        for tracker_x, tracker_y, idx, minX, maxX, minY, maxY, distance in tracker_list:
-            tdata = dtype_tracker(idx, minX, maxX, minY, maxY, tracker_x, tracker_y, maxX - minX, maxY - minY, distance)
+        for tracker_x, tracker_y, idx, minX, maxX, minY, maxY, size, distance, acc, speed in tracker_list:
+            # id, minX, maxX, minY, maxY, posx, posy, subX, subY, size, distance, acc, speed, color = "#ffffff"):
+            tdata = dtype_tracker(idx, minX, maxX, minY, maxY, tracker_x, tracker_y, maxX - minX, maxY - minY, size, distance, acc, speed, "#ff0000")
             self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
 
-        for x, y in self.tracker.getTracklist():
-            tdata = dtype_tracker(0, 10, 30, 10, 30, x, y, 30 - 10, 30 - 10, 77, "#ff0000")
-            self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
+        # for x, y in self.tracker.getTracklist():
+        #     tdata = dtype_tracker(0, 10, 30, 10, 30, x, y, 30 - 10, 30 - 10, 77, "#ff0000")
+        #     self._addData(datakey=senarioBasicDataset.TRACK, data=tdata)
 
         # tdata = dtype_tracker()

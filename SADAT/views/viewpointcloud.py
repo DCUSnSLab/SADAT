@@ -1,4 +1,5 @@
 from views.DataView import DataView
+from PyQt5.QtGui import *
 
 class viewPointCloud(DataView):
     def __init__(self, pdata=None):
@@ -11,5 +12,9 @@ class viewPointCloud(DataView):
         for tdata in self.pos_xy:
             xp=int(tdata[0])
             yp=int(tdata[1])
+
+            color = QColor()
+            color.setNamedColor("#ffffff")
+            qp.setPen(color)
 
             qp.drawEllipse(xp,yp,6,6)
