@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-#from dadatype.dtype_cate import DataTypeCategory
+from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
@@ -35,7 +35,14 @@ class GUI_CONTROLLER:
         self.toolbar = {}
         self.menubar = {}
         self.slider = None
+        self.button=None
         self.cmode = self.STOPMODE
+
+    def addButton(self, item):
+        self.button = item
+
+    def getButton(self):
+        return self.button
 
     def addToolbar(self, item, name):
         self.toolbar[name] = item
@@ -276,12 +283,36 @@ class MyApp(QMainWindow):
         toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)         #재생
         self.toolvel = toolbarEditor('10', self, self.simulator.setVelocity)
         self.toolvel.setText(str(self.simulator.getVelocity()))
+        self.toolvel.setFixedWidth(50)
 
         self.toolbar.addAction(toolplay)
         self.toolbar.addAction(toolpause)
         self.toolbar.addAction(toolresume)
         self.toolbar.addWidget(self.toolvel)
         #self.toolbar.setStyleSheet("color: white")
+
+        #step by step
+        #s = self.simulator.setVelocity
+        fbutton=QPushButton('Decrease button')
+        fbutton.setFixedWidth(50)
+        fbutton.setText("⬅")
+        # if GUI_CONTROLLER.STOPMODE:
+        fbutton.clicked.connect(self.DecreaseButton)
+            # if GUI_CONTROLLER.STOPMODE:
+            #     self.velocity-=1
+            #     self.toolvel.setText(str(self.velocity))
+
+        self.toolbar.addWidget(fbutton)
+
+
+        sbutton=QPushButton('Increase button')
+        sbutton.setFixedWidth(50)
+        sbutton.setText("➡︎︎")
+        sbutton.clicked.connect(self.IncreaseButton)
+        # if GUI_CONTROLLER.STOPMODE:
+        #     if sbutton.click():
+        #         pass
+        self.toolbar.addWidget(sbutton)
 
         #slider
         slider = toolbarSlider(Qt.Horizontal, self)
@@ -294,9 +325,18 @@ class MyApp(QMainWindow):
         self.gcontrol.addToolbar(toolresume, toolresume.text())
         self.gcontrol.addToolbar(slider, 'logslider')
         self.gcontrol.addSlider(slider)
+        self.gcontrol.addButton(sbutton)
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
 
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
+
+    def DecreaseButton(self):
+        self.simulator.lpthread.setPlayPoint(-1)
+        print('---')
+
+    def IncreaseButton(self):
+        self.simulator.lpthread.setPlayPoint(+1)
+        print('+++')
 
     def ComboToolbar(self):
         self.toolbar=self.addToolBar('Ex')
@@ -390,6 +430,7 @@ class MyApp(QMainWindow):
     def sliderMoved(self):                  #sliderMoved 함수는 tool의 슬라이드 바를 움직임
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
+        print("p")
 
     def changePosition(self, data):
         self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
