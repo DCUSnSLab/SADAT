@@ -211,21 +211,22 @@ class MyApp(QMainWindow):
         self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
-    def ComboBox(self):
-        myWidget=QWidget()
-        ComboBoxLayout = QVBoxLayout()
-        myWidget.setLayout(ComboBoxLayout)
-        #self.setCentralWidget(myWidget)
-        self.combo = CheckableComboBox()
-
-        for i in range(3):
-            self.combo.addItem("Combobox Item " + str(i))
-            item = self.combo.model().item(i, 0)
-            item.setCheckState(Qt.Unchecked)
-
-        ComboBoxLayout.addWidget(self.combo)
-        # ComboBoxLayout.setGeometry(340,10,150,100)
-        #self.show()
+    # def ComboBox(self):
+    #     myWidget=QWidget()
+    #     ComboBoxLayout = QVBoxLayout()
+    #     myWidget.setLayout(ComboBoxLayout)
+    #     #self.setCentralWidget(myWidget)
+    #     self.combo = CheckableComboBox()
+    #
+    #     # for i in range(3):
+    #     #     self.combo.addItem(str(senarioBasicDataset.name))
+    #     #     #self.combo.addItem("Combobox Item " + str(i))
+    #     #     item = self.combo.model().item(i, 0)
+    #     #     item.setCheckState(Qt.Unchecked)
+    #     #
+    #     ComboBoxLayout.addWidget(self.combo)
+    #     # ComboBoxLayout.setGeometry(340,10,150,100)
+    #     #self.show()
 
     def initUI(self):
         # self.form_widget = MyWG(self)
@@ -292,26 +293,16 @@ class MyApp(QMainWindow):
         #self.toolbar.setStyleSheet("color: white")
 
         #step by step
-        #s = self.simulator.setVelocity
         fbutton=QPushButton('Decrease button')
         fbutton.setFixedWidth(50)
         fbutton.setText("⬅")
-        # if GUI_CONTROLLER.STOPMODE:
         fbutton.clicked.connect(self.DecreaseButton)
-            # if GUI_CONTROLLER.STOPMODE:
-            #     self.velocity-=1
-            #     self.toolvel.setText(str(self.velocity))
-
         self.toolbar.addWidget(fbutton)
-
 
         sbutton=QPushButton('Increase button')
         sbutton.setFixedWidth(50)
         sbutton.setText("➡︎︎")
         sbutton.clicked.connect(self.IncreaseButton)
-        # if GUI_CONTROLLER.STOPMODE:
-        #     if sbutton.click():
-        #         pass
         self.toolbar.addWidget(sbutton)
 
         #slider
@@ -327,28 +318,46 @@ class MyApp(QMainWindow):
         self.gcontrol.addSlider(slider)
         self.gcontrol.addButton(sbutton)
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
-
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
+
+    def keyPressEvent(self, e):
+        if e.key()==Qt.Key_Left:
+            print('Left Key')
+            self.DecreaseButton()
+        if e.key()==Qt.Key_Right:
+            print('Right Key')
+            self.IncreaseButton()
+
     def DecreaseButton(self):
-        self.simulator.lpthread.setPlayPoint(-1)
-        print('---')
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value()-1)
+        # self.simulator.lpthread.setPlayPoint()
+        print('Left Button')
 
     def IncreaseButton(self):
-        self.simulator.lpthread.setPlayPoint(+1)
-        print('+++')
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value()+1)
+        # self.simulator.lpthread.setPlayPoint(+1)
+        print('Right Button')
 
     def ComboToolbar(self):
-        self.toolbar=self.addToolBar('Ex')
+        self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
         self.comboText=QLabel('Object')
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)
 
-        for i in range(3):
-            self.combo.addItem("Combobox Item " + str(i))
-            item = self.combo.model().item(i, 0)
+        for i in senarioBasicDataset.__members__:
+            self.combo.addItem(i)
+            item=self.combo.model().item(0)
             item.setCheckState(Qt.Unchecked)
+            #item=self.combo.model().item(i,0)
+            #item.setCheckState(Qt.Unchecked)
+            #print(item)
+        # for i in range(3):
+        #     self.combo.addItem(ss)
+        #     #self.combo.addItem("Combobox Item " + str(i))
+        #     item = self.combo.model().item(i, 0)
+        #     item.setCheckState(Qt.Unchecked)
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
