@@ -23,16 +23,16 @@ class viewTrack(DataView):
             # 생성된 군집 중심좌표까지의 거리 출력
             qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 20,
-                        "distance : " + str(int(self.rawdata.distance)))
+                        "distance : " + format(self.rawdata.distance, ".2f") + "m")
             qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 40,
-                        "width, height : " + str(int(self.rawdata.maxX - self.rawdata.minX)) + " " + str(int(self.rawdata.maxY - self.rawdata.minY)))
+                        "Width, Height : " + format((self.rawdata.meterWidth), ".2f") + "m " + format((self.rawdata.meterHeight), ".2f") + "m")
             qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 60,
-                        "Area : " + str(int(self.rawdata.size)))
+                        "Area : " + format(self.rawdata.squareMeterArea, ".2f") + "m^2")
             qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 80,
-                        "Speed : " + str(int(self.rawdata.speed)))
+                        "Speed : " + format(self.rawdata.speed, ".2f") + "m/s")
             qp.drawRect(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2),
                         int(self.rawdata.width / self.guiinfo.planviewsize), int(self.rawdata.height / self.guiinfo.planviewsize))
