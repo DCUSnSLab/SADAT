@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
@@ -35,14 +34,7 @@ class GUI_CONTROLLER:
         self.toolbar = {}
         self.menubar = {}
         self.slider = None
-        self.button=None
         self.cmode = self.STOPMODE
-
-    def addButton(self, item):
-        self.button = item
-
-    def getButton(self):
-        return self.button
 
     def addToolbar(self, item, name):
         self.toolbar[name] = item
@@ -52,6 +44,9 @@ class GUI_CONTROLLER:
 
     def addSlider(self, item):
         self.slider = item
+
+    def setSlider(self, index):
+        self.slider.setValue(index)
 
     def getSlider(self):
         return self.slider
@@ -87,8 +82,6 @@ class CheckableComboBox(QComboBox):
         self.setFixedSize(200,100)
         self.move(0,20)
         self.resize(50,50)
-
-        #self.setGeometry(300,300,200,100)
 
     def handle_item_pressed(self, index):
         item = self.model().itemFromIndex(index)
@@ -211,26 +204,7 @@ class MyApp(QMainWindow):
         self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
-    # def ComboBox(self):
-    #     myWidget=QWidget()
-    #     ComboBoxLayout = QVBoxLayout()
-    #     myWidget.setLayout(ComboBoxLayout)
-    #     #self.setCentralWidget(myWidget)
-    #     self.combo = CheckableComboBox()
-    #
-    #     # for i in range(3):
-    #     #     self.combo.addItem(str(senarioBasicDataset.name))
-    #     #     #self.combo.addItem("Combobox Item " + str(i))
-    #     #     item = self.combo.model().item(i, 0)
-    #     #     item.setCheckState(Qt.Unchecked)
-    #     #
-    #     ComboBoxLayout.addWidget(self.combo)
-    #     # ComboBoxLayout.setGeometry(340,10,150,100)
-    #     #self.show()
-
     def initUI(self):
-        # self.form_widget = MyWG(self)
-        # self.setCentralWidget(self.form_widget)
         self.setWindowTitle('SADAT')
         #self.setStyleSheet("background-color: dimgray;")
         self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
@@ -316,28 +290,22 @@ class MyApp(QMainWindow):
         self.gcontrol.addToolbar(toolresume, toolresume.text())
         self.gcontrol.addToolbar(slider, 'logslider')
         self.gcontrol.addSlider(slider)
-        self.gcontrol.addButton(sbutton)
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
-
     def keyPressEvent(self, e):
         if e.key()==Qt.Key_Left:
-            print('Left Key')
             self.DecreaseButton()
         if e.key()==Qt.Key_Right:
-            print('Right Key')
             self.IncreaseButton()
 
     def DecreaseButton(self):
-        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value()-1)
-        # self.simulator.lpthread.setPlayPoint()
-        print('Left Button')
+        self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
 
     def IncreaseButton(self):
-        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value()+1)
-        # self.simulator.lpthread.setPlayPoint(+1)
-        print('Right Button')
+        self.gcontrol.setSlider(self.gcontrol.getSlider().value() + 1)
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
 
     def ComboToolbar(self):
         self.toolbar=self.addToolBar('ComboToolbar')
@@ -404,11 +372,9 @@ class MyApp(QMainWindow):
         self.pressX = e.globalX()-self.relx
         self.pressY = e.globalY()-self.rely
         self.updatePosition()
-        #print('press')
 
     def mouseReleaseEvent(self, e):
         self.updatePosition()
-        #print('release')
 
     #qp를 넘겨주어야 함
     def draw_point(self, qp):
@@ -465,7 +431,6 @@ class MyApp(QMainWindow):
         stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
-        #print("pbInfo : ", pbinfo.mode, pbinfo.maxLength, pbinfo.currentIdx)
 
     def closeEvent(self, event):
         sys.exit()
