@@ -32,7 +32,10 @@ class viewTrack(DataView):
                         "Area : " + format(self.rawdata.squareMeterArea, ".2f") + "m^2")
             qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 80,
-                        "Speed : " + format(self.rawdata.speed, ".2f") + "m/s")
+                        "Speed : " + format(self.rawdata.speed, ".2f") + "km/h")
+            qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
+                        yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 100,
+                        "Acc : " + format(self.rawdata.acc) + "m/s^2")
             qp.drawRect(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
                         yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2),
                         int(self.rawdata.width / self.guiinfo.planviewsize), int(self.rawdata.height / self.guiinfo.planviewsize))
