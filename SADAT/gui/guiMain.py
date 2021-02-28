@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 
 import SnSimulator
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from externalmodules.default.senario import senarioBasic
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -242,7 +243,7 @@ class MyApp(QMainWindow):
         filemenu = menubar.addMenu('&File')
         #filemenu.addAction(self.OnOpenDocument('Load log files..', self))
         filemenu.addAction(menuLoadSim('Load log files..', self))
-        #self.Open_Button.clicked.connect(self.OnOpenDocument3)
+        #self.Open_Button.clicked.connect(self.OnOpenDocument3)₩
         filemenu.addAction(menuLogPlay('Log Play',self))
         filemenu.addAction(menuExit('exit', self))
 
@@ -311,16 +312,16 @@ class MyApp(QMainWindow):
         self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
         self.comboText=QLabel('Object')
+        self.check=QCheckBox('Track',self)
+        self.check.stateChanged.connect(self.Activation)
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)
 
-        for i in senarioBasicDataset.__members__:
-            self.combo.addItem(i)
-            item=self.combo.model().item(0)
+        for name,member in senarioBasicDataset.__members__.items():
+            self.combo.addItem(name)
+            item=self.combo.model().item(name.index(name),0)
             item.setCheckState(Qt.Unchecked)
-            #item=self.combo.model().item(i,0)
-            #item.setCheckState(Qt.Unchecked)
-            #print(item)
+
         # for i in range(3):
         #     self.combo.addItem(ss)
         #     #self.combo.addItem("Combobox Item " + str(i))
@@ -329,6 +330,17 @@ class MyApp(QMainWindow):
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
+        self.toolbar.addWidget(self.check)
+
+    def Activation(self,state):
+        if state==Qt.Checked:
+            self.simulator.extModManager.Disable()
+
+        if state==Qt.Unchecked:
+            self.simulator.extModManager.Enable()
+
+        # if state == Qt.Unchecked:
+        #     self.simulator.Disable()
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
@@ -405,7 +417,6 @@ class MyApp(QMainWindow):
     def sliderMoved(self):                  #sliderMoved 함수는 tool의 슬라이드 바를 움직임
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
-        print("p")
 
     def changePosition(self, data):
         self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
@@ -434,6 +445,18 @@ class MyApp(QMainWindow):
 
     def closeEvent(self, event):
         sys.exit()
+# class Ex(extScheduler):
+#     def __init__(self):
+#         super().__init__()
+#
+#     def ex(self):
+#         self._initDataset(senarioBasicDataset.TRACK,list())
+#         self._initDataset(senarioBasicDataset.CAMTRACK,list())
+#         self._initDataset(senarioBasicDataset.DELAYEDPOINTS,list())
+#
+#         for key in  self._dataset.key():
+#             senarioBasic.sprint(key)
+#             print(key)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

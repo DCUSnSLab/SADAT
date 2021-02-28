@@ -11,6 +11,7 @@
 '''
 from externalmodules.default.senario import senarioBasic
 from externalmodules.ext_scheduler import extScheduler
+from externalmodules.default.dataset_enum import senarioBasicDataset
 
 
 class extModuleManager():
@@ -28,6 +29,25 @@ class extModuleManager():
     def setSenario(self, senario:extScheduler):
         self.__selectedScheduler = senario
         self.__selectedScheduler.initextScheduler()
+        self.__selectedScheduler.enableModule(0)
+
+    def Disable(self):
+        a=senarioBasicDataset.TRACK
+        b=senarioBasicDataset.DELAYEDPOINTS
+        c=senarioBasicDataset.CAMTRACK
+        self.__selectedScheduler.disableModule(0)
+        print('disable')
+
+    def Enable(self):
+        self.__selectedScheduler.enableModule(0)
+        print('enable')
+
+
+    # def Ensable(self,senario:extScheduler):
+    #     print('disable')
+    #     self.__selectedScheduler = senario
+    #     self.__selectedScheduler.disableModule(0)
+    #     print(123)
 
     def getDataset(self):
         return self.__selectedScheduler.getAllDataset()

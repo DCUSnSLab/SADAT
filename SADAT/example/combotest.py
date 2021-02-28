@@ -50,6 +50,7 @@ class CheckableComboBox(QComboBox):
             # if item is checked add it to the list
             if self.item_checked(i):
                 checkedItems.append(i)
+                #print(i) 여기서 값을 받아옴
 
                 # call this method
         #self.update_labels(checkedItems)
@@ -62,55 +63,55 @@ class CheckableComboBox(QComboBox):
         count = 0
 
         # traversing the list
-        # for i in item_list:
-        #
-        #     # if count value is 0 don't add comma
-        #     if count == 0:
-        #         n += ' % s' % i
-        #         # else value is greater then 0
-        #     # add comma
-        #     else:
-        #         n += ', % s' % i
-        #
-        #         # increment count
-        #     count += 1
+        for i in item_list:
+
+            # if count value is 0 don't add comma
+            if count == 0:
+                n += ' % s' % i
+                # else value is greater then 0
+            # add comma
+            else:
+                n += ', % s' % i
+
+                # increment count
+            count += 1
 
         # loop
-        # for i in range(self.count()):
-        #
-        #     # getting label
-        #     text_label = self.model().item(i, 0).text()
-        #
-        #     # default state
-        #     if text_label.find('-') >= 0:
-        #         text_label = text_label.split('-')[0]
-        #
-        #         # shows the selected items
-        #     item_new_text_label = text_label + ' - selected index: ' + n
-        #
-        #     # setting text to combo box
-        #     self.setItemText(i, item_new_text_label)
+        for i in range(self.count()):
+
+            # getting label
+            text_label = self.model().item(i, 0).text()
+
+            # default state
+            if text_label.find('-') >= 0:
+                text_label = text_label.split('-')[0]
+
+                # shows the selected items
+            item_new_text_label = text_label + ' - selected index: ' + n
+
+            # setting text to combo box
+            self.setItemText(i, item_new_text_label)
 
             # flush
 
-    #sys.stdout.flush()
+    sys.stdout.flush()
 
 
 class Window(QMainWindow):
     def __init__(self):
         super(QMainWindow, self).__init__()
 
-        # creating a widget object 
+        # creating a widget object
         myQWidget = QWidget()
 
-        # vertical box layout 
+        # vertical box layout
         myBoxLayout = QVBoxLayout()
         myQWidget.setLayout(myBoxLayout)
 
-        # central widget 
+        # central widget
         self.setCentralWidget(myQWidget)
 
-        # creating checkable combo box 
+        # creating checkable combo box
         self.ComboBox = CheckableComboBox()
 
         # traversing items
@@ -121,6 +122,7 @@ class Window(QMainWindow):
 
             # setting item unchecked
             item.setCheckState(Qt.Unchecked)
+            print(item)
 
             # adding combo box to the layout
         myBoxLayout.addWidget(self.ComboBox)
@@ -133,4 +135,4 @@ if __name__ == '__main__':
     window = Window()
     window.show()
     window.resize(480, 320)
-    sys.exit(app.exec_()) 
+    sys.exit(app.exec_())
