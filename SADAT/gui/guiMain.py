@@ -18,6 +18,7 @@ from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from views.planview_manager import planviewManager, guiInfo
 from views.DataView import DataView
+from dadatype.dtype_cate import DataTypeCategory
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -130,7 +131,6 @@ class MyApp(QMainWindow):
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
         self.DockingWidget()
-        #self.ComboBox()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -245,8 +245,8 @@ class MyApp(QMainWindow):
         filemenu.addAction(menuLoadSim('Load log files..', self))
         #self.Open_Button.clicked.connect(self.OnOpenDocument3)₩
         filemenu.addAction(menuLogPlay('Log Play',self))
+        #filemenu.addAction(QDockWidget.setVisible(True))
         filemenu.addAction(menuExit('exit', self))
-
         #Simulation Menu
         simmenu = menubar.addMenu('&Simulation')
         simmenu.addAction(menuSim('Play',self))
@@ -280,6 +280,7 @@ class MyApp(QMainWindow):
         sbutton.clicked.connect(self.IncreaseButton)
         self.toolbar.addWidget(sbutton)
 
+
         #slider
         slider = toolbarSlider(Qt.Horizontal, self)
         slider.sliderMoved.connect(self.sliderMoved)
@@ -312,40 +313,40 @@ class MyApp(QMainWindow):
         self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
         self.comboText=QLabel('Object')
-        self.check=QCheckBox('Track',self)
-        self.check.stateChanged.connect(self.Activation)
+        self.check1=QCheckBox('Track',self)
+        self.check2=QCheckBox('PointCloud',self)
+        self.check3=QCheckBox('Lane',self)
+
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)
 
-        for name,member in senarioBasicDataset.__members__.items():
+        for name, member in DataTypeCategory.__members__.items():
             self.combo.addItem(name)
-            item=self.combo.model().item(name.index(name),0)
-            item.setCheckState(Qt.Unchecked)
+            item = self.combo.model().item(name.index(name), 0)
+            item.setCheckState(Qt.Checked)
 
-        # for i in range(3):
-        #     self.combo.addItem(ss)
-        #     #self.combo.addItem("Combobox Item " + str(i))
-        #     item = self.combo.model().item(i, 0)
-        #     item.setCheckState(Qt.Unchecked)
+        self.lbl=QLabel("Option",self)
+        self.combo.activated[str].connect(self.onActivated)
+        self.combo.activated[str].connect(self.printed)
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
-        self.toolbar.addWidget(self.check)
+        self.toolbar.addWidget(self.check1)
+        self.toolbar.addWidget(self.check2)
+        self.toolbar.addWidget(self.check3)
+        self.toolbar.addWidget(self.lbl)
 
-    def Activation(self,state):
-        if state==Qt.Checked:
-            self.simulator.extModManager.Disable()
+    def onActivated(self,text):
+        self.lbl.setText(text)
+        self.lbl.adjustSize()
 
-        if state==Qt.Unchecked:
-            self.simulator.extModManager.Enable()
-
-        # if state == Qt.Unchecked:
-        #     self.simulator.Disable()
+    def printed(self,text):
+        print(text)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
         qp.begin(self)
-        self.draw_point(qp)
+        self.draw(qp)
         qp.end()
 
     #event
@@ -389,7 +390,7 @@ class MyApp(QMainWindow):
         self.updatePosition()
 
     #qp를 넘겨주어야 함
-    def draw_point(self, qp):
+    def draw(self, qp):
         #draw paint
         self.xp= self.relx
         self.yp=self.rely
@@ -398,10 +399,31 @@ class MyApp(QMainWindow):
         xp=None
         yp=None
 
-        for ikey, values in self.planviewmanager.getObjects():
-            for idata in values:
-                idata.draw(qp,xp,yp,ikey)
+        # if self.combo.currentText()=='TRACK':
+        #     for ikey, values in self.planviewmanager.getObjects():
+        #         for idata in values:
+        #             idata.draw1(qp,xp,yp,ikey)
+        #
+        # if self.combo.currentText()=='POINT_CLOUD':
+        #     for ikey, values in self.planviewmanager.getObjects():
+        #         for idata in values:
+        #             idata.draw2(qp, xp, yp, ikey)
 
+
+        if self.check1.isChecked():
+            for ikey, values in self.planviewmanager.getObjects():
+                for idata in values:
+                    idata.draw1(qp,xp,yp,ikey)
+
+        if self.check2.isChecked():
+            for ikey, values in self.planviewmanager.getObjects():
+                for idata in values:
+                    idata.draw2(qp, xp, yp, ikey)
+
+        if self.check3.isChecked():
+            for ikey, values in self.planviewmanager.getObjects():
+                for idata in values:
+                    idata.draw3(qp, xp, yp, ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -413,7 +435,6 @@ class MyApp(QMainWindow):
         self.statusBar().showMessage(str)
 
     #Callback Event
-
     def sliderMoved(self):                  #sliderMoved 함수는 tool의 슬라이드 바를 움직임
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
@@ -445,18 +466,6 @@ class MyApp(QMainWindow):
 
     def closeEvent(self, event):
         sys.exit()
-# class Ex(extScheduler):
-#     def __init__(self):
-#         super().__init__()
-#
-#     def ex(self):
-#         self._initDataset(senarioBasicDataset.TRACK,list())
-#         self._initDataset(senarioBasicDataset.CAMTRACK,list())
-#         self._initDataset(senarioBasicDataset.DELAYEDPOINTS,list())
-#
-#         for key in  self._dataset.key():
-#             senarioBasic.sprint(key)
-#             print(key)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -6,7 +6,6 @@ class viewLane(DataView):
 
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
-    def drawIndividual(self,qp, xp, yp, ikey):
 
-
+    def Lanedraw(self,qp,xp,yp,ikey):
         qp.drawLine(xp,yp,6,6)

@@ -7,8 +7,6 @@ class viewTrack(DataView):
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
 
-    def drawIndividual(self,qp, xp, yp, ikey):
-
-
+    def Textdraw(self,qp, xp, yp, ikey):
         qp.drawText(xp,yp,10,10)
 

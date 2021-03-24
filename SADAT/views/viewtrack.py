@@ -7,8 +7,7 @@ class viewTrack(DataView):
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
 
-    def drawIndividual(self,qp, xp, yp, ikey):
-
+    def Trackdraw(self,qp,xp,yp,ikey):
         #color.setNamedColor(idata.rawdata.color)
         #qp.setPen(color)
 

@@ -49,6 +49,12 @@ class extScheduler(metaclass=ABCMeta):
     def _initDataset(self, datakey, datatype):
         self._dataset[datakey] = datatype
 
+    # def get_dataset(self):
+    #     return self._dataset.keys()
+    #
+    # def set_dataset(self,datakey,datatype):
+    #     self._dataset[datakey]=datatype
+
     def addData(self, datakey, data, dictkey=None):
         dset = self._dataset[datakey]
 

@@ -3,8 +3,8 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 class DataView:
     def __init__(self, rawdata=None):
         self.rawdata = rawdata
-        self.isVisible = False          #이거
-        self.viewType = None            #
+        self.isVisible = True
+        self.viewType = None
 
         self.guiinfo = None
         self.pos_xy = list()
@@ -30,14 +30,40 @@ class DataView:
     def _updatePlanviewSub(self):
         pass
 
-    def draw(self, qp, xp, yp, ikey):
-        for tdata in self.pos_xy:
-            xp = int(tdata[0])
-            yp = int(tdata[1])
+    def draw1(self, qp, xp, yp, ikey):
+        if self.isVisible:
+            for tdata in self.pos_xy:
+                xp=int(tdata[0])
+                yp=int(tdata[1])
+                self.Trackdraw(qp,xp,yp,ikey)
 
-            self.drawIndividual(qp, xp, yp, ikey)
+    def draw2(self, qp, xp, yp, ikey):
+        if self.isVisible:
+            for tdata in self.pos_xy:
+                xp=int(tdata[0])
+                yp=int(tdata[1])
+                self.PointClouddraw(qp,xp,yp,ikey)
 
-    def drawIndividual(self, qp, xp, yp, ikey):
+    def draw3(self, qp, xp, yp, ikey):
+        if self.isVisible:
+            for tdata in self.pos_xy:
+                xp=int(tdata[0])
+                yp=int(tdata[1])
+                self.Lanedraw(qp,xp,yp,ikey)
+
+    def Trackdraw(self,qp,xp,yp,ikey):
+        pass
+
+    def PointClouddraw(self,qp,xp,yp,ikey):
+        pass
+
+    def Lanedraw(self,qp,xp,yp,ikey):
+        pass
+
+    def Linedraw(self,qp,xp,yp,ikey):
+        pass
+
+    def Textdraw(self,qp,xp,yp,ikey):
         pass
 
     def _getPos(self, posx, posy):

@@ -29,12 +29,9 @@ class extModuleManager():
     def setSenario(self, senario:extScheduler):
         self.__selectedScheduler = senario
         self.__selectedScheduler.initextScheduler()
-        self.__selectedScheduler.enableModule(0)
+        #self.__selectedScheduler.enableModule(0)
 
     def Disable(self):
-        a=senarioBasicDataset.TRACK
-        b=senarioBasicDataset.DELAYEDPOINTS
-        c=senarioBasicDataset.CAMTRACK
         self.__selectedScheduler.disableModule(0)
         print('disable')
 
