@@ -7,5 +7,5 @@ class viewPointCloud(DataView):
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
 
-    def PointClouddraw(self,qp,xp,yp,ikey):
+    def drawIndividual(self,qp,xp,yp,ikey):
         qp.drawEllipse(xp,yp,6,6)

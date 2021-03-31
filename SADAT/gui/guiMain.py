@@ -6,7 +6,8 @@ from PyQt5.QtCore import *
 
 import SnSimulator
 from externalmodules.default.dataset_enum import senarioBasicDataset
-from externalmodules.default.senario import senarioBasic
+from sensor.SenAdptMgr import AttachedSensorName
+from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay
@@ -75,36 +76,6 @@ class GUI_CONTROLLER:
 class MyAppEventManager():          #아직 해당 클래의 기능은 없는거 같음
     def __init__(self):
         pass
-
-class CheckableComboBox(QComboBox):
-    def __init__(self):
-        super(CheckableComboBox, self).__init__()
-        self.view().pressed.connect(self.handle_item_pressed)
-        self.setModel(QStandardItemModel(self))
-        self.setFixedSize(200,100)
-        self.move(0,20)
-        self.resize(50,50)
-
-    def handle_item_pressed(self, index):
-        item = self.model().itemFromIndex(index)
-
-        if item.checkState() == Qt.Checked:
-            item.setCheckState(Qt.Unchecked)
-        else:
-            item.setCheckState(Qt.Checked)
-        self.check_items()
-
-    def item_checked(self, index):
-        item = self.model().item(index, 0)
-
-        return item.checkState() == Qt.Checked
-
-    def check_items(self):
-        checkedItems = []
-
-        for i in range(self.count()):
-            if self.item_checked(i):
-                checkedItems.append(i)
 
 '''MyWG클래스는 레이아웃을 나누기 위해 생성한 클래스'''
 class MyWG(QWidget):
@@ -313,9 +284,6 @@ class MyApp(QMainWindow):
         self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
         self.comboText=QLabel('Object')
-        self.check1=QCheckBox('Track',self)
-        self.check2=QCheckBox('PointCloud',self)
-        self.check3=QCheckBox('Lane',self)
 
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)
@@ -323,25 +291,10 @@ class MyApp(QMainWindow):
         for name, member in DataTypeCategory.__members__.items():
             self.combo.addItem(name)
             item = self.combo.model().item(name.index(name), 0)
-            item.setCheckState(Qt.Checked)
-
-        self.lbl=QLabel("Option",self)
-        self.combo.activated[str].connect(self.onActivated)
-        self.combo.activated[str].connect(self.printed)
+            item.setCheckState(Qt.Unchecked)
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
-        self.toolbar.addWidget(self.check1)
-        self.toolbar.addWidget(self.check2)
-        self.toolbar.addWidget(self.check3)
-        self.toolbar.addWidget(self.lbl)
-
-    def onActivated(self,text):
-        self.lbl.setText(text)
-        self.lbl.adjustSize()
-
-    def printed(self,text):
-        print(text)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
@@ -396,34 +349,15 @@ class MyApp(QMainWindow):
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
 
-        xp=None
-        yp=None
-
-        # if self.combo.currentText()=='TRACK':
-        #     for ikey, values in self.planviewmanager.getObjects():
-        #         for idata in values:
-        #             idata.draw1(qp,xp,yp,ikey)
-        #
-        # if self.combo.currentText()=='POINT_CLOUD':
-        #     for ikey, values in self.planviewmanager.getObjects():
-        #         for idata in values:
-        #             idata.draw2(qp, xp, yp, ikey)
-
-
-        if self.check1.isChecked():
-            for ikey, values in self.planviewmanager.getObjects():
-                for idata in values:
-                    idata.draw1(qp,xp,yp,ikey)
-
-        if self.check2.isChecked():
-            for ikey, values in self.planviewmanager.getObjects():
-                for idata in values:
-                    idata.draw2(qp, xp, yp, ikey)
-
-        if self.check3.isChecked():
-            for ikey, values in self.planviewmanager.getObjects():
-                for idata in values:
-                    idata.draw3(qp, xp, yp, ikey)
+        for ikey, values in self.planviewmanager.getObjects():
+            for idata in values:
+                if self.combo.item_checked(index=0):
+                    if ikey is AttachedSensorName.RPLidar2DVirtual:
+                        idata.setVisible(True)
+                if self.combo.item_checked(index=1):
+                    if ikey is senarioBasicDataset.TRACK:
+                        idata.setVisible(True)
+                idata.draw(qp,ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
