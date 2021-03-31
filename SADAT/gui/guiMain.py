@@ -16,6 +16,7 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from rosinterface import rosInstance
 from views.planview_manager import planviewManager, guiInfo
 
 '''GUI 그룹'''
@@ -175,7 +176,7 @@ class MyApp(QMainWindow):
 
         #planview manager
         self.planviewmanager = planviewManager()
-
+        self.rosinterface = rosInstance()
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()
