@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
@@ -16,7 +15,6 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
-from rosinterface import rosInstance
 from views.planview_manager import planviewManager, guiInfo
 
 '''GUI 그룹'''
@@ -176,7 +174,6 @@ class MyApp(QMainWindow):
 
         #planview manager
         self.planviewmanager = planviewManager()
-        self.rosinterface = rosInstance()
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()

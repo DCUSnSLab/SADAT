@@ -1,19 +1,11 @@
-import platform
-import time
 import datetime as pydatetime
-
 import numpy
-
-from LidarLog import LidarLog
-from multiprocessing import Manager
-import rospy
-from sensor_msgs.msg import LaserScan
 from numpy import inf
 import math
 from multiprocessing import Value
-
 from log.makeRPLidarLog import RPLidarLogType
 from sensor.SenAdptMgr import AttachedSensorName
+from utils.importer import Importer
 
 
 def get_now():
@@ -33,6 +25,10 @@ class GrabberROS:
         self.Signal = Value('i', 0)
         self.senstype = AttachedSensorName.RPLidar2DA3
 
+        # Import LaserScan
+        self.rospy = Importer.importerLibrary('rospy')
+        self.LaserScan = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
+
     def connect(self):
         pass
 
@@ -46,10 +42,10 @@ class GrabberROS:
 
     def startLidar(self):
         print('init ROS scan')
-        rospy.init_node('SADAT_scanvalue')
+        self.rospy.init_node('SADAT_scanvalue')
         print('start lidar')
-        sub = rospy.Subscriber('/scan', LaserScan, self.lidarcallback)
-        rospy.spin()
+        sub = self.rospy.Subscriber('/scan', self.LaserScan, self.lidarcallback)
+        self.rospy.spin()
         print('end')
 
     def lidarcallback(self, msg):
