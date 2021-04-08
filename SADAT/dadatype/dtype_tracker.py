@@ -7,6 +7,7 @@ class dtype_tracker(DataWrapper):
         super().__init__(id=id, posx=posx, posy=posy, dtypecate=DataTypeCategory.TRACK)
         self.ref_point = 0
 
+
         self.minX = minX
         self.maxX = maxX
         self.minY = minY

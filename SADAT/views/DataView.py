@@ -28,6 +28,17 @@ class DataView:
     def _updatePlanviewSub(self):
         pass
 
+    def draw(self, qp,ikey):
+        if self.isVisible:
+            for tdata in self.pos_xy:
+                xp=int(tdata[0])
+                yp=int(tdata[1])
+                self.drawIndividual(qp,xp,yp,ikey)
+
+
+    def drawIndividual(self,qp,xp,yp,ikey):
+        pass
+
     def _getPos(self, posx, posy):
         rposx = (posx / self.guiinfo.planviewsize) + (self.guiinfo.wwidth / 2) + self.guiinfo.relx
         rposy = (posy / self.guiinfo.planviewsize) + (self.guiinfo.wheight / 2) + self.guiinfo.rely
@@ -38,3 +49,6 @@ class DataView:
         w = w / self.guiinfo.planviewsize
         h = h / self.guiinfo.planviewsize
         return w,h
+
+    def setVisible(self,tf):
+        self.isVisible=tf

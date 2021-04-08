@@ -14,7 +14,7 @@ class senarioBasic(extScheduler):
     def dataConstruction(self):
         self._initDataset(senarioBasicDataset.TRACK, list())
         self._initDataset(senarioBasicDataset.CAMTRACK, list()) #temporary
-        #self._initDataset(senarioBasicDataset.DELAYEDPOINTS, list())
+        self._initDataset(senarioBasicDataset.DELAYEDPOINTS, list())
 
         self.sprint('data Construction loaded')
         for key in self._dataset.keys():
