@@ -87,7 +87,6 @@ class MyWG(QWidget):
 
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
-        self.pr.planviewmanager = planviewManager()
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
@@ -127,7 +126,7 @@ class MyApp(QMainWindow):
         # init Simulator Manager
         self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
-
+        self.planviewmanager = planviewManager()
         self.initUI()
         self.dataview = DataView()
 
