@@ -78,5 +78,5 @@ class Sensor(metaclass=ABCMeta):
 
     def __getCoordinatebyLidarNP(self, distance, angle):
         x = distance * np.cos(np.radians(90 - angle))
-        y = -1 * (distance * np.sin(np.radians(90 - angle)))
+        y = 1 * (distance * np.sin(np.radians(90 - angle)))
         return x, y

@@ -13,7 +13,9 @@ class SourceManager:
         self.dataLoadQueue = manager.Queue()
 
     def init(self):
-        pass
+        self.ActualSensor.clear()
+        self.VirtualSensor.clear()
+        self.AllSensors.clear()
 
     def addActualSensor(self, sens, man):
         self.__addSensor(self.ActualSensor, sens, man)
@@ -28,6 +30,9 @@ class SourceManager:
             self.AllSensors[sensor.sensorName] = sensor
         else:
             print("error SensorName: %s already in SensorList" % sensor.sensorName)
+
+    def getActualSensors(self):
+        return self.ActualSensor
 
     def getSensorbyName(self, name:str):
         if name in self.AllSensors:

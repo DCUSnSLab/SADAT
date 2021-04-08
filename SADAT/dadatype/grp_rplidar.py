@@ -28,6 +28,7 @@ class grp_rplidar():
         return self.__start_flag
 
     def clone(self, obj):
-        self.__timestamp = obj.getTimeStamp()
-        self.__start_flag = obj.getStartFlag()
-        self.__pntxy = copy.deepcopy(obj.getPoints())
+        if obj != None:
+            self.__timestamp = obj.getTimeStamp()
+            self.__start_flag = obj.getStartFlag()
+            self.__pntxy = copy.deepcopy(obj.getPoints())

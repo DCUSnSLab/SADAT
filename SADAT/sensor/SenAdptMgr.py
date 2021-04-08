@@ -15,6 +15,7 @@ class SenAdptMgr:
         self.__initDevices()
 
     def __initDevices(self):
+        self.srcmanager.init()
         #actual Device
         self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
 

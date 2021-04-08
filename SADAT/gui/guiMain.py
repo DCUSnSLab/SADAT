@@ -5,11 +5,10 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import SnSimulator
-from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
-from gui.menuFiles import menuLoadSim, menuLogPlay
+from gui.menuFiles import menuLoadSim, menuLogPlay, menuLogPlayROS
 from gui.menuSim import menuSim
 
 from multiprocessing import Manager
@@ -175,7 +174,6 @@ class MyApp(QMainWindow):
 
         #planview manager
         self.planviewmanager = planviewManager()
-
         self.form_widget = MyWG(self)
         self.setCentralWidget(self.form_widget)
         self.initUI()
@@ -194,10 +192,11 @@ class MyApp(QMainWindow):
 
         #File Menu
         filemenu = menubar.addMenu('&File')
-        #filemenu.addAction(self.OnOpenDocument('Load log files..', self))
         filemenu.addAction(menuLoadSim('Load log files..', self))
-        #self.Open_Button.clicked.connect(self.OnOpenDocument3)
-        filemenu.addAction(menuLogPlay('Log Play',self))
+        # Add LogPlay
+        logplaymenu = filemenu.addMenu('&Log Play')
+        logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
+        logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
         filemenu.addAction(menuExit('exit', self))
 
         #Simulation Menu
