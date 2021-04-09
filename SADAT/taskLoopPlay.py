@@ -82,10 +82,17 @@ class taskLoopPlay(QThread):
         for td in iter(self.task.get, 'stop'):
             #Realtime Play Mode
             if td == self.PLAYMODE_LOGPLAY:
-                lq = self.simlog.getQueueData()
-                print("store origin data")
-                for data in iter(lq.get, 'interrupt'):
-                    self.simlog.enQueuePlayData(data)
+                ldata = list()
+                #Through all rawdata to post plan and planviewmanager
+                #need to split an image data and sensor(Lidar, track, radar and so on)
+                #it means that image data should be processed in other thread(process)
+                while True:
+                    lq = self.sourcemanager.getActualSensors()
+                    ldata.clear()
+                    for key, data in lq.items():
+                        data = data.getRealtimeDataQueue().get()
+                        ldata.append(tuple((key, data)))
+                    self.simlog.enQueuePlayData(ldata)
 
 
             #Sim Mode

@@ -42,6 +42,8 @@ class SnSimulator:
         self.loadPlugin()
         self.defineProcess()
 
+        self.currentPlayMode = None
+
     def StartManager(self):
         # self.CommandMode()
         print("exit")
@@ -50,8 +52,7 @@ class SnSimulator:
 
         print("end Process")
 
-    def setAction(self, mode):
-        #set mode change
+    def setAction(self, mode, logtype=None):
         if mode is Mode.MODE_SIM:
             self.lpthread.setSimMode()
         elif mode is Mode.MODE_LOG:
@@ -65,6 +66,14 @@ class SnSimulator:
         self.cleanProcess()
         proc = self.procs[mode]
 
+        # set mode change
+        self.currentPlayMode = mode
+
+        #set Log Type
+        if mode is Mode.MODE_LOG and logtype is not None:
+            proc.setLogType(logtype)
+
+        print("Start Process")
         if proc is not None:
             # set Processes
             for pr in proc.getProcesses():
@@ -76,8 +85,15 @@ class SnSimulator:
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
             #     time.sleep(0.01)
 
+    def cleanGrabber(self, procs=None):
+        if self.currentPlayMode is Mode.MODE_LOG:
+            #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
+            self.procs[Mode.MODE_LOG].grabber.disconnect()
+            #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
+
     def cleanProcess(self):
         if len(self.processes) != 0:
+            self.cleanGrabber(self.processes)
             # clean process start
 
             # send interrupt message to logs
@@ -105,7 +121,7 @@ class SnSimulator:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog)
+        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         print(self.procs)
 
