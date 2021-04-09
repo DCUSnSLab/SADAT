@@ -87,5 +87,5 @@ class GrabberROS:
         self.Signal.value = 1
 
     def disconnectSignal(self):
-        rospy.signal_shutdown("reason")
+        self.rospy.signal_shutdown("reason")
         print('ROS Disconnected')
