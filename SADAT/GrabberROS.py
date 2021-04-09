@@ -24,10 +24,15 @@ class GrabberROS:
         self.node = "GrabberROS"
         self.Signal = Value('i', 0)
         self.senstype = AttachedSensorName.RPLidar2DA3
+        self.initpass = False
 
-        # Import LaserScan
-        self.rospy = Importer.importerLibrary('rospy')
-        self.LaserScan = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
+        try:
+            # Import LaserScan
+            self.rospy = Importer.importerLibrary('rospy')
+            self.LaserScan = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
+            self.initpass = True
+        except:
+            self.initpass = False
 
     def connect(self):
         pass
@@ -35,10 +40,12 @@ class GrabberROS:
     def startGrab(self):
         print('start grab')
         self.log.initLog(self.pwm)
-        if self.log is not None:
+        if self.log is not None and self.initpass is True:
             self.connect()
             self.startLidar()
             self.disconnect()
+        else:
+            print('Grab Stopped due to init Failed')
 
     def startLidar(self):
         print('init ROS scan')
