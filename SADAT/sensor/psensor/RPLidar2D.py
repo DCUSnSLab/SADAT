@@ -1,7 +1,7 @@
 from dadatype.grp_rplidar import grp_rplidar
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
-
+import numpy as np
 
 class RPLidar2DA3(pSensor):
     def __init__(self, name):
@@ -10,7 +10,8 @@ class RPLidar2DA3(pSensor):
     def _doWorkDataInput(self, inputdata):
         tempX, tempY = self._inputdataArray(inputdata)
         X_Y = [(i, tempX[i], tempY[i]) for i in range(len(tempX))]
-        lgrp = grp_rplidar(inputdata.timestamp, X_Y, inputdata.start_flag)
+        X_Y_n = np.array(X_Y)
+        lgrp = grp_rplidar(X_Y_n, inputdata.distance, inputdata.angle, inputdata.timestamp, inputdata.start_flag)
         if len(lgrp.getPoints()) == 0:
             print('inSensor - ', lgrp.getPoints())
             print('lgrp is None',lgrp.getTimeStamp())

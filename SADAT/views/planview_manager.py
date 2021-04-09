@@ -1,5 +1,6 @@
 from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from sensor.SenAdptMgr import AttachedSensorName
 from views.viewpointcloud import viewPointCloud
 
 class guiInfo():

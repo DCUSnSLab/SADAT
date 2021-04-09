@@ -351,7 +351,7 @@ class MyApp(QMainWindow):
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
                 if self.combo.item_checked(index=0):
-                    if ikey is AttachedSensorName.RPLidar2DVirtual:
+                    if ikey is AttachedSensorName.RPLidar2DVirtual or ikey is AttachedSensorName.RPLidar2DA3:
                         idata.setVisible(True)
                 if self.combo.item_checked(index=1):
                     if ikey is senarioBasicDataset.TRACK:
