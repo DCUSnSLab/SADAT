@@ -9,7 +9,10 @@ from sensor.SenAdptMgr import AttachedSensorName
 class trackerBasic(extModule):
     def __init__(self):
         super().__init__('trackerBasic')
-        self.tracker = mytracker.Tracker(100, 2)
+        try:
+            self.tracker = mytracker.Tracker(100, 2)
+        except:
+            pass
 
     def getRawDatabyKey(self, key):
         return self._getRawDatabyKey(key)
