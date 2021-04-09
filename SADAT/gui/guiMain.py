@@ -6,6 +6,8 @@ from PyQt5.QtCore import *
 
 import SnSimulator
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from sensor.SenAdptMgr import AttachedSensorName
+from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
 from gui.menuFiles import menuLoadSim, menuLogPlay, menuLogPlayROS
@@ -16,6 +18,8 @@ from multiprocessing import Manager
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from views.planview_manager import planviewManager, guiInfo
+from views.DataView import DataView
+from dadatype.dtype_cate import DataTypeCategory
 
 '''GUI 그룹'''
 class GUI_GROUP:
@@ -43,6 +47,9 @@ class GUI_CONTROLLER:
 
     def addSlider(self, item):
         self.slider = item
+
+    def setSlider(self, index):
+        self.slider.setValue(index)
 
     def getSlider(self):
         return self.slider
@@ -80,62 +87,9 @@ class MyWG(QWidget):
 
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
-        self.group=QGroupBox("Evaluation")          #레이아웃의 그룹 이름
-        self.group.setStyleSheet("color:black;"
-                                 "background-color:white;")
-        fInnerLayOut=QVBoxLayout()
-        self.buttonGroup=QGroupBox("Vehicle Button")
-        self.buttonGroup.setStyleSheet("color:black;"
-                                       "background-color: white;")
-        #레이아웃에 있는 제어 버튼
-        self.pushButton1 = QPushButton("전진")
-        self.pushButton2 = QPushButton("후진")
-        self.pushButton3 = QPushButton("좌회전")
-        self.pushButton4 = QPushButton("우회전")
-        self.pushButton5 = QPushButton("멈춤")
-
-        eInnerLayOut=QVBoxLayout()
-        eInnerLayOut.addWidget(self.pushButton1)
-        eInnerLayOut.addWidget(self.pushButton2)
-        eInnerLayOut.addWidget(self.pushButton3)
-        eInnerLayOut.addWidget(self.pushButton4)
-        eInnerLayOut.addWidget(self.pushButton5)
-        self.buttonGroup.setLayout(eInnerLayOut)
-        self.ExGroup=QGroupBox("None")
-        self.ExGroup.setStyleSheet("color:black;"
-                                   "background-color: white")
-        fInnerLayOut.addWidget(self.buttonGroup)
-        fInnerLayOut.addWidget(self.ExGroup,1)
-        self.group.setLayout(fInnerLayOut)
-        layout=QVBoxLayout()
-        layout.addWidget(self.group)
-        self.setLayout(layout)
-        self.setFixedSize(300, 730)         #이 부분의 y의 값은 맥에서 개발 할 때는 730으로 리눅스 환경에서 개발할 때는 930으로 설정
-
-        self.pr.guiGroup[GUI_GROUP.LOGGING_MODE] = []
-        self.pr.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
-        self.pr.statusBar()
-        self.pr.statusBar().setStyleSheet("background-color : white")
-        self.pr.initMenubar()
-        self.pr.initToolbar()
-        self.pr.initplanview()
-        self.pr.setStyleSheet("""QMenuBar {
-                 background-color: Gray;
-                 color: white;
-                }
-
-             QMenuBar::item {
-                 background: Gray;
-                 color: white;
-             }""")
-
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
-        #self.setPalette(p)
-        self.pr.modeChanger(GUI_GROUP.ALL, False)
-        self.setWindowTitle('QGridLayout')
-        self.setGeometry(300, 300, 300, 200)
         self.show()
 
 class MyApp(QMainWindow):
@@ -146,6 +100,7 @@ class MyApp(QMainWindow):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
+        self.DockingWidget()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -171,16 +126,80 @@ class MyApp(QMainWindow):
         # init Simulator Manager
         self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
-
-        #planview manager
         self.planviewmanager = planviewManager()
-        self.form_widget = MyWG(self)
-        self.setCentralWidget(self.form_widget)
         self.initUI()
+        self.dataview = DataView()
+
+    def DockingWidget(self):
+        self.items=QDockWidget('Dockable',self)
+        self.listWidget=QGroupBox()
+        self.listWidget.setStyleSheet("color:black;"
+                                      "background-color:white;")
+        fInnerLayout=QVBoxLayout()
+        self.buttonGroup=QGroupBox("Vehicle Button")
+        self.buttonGroup.setStyleSheet("color:black;"
+                                      "background-color:white;")
+
+        #제어버튼
+        self.pushButton1 = QPushButton("Advance")
+        self.pushButton1.setMaximumSize(100,70)
+        self.pushButton2 = QPushButton("Back up")
+        self.pushButton2.setMaximumSize(100, 70)
+        self.pushButton3 = QPushButton("Turn Left")
+        self.pushButton3.setMaximumSize(100, 70)
+        self.pushButton4 = QPushButton("Turn Right")
+        self.pushButton4.setMaximumSize(100,70)
+        self.pushButton5 = QPushButton("Stop")
+        self.pushButton5.setMaximumSize(100, 70)
+
+        sInnerLayout=QGridLayout()
+        sInnerLayout.addWidget(self.pushButton1,0,1)
+        sInnerLayout.addWidget(self.pushButton2,2,1)
+        sInnerLayout.addWidget(self.pushButton3,1,0)
+        sInnerLayout.addWidget(self.pushButton4,1,2)
+        sInnerLayout.addWidget(self.pushButton5,1,1)
+        self.buttonGroup.setLayout(sInnerLayout)
+
+        self.CheckGroup=QGroupBox("Check Box")
+        self.CheckGroup.setStyleSheet("color:black;"
+                                   "background-color: white")
+
+        fInnerLayout.addWidget(self.buttonGroup,35)
+        fInnerLayout.addWidget(self.CheckGroup,100)
+        self.listWidget.setLayout(fInnerLayout)
+        layout=QVBoxLayout()
+        layout.addWidget(self.listWidget)
+
+        self.items.setWidget(self.listWidget)
+        self.items.setFloating(False)
+        self.setCentralWidget(MyWG(self))
+        self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
         self.setWindowTitle('SADAT')
         #self.setStyleSheet("background-color: dimgray;")
+        self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
+        self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
+        self.statusBar()
+        self.statusBar().setStyleSheet("background-color : white")
+        self.initMenubar()
+        self.initToolbar()
+        self.ComboToolbar()
+        self.setStyleSheet("""QMenuBar {
+                         background-color: Gray;
+                         color: white;
+                        }
+
+                     QMenuBar::item {
+                         background: Gray;
+                         color: white;
+                     }""")
+
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+        self.modeChanger(GUI_GROUP.ALL, False)
+
         self.setGeometry(300, 300, 1500, 1000)
         self.show()
 
@@ -198,7 +217,6 @@ class MyApp(QMainWindow):
         logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
         logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
         filemenu.addAction(menuExit('exit', self))
-
         #Simulation Menu
         simmenu = menubar.addMenu('&Simulation')
         simmenu.addAction(menuSim('Play',self))
@@ -211,12 +229,27 @@ class MyApp(QMainWindow):
         toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)         #재생
         self.toolvel = toolbarEditor('10', self, self.simulator.setVelocity)
         self.toolvel.setText(str(self.simulator.getVelocity()))
+        self.toolvel.setFixedWidth(50)
 
         self.toolbar.addAction(toolplay)
         self.toolbar.addAction(toolpause)
         self.toolbar.addAction(toolresume)
         self.toolbar.addWidget(self.toolvel)
-        self.toolbar.setStyleSheet("color: black")
+        #self.toolbar.setStyleSheet("color: white")
+
+        #step by step
+        fbutton=QPushButton('Decrease button')
+        fbutton.setFixedWidth(50)
+        fbutton.setText("⬅")
+        fbutton.clicked.connect(self.DecreaseButton)
+        self.toolbar.addWidget(fbutton)
+
+        sbutton=QPushButton('Increase button')
+        sbutton.setFixedWidth(50)
+        sbutton.setText("➡︎︎")
+        sbutton.clicked.connect(self.IncreaseButton)
+        self.toolbar.addWidget(sbutton)
+
 
         #slider
         slider = toolbarSlider(Qt.Horizontal, self)
@@ -230,23 +263,42 @@ class MyApp(QMainWindow):
         self.gcontrol.addToolbar(slider, 'logslider')
         self.gcontrol.addSlider(slider)
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
-
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
+    def keyPressEvent(self, e):
+        if e.key()==Qt.Key_Left:
+            self.DecreaseButton()
+        if e.key()==Qt.Key_Right:
+            self.IncreaseButton()
 
-    def initplanview(self):         #현재 이 함수의 기능은 못 찾겠음,, tool을 보아하니 아직 레이아웃 버튼이 안보임
-        grid_layout = QGridLayout()
-        self.setLayout(grid_layout)
+    def DecreaseButton(self):
+        self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
 
-        for x in range(3):
-            for y in range(3):
-                button = QPushButton(str(str(3 * x + y)))
-                grid_layout.addWidget(button, x, y)
+    def IncreaseButton(self):
+        self.gcontrol.setSlider(self.gcontrol.getSlider().value() + 1)
+        self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
+
+    def ComboToolbar(self):
+        self.toolbar=self.addToolBar('ComboToolbar')
+        self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
+        self.comboText=QLabel('Object')
+
+        self.combo = CheckableComboBox()
+        self.combo.setFixedHeight(25)
+
+        for name, member in DataTypeCategory.__members__.items():
+            self.combo.addItem(name)
+            item = self.combo.model().item(name.index(name), 0)
+            item.setCheckState(Qt.Unchecked)
+
+        self.toolbar.addWidget(self.comboText)
+        self.toolbar.addWidget(self.combo)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
         qp = QPainter()
         qp.begin(self)
-        self.draw_point(qp)
+        self.draw(qp)
         qp.end()
 
     #event
@@ -285,31 +337,26 @@ class MyApp(QMainWindow):
         self.pressX = e.globalX()-self.relx
         self.pressY = e.globalY()-self.rely
         self.updatePosition()
-        #print('press')
 
     def mouseReleaseEvent(self, e):
-        self.relx = e.globalX()-self.pressX
-        self.rely = e.globalY()-self.pressY
         self.updatePosition()
-        #print('release')
 
-    def draw_point(self, qp):
+    #qp를 넘겨주어야 함
+    def draw(self, qp):
         #draw paint
         self.xp= self.relx
         self.yp=self.rely
         qp.setPen(QPen(Qt.white, 1))
-        rx = 150
-        ry = 100
 
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
-                for tdata in idata.pos_xy:
-                    xp = int(tdata[0]) + rx
-                    yp = int(tdata[1]) + ry
+                if self.combo.item_checked(index=0):
+                    if ikey is AttachedSensorName.RPLidar2DVirtual or ikey is AttachedSensorName.RPLidar2DA3:
+                        idata.setVisible(True)
+                if self.combo.item_checked(index=1):
                     if ikey is senarioBasicDataset.TRACK:
-                        qp.drawRect(xp,yp,idata.width,idata.height)
-                    else:
-                        qp.drawEllipse(xp, yp, 6, 6)
+                        idata.setVisible(True)
+                idata.draw(qp,ikey)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -321,7 +368,6 @@ class MyApp(QMainWindow):
         self.statusBar().showMessage(str)
 
     #Callback Event
-
     def sliderMoved(self):                  #sliderMoved 함수는 tool의 슬라이드 바를 움직임
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
         self.simulator.PauseMode()
@@ -350,7 +396,6 @@ class MyApp(QMainWindow):
         stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
-        #print("pbInfo : ", pbinfo.mode, pbinfo.maxLength, pbinfo.currentIdx)
 
     def closeEvent(self, event):
         sys.exit()

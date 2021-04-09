@@ -4,9 +4,11 @@ from dadatype.dtype_cate import DataTypeCategory
 
 
 class grp_rplidar():
-    def __init__(self, timestamp=0, pnt=list(), start_flag=False):
+    def __init__(self, pnt, distance, angle, timestamp=0, start_flag=False):
         self.__timestamp = timestamp
         self.__pntxy = pnt
+        self.__distance = distance
+        self.__angle = angle
         self.__start_flag = start_flag
         self.dtypecate = DataTypeCategory.POINT_CLOUD
 

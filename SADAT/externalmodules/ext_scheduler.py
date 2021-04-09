@@ -23,6 +23,10 @@ class extScheduler(metaclass=ABCMeta):
             if mod.isEnabled():
                 mod.do()
 
+    def doTask2(self):
+        pass
+        #DisAct_Track()
+
     def _addModules(self, modlist):
         for mod in modlist:
             mod.addScheduler(self)
@@ -44,6 +48,12 @@ class extScheduler(metaclass=ABCMeta):
 
     def _initDataset(self, datakey, datatype):
         self._dataset[datakey] = datatype
+
+    # def get_dataset(self):
+    #     return self._dataset.keys()
+    #
+    # def set_dataset(self,datakey,datatype):
+    #     self._dataset[datakey]=datatype
 
     def addData(self, datakey, data, dictkey=None):
         dset = self._dataset[datakey]
