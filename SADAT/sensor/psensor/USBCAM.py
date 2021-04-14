@@ -34,6 +34,7 @@ class USBCAM(pSensor):
             cv2.putText(cv_image, str, (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
             #print(str)
             h, w, ch = cv_image.shape
+            #self.addRealtimeData(cv_image)
             bytesPerLine = ch * w
             # convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
             # p = convertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
