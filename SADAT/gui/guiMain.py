@@ -398,6 +398,7 @@ class MyApp(QMainWindow):
         self.update()
 
     def closeEvent(self, event):
+        self.simulator.cleanProcess()
         sys.exit()
 
 if __name__ == '__main__':

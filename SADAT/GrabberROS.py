@@ -1,3 +1,4 @@
+from abc import *
 import datetime as pydatetime
 import numpy
 from numpy import inf
@@ -14,83 +15,83 @@ def get_now():
 def get_now_timestamp():
     return get_now().timestamp()
 
+class GrabberROS(metaclass=ABCMeta):
+    def __init__(self, _log, senstype, nodename, topicname=None):
+        self._log = _log
+        self._node = nodename
+        self._senstype = senstype
 
-class GrabberROS:
-    def __init__(self, _log):
-        self.log = _log
-        self.log.initLog(1000)
-        self.pwm = 1000
-        self.lidar = None
-        self.node = "GrabberROS"
+        self._initpass = True
         self.Signal = Value('i', 0)
-        self.senstype = AttachedSensorName.RPLidar2DA3
-        self.initpass = False
 
+        self._msgtype = None
+        if topicname != None:
+            self._topicName = '/'+topicname
+            print(self._topicName)
+            self._initMsgType()
+        else:
+            self._initpass = False
+
+    def _initMsgType(self):
+        print('init msgtype')
         try:
+            checkinit = True
             # Import LaserScan
             self.rospy = Importer.importerLibrary('rospy')
-            self.LaserScan = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
-            self.initpass = True
-        except:
-            self.initpass = False
+            if self._topicName == '/scan':
+                print('set msgtype')
+                self._msgtype = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
+            elif self._topicName == '/usb_cam/image_raw/compressed':
+                self._msgtype = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
+            elif self._topicName == '/usb_cam/image_raw':
+                self._msgtype = Importer.importerLibrary('sensor_msgs.msg', 'Image')
+            else:
+                self._msgtype = None
+                checkinit = False
+
+            if checkinit is True:
+                self._initpass = True
+            else:
+                self._initpass = False
+        except Exception as e:
+            print("Exception",e)
+            self._initpass = False
 
     def connect(self):
         pass
 
     def startGrab(self):
         print('start grab')
-        self.log.initLog(self.pwm)
-        if self.log is not None and self.initpass is True:
+        if self._log is not None and self._initpass is True:
             self.connect()
-            self.startLidar()
+            self.doGrab()
             self.disconnect()
         else:
-            print('Grab Stopped due to init Failed')
+            print('Grab Stopped due to init Failed -',self._node)
 
-    def startLidar(self):
-        print('init ROS scan')
-        self.rospy.init_node('SADAT_scanvalue')
-        print('start lidar')
-        sub = self.rospy.Subscriber('/scan', self.LaserScan, self.lidarcallback)
+    def doGrab(self):
+        print('init ROS Node -',self._node)
+        self.rospy.init_node(self._node)
+        sub = self.rospy.Subscriber(self._topicName, self._msgtype, self.callback)
         self.rospy.spin()
-        print('end')
 
-    def lidarcallback(self, msg):
-        # print(len(msg.ranges))
-        angle_min = msg.angle_min
-        angle_max = msg.angle_max
-        angle_inc = msg.angle_increment
-        #print(angle_min, angle_max, angle_inc)
-        cnt = 0
-
-        rpdata = RPLidarLogType()
-        distance = list()
-        angle = list()
-        timestamp = 0
-
-        for data in msg.ranges:
-            range = data
-            if data == inf:
-                range = 0
-            rosdata = self.log.makeDatafromROS(math.degrees(angle_min+(angle_inc * cnt)), range*1000, cnt, get_now_timestamp())
-            distance.append(rosdata['distance'])
-            angle.append(rosdata['angle'])
-            timestamp = rosdata['timestamp']
-            cnt += 1
-
-        rpdata.distance = numpy.array(distance)
-        rpdata.angle = numpy.array(angle)
-        rpdata.timestamp = timestamp
-        rpdata.start_flag = True
-        senddata = {self.senstype:rpdata}
-        self.log.enQueueDataNew(senddata)
-        #print("callback",self.Signal.value)
+    def callback(self, msg):
         if self.Signal.value == 1:
             print("Set Signal 1")
             self.disconnectSignal()
+        else:
+            self.userCallBack(msg)
+
+    def sendData(self, data):
+        senddata = {self._senstype:data}
+        self._log.enQueueDataNew(senddata)
+
+    @abstractmethod
+    def userCallBack(self, msg):
+        pass
 
     def disconnect(self):
-        print("ROS Grappber disconnect", self.node)
+        print("ROS Grappber disconnect", self._node)
         self.Signal.value = 1
 
     def disconnectSignal(self):

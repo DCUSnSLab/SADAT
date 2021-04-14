@@ -90,8 +90,9 @@ class taskLoopPlay(QThread):
                     lq = self.sourcemanager.getActualSensors()
                     ldata.clear()
                     for key, data in lq.items():
-                        data = data.getRealtimeDataQueue().get()
-                        ldata.append(tuple((key, data)))
+                        if data.getRealtimeDataQueue().qsize() > 0:
+                            data = data.getRealtimeDataQueue().get()
+                            ldata.append(tuple((key, data)))
                     self.simlog.enQueuePlayData(ldata)
 
 

@@ -89,10 +89,13 @@ class SnSimulator:
         if self.currentPlayMode is Mode.MODE_LOG:
             #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
             self.procs[Mode.MODE_LOG].grabber.disconnect()
+            self.procs[Mode.MODE_LOG].camgrabber.disconnect()
             #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
 
     def cleanProcess(self):
+        print('clean process')
         if len(self.processes) != 0:
+            print('clean grabber')
             self.cleanGrabber(self.processes)
             # clean process start
 
