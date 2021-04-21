@@ -23,5 +23,7 @@ class GrabberROSCam(GrabberROS):
 
         self._initMsgType()
 
+        print(self.rospy.get_published_topics())
+
     def userCallBack(self, msg):
         self.sendData(msg)
