@@ -155,7 +155,7 @@ class MyApp(QMainWindow):
         self.items.setWidget(self.listWidget)
 
         self.items.setFloating(False)
-        #self.items.setFixedSize(600,600)
+        self.items.setFixedSize(500,275)
         #self.label.setFixedSize(600, 600)
 
         self.vwidth = self.items.frameGeometry().width()
@@ -307,16 +307,16 @@ class MyApp(QMainWindow):
     def eventFilter(self, obj: 'QObject', event: 'QEvent') -> bool:
         if event.type() == QEvent.MouseButtonPress:
             self.widgetResizeFlag = True
-            self.vwidth -= 30
+            #self.vwidth -= 30
         elif event.type() == QEvent.MouseButtonRelease:
             self.widgetResizeFlag = False
-            self.vwidth += 30
+            #self.vwidth += 30
 
         if self.widgetResizeFlag is True and obj is self.items and event.type() == QEvent.Resize:
-            self.vwidth = self.items.frameGeometry().width() - 30
+            #self.vwidth = self.items.frameGeometry().width() - 30
+            self.vwidth = self.items.frameGeometry().width()
             self.vheight = self.vwidth * 0.75
 
-            print(self.vwidth, self.vheight)
         return super().eventFilter(obj, event)
 
     def DecreaseButton(self):

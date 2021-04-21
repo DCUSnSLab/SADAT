@@ -1,5 +1,3 @@
-from cv_bridge import CvBridge
-
 from dadatype.dtype_camera import dtype_camera
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
@@ -7,10 +5,13 @@ import time
 import cv2
 import numpy as np
 
+from utils.importer import Importer
+
+
 class USBCAM(pSensor):
     def __init__(self, name):
         super().__init__(SensorCategory.Camera, name)
-        self.bridge = CvBridge()
+        self.bridge = Importer.importerLibrary('cv_bridge','CvBridge')
         self.prevTime = 0
         self.selecting_sub_image = "compressed"  # you can choose image type "compressed", "raw"
 

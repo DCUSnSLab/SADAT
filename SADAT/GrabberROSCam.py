@@ -1,5 +1,4 @@
 import datetime as pydatetime
-from cv_bridge import CvBridge
 from GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
 

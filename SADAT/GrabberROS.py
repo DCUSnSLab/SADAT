@@ -1,11 +1,6 @@
 from abc import *
 import datetime as pydatetime
-import numpy
-from numpy import inf
-import math
 from multiprocessing import Value
-from log.makeRPLidarLog import RPLidarLogType
-from sensor.SenAdptMgr import AttachedSensorName
 from utils.importer import Importer
 
 
