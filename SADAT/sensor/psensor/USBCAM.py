@@ -15,17 +15,10 @@ class USBCAM(pSensor):
         self.prevTime = 0
         self.selecting_sub_image = "compressed"  # you can choose image type "compressed", "raw"
 
-    def _doWorkDataInput(self, inputdata):
+    def _doWorkDataInput(self, msg):
         try:
-            if self.selecting_sub_image == "compressed":
-                # converting compressed image to opencv image
-                np_arr = np.fromstring(inputdata.data, np.uint8)
-                cv_image = cv2.imdecode(np_arr, cv2.COLOR_BGR2RGB)
-                #cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
-            elif self.selecting_sub_image == "raw":
-                cv_image = self.bridge.imgmsg_to_cv2(inputdata, "bgr8")
-
-            #cv_gray = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
+            cv_image = msg[0]
+            inputdata = msg[1]
 
             curTime = time.time()
             sec = curTime - self.prevTime

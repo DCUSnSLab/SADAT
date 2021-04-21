@@ -1,18 +1,13 @@
-import datetime as pydatetime
+import cv2
+import numpy as np
 from GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
-
-
-def get_now():
-    return pydatetime.datetime.now()
-
-def get_now_timestamp():
-    return get_now().timestamp()
-
+from utils.importer import Importer
 
 class GrabberROSCam(GrabberROS):
     def __init__(self, _log):
         super().__init__(_log, AttachedSensorName.USBCAM, 'usbCamGrabber')
+        self.bridge = Importer.importerLibrary('cv_bridge', 'CvBridge')
         self.selecting_sub_image = "compressed"  # you can choose image type "compressed", "raw"
 
         if self.selecting_sub_image == "compressed":
@@ -22,7 +17,16 @@ class GrabberROSCam(GrabberROS):
 
         self._initMsgType()
 
-        print(self.rospy.get_published_topics())
+    def userCallBack(self, inputdata):
+        try:
+            if self.selecting_sub_image == "compressed":
+                # converting compressed image to opencv image
+                np_arr = np.fromstring(inputdata.data, np.uint8)
+                cv_image = cv2.imdecode(np_arr, cv2.COLOR_BGR2RGB)
+                #cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+            elif self.selecting_sub_image == "raw":
+                cv_image = self.bridge.imgmsg_to_cv2(inputdata, "bgr8")
 
-    def userCallBack(self, msg):
-        self.sendData(msg)
+            self.sendData((cv_image,inputdata))
+        except Exception as e:
+            print(e)

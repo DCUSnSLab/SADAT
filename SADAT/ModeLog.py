@@ -1,6 +1,7 @@
 from Grabber import Grabber
 from GrabberROS import GrabberROS
 from GrabberROSCam import GrabberROSCam
+from GrabberROSManager import grabberROSManager
 from GrabberROSrplidar import GrabberROSrplidar
 from LogPlayDispatcher import LogPlayDispatcher
 from Logger import Logger
@@ -14,6 +15,7 @@ class ModeLog(Mode):
         self.grabber = None
         self.logger = Logger(self.log, simlog)
         self.dispatcher = LogPlayDispatcher(simlog, srcmgr)
+        self.rosmanger = grabberROSManager()
 
     def makeProcess(self):
         print("MakeProcess : Log Type :",self.currentMode)
