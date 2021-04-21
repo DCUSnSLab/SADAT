@@ -101,6 +101,7 @@ class MyApp(QMainWindow):
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
         self.DockingWidget()
+        self.DockingWidget2()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -129,6 +130,22 @@ class MyApp(QMainWindow):
         self.planviewmanager = planviewManager()
         self.initUI()
         self.dataview = DataView()
+
+    def DockingWidget2(self):
+        self.items=QDockWidget('Dockable',self)
+        self.listWidget=QGroupBox()
+        self.listWidget.setStyleSheet("color:black;"
+                                      "background-color:white;")
+        self.label = QLabel(self)
+        self.label.resize(200,100)
+        fInnerLayout = QVBoxLayout()
+        fInnerLayout.addWidget(self.label,100)
+        self.listWidget.setLayout(fInnerLayout)
+
+        self.items.setWidget(self.listWidget)
+        self.items.setFloating(False)
+        self.setCentralWidget(MyWG(self))
+        self.addDockWidget(Qt.RightDockWidgetArea,self.items)
 
     def DockingWidget(self):
         self.items=QDockWidget('Dockable',self)
@@ -396,6 +413,16 @@ class MyApp(QMainWindow):
         stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
+    def updateCameraImage(self, data):
+        #print(data)
+        for rkey, rval in data.items():
+            #print(rval.imagedata)
+            cv_image = rval.imagedata
+            h, w, ch = cv_image.shape
+            bytesPerLine = ch * w
+            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
+            p = convertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
+            self.label.setPixmap(QPixmap.fromImage(p))
 
     def closeEvent(self, event):
         self.simulator.cleanProcess()

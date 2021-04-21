@@ -2,10 +2,12 @@ import time
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 
+from dadatype.dtype_cate import DataGroup
 
 
 class taskPostPlan(QThread):
     signal = pyqtSignal([dict])
+    imageSignal = pyqtSignal([dict])
     working = True
 
     def __init__(self, parent=None, simlog=None, extModule=None):
@@ -21,13 +23,17 @@ class taskPostPlan(QThread):
 
         for rawdata in iter(lq.get, 'interrupt'):
             dset = dict()
+            imageset = dict()
+
             self.extModMngr.doTask(rawdata)
             for dskey, dsv in self.extModMngr.getDataset().items():
                 dset[dskey] = dsv
 
             for rwkey, val in self.extModMngr.getRawData().items():
-                dset[rwkey] = val
-
-
+                if val.dataGroup != DataGroup.GRP_DISPLAY:
+                    dset[rwkey] = val
+                else:
+                    imageset[rwkey] = val
             #send all data to show in planview
             self.signal.emit(dset)
+            self.imageSignal.emit(imageset)
