@@ -33,7 +33,7 @@ class USBCAM(pSensor):
             tstamp = float(inputdata.header.stamp.to_sec())
             #print(tstamp.to_sec(), type(tstamp))
             str = "FPS : %0.1f %0.3f" % (fps, tstamp)
-            cv2.putText(cv_image, str, (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0))
+            cv2.putText(cv_image, str, (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
             #print(str)
             h, w, ch = cv_image.shape
             #self.addRealtimeData(dtype_camera(cv_image))

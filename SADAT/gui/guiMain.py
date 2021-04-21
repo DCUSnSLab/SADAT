@@ -100,8 +100,6 @@ class MyApp(QMainWindow):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         print(self.hasMouseTracking())
-        self.DockingWidget()
-        self.DockingWidget2()
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -111,6 +109,11 @@ class MyApp(QMainWindow):
         self.pressY=0
         self.xp=0
         self.yp=0
+
+        #for Camera image
+        self.vwidth = 0
+        self.vheight = 0
+        self.widgetResizeFlag = False
 
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
@@ -128,22 +131,35 @@ class MyApp(QMainWindow):
         self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
+
+        self.DockingWidget()
+        self.DockingWidget2()
+        self.installEventFilter(self)
         self.initUI()
+
         self.dataview = DataView()
 
     def DockingWidget2(self):
         self.items=QDockWidget('Dockable',self)
+        self.items.installEventFilter(self)
         self.listWidget=QGroupBox()
         self.listWidget.setStyleSheet("color:black;"
                                       "background-color:white;")
         self.label = QLabel(self)
-        self.label.resize(200,100)
-        fInnerLayout = QVBoxLayout()
-        fInnerLayout.addWidget(self.label,100)
+        fInnerLayout = QHBoxLayout()
+        fInnerLayout.setContentsMargins(0,0,0,0)
+        fInnerLayout.setSpacing(0)
+        fInnerLayout.addWidget(self.label)
         self.listWidget.setLayout(fInnerLayout)
 
         self.items.setWidget(self.listWidget)
+
         self.items.setFloating(False)
+        #self.items.setFixedSize(600,600)
+        #self.label.setFixedSize(600, 600)
+
+        self.vwidth = self.items.frameGeometry().width()
+        self.vheight = self.vwidth * 0.75
         self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.RightDockWidgetArea,self.items)
 
@@ -288,6 +304,21 @@ class MyApp(QMainWindow):
         if e.key()==Qt.Key_Right:
             self.IncreaseButton()
 
+    def eventFilter(self, obj: 'QObject', event: 'QEvent') -> bool:
+        if event.type() == QEvent.MouseButtonPress:
+            self.widgetResizeFlag = True
+            self.vwidth -= 30
+        elif event.type() == QEvent.MouseButtonRelease:
+            self.widgetResizeFlag = False
+            self.vwidth += 30
+
+        if self.widgetResizeFlag is True and obj is self.items and event.type() == QEvent.Resize:
+            self.vwidth = self.items.frameGeometry().width() - 30
+            self.vheight = self.vwidth * 0.75
+
+            print(self.vwidth, self.vheight)
+        return super().eventFilter(obj, event)
+
     def DecreaseButton(self):
         self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
@@ -307,7 +338,7 @@ class MyApp(QMainWindow):
         for name, member in DataTypeCategory.__members__.items():
             self.combo.addItem(name)
             item = self.combo.model().item(name.index(name), 0)
-            item.setCheckState(Qt.Unchecked)
+            item.setCheckState(Qt.Checked)
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
@@ -421,7 +452,7 @@ class MyApp(QMainWindow):
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
             convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
-            p = convertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
+            p = convertToQtFormat.scaledToWidth(self.vwidth)
             self.label.setPixmap(QPixmap.fromImage(p))
 
     def closeEvent(self, event):
