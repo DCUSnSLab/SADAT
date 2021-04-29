@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import SnSimulator
+import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
@@ -17,6 +17,7 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from utils.sadatlogger import slog
 from views.planview_manager import planviewManager, guiInfo
 from views.DataView import DataView
 from dadatype.dtype_cate import DataTypeCategory
@@ -99,7 +100,7 @@ class MyApp(QMainWindow):
         self.statusbar=self.statusBar()
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
-        print(self.hasMouseTracking())
+        slog.DEBUG(self.hasMouseTracking())
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -128,7 +129,7 @@ class MyApp(QMainWindow):
         self.prevy = list()
 
         # init Simulator Manager
-        self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
+        self.simulator = SystemManager.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
 
@@ -209,7 +210,7 @@ class MyApp(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
-        self.setWindowTitle('SADAT')
+        self.setWindowTitle('Autonomous Driving Analysis Tool')
         #self.setStyleSheet("background-color: dimgray;")
         self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
@@ -460,6 +461,7 @@ class MyApp(QMainWindow):
         sys.exit()
 
 if __name__ == '__main__':
+    slog.init()
     app = QApplication(sys.argv)
     ex = MyApp()
     sys.exit(app.exec_())

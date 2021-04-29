@@ -5,6 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 
 from Dispatcher import Dispatcher
 from sensor.SenAdptMgr import AttachedSensorName
+from utils.sadatlogger import slog
 
 
 class LogPlayDispatcher(Dispatcher):
@@ -13,7 +14,7 @@ class LogPlayDispatcher(Dispatcher):
         super().__init__()
         self.Log = log
         self.sourcemanager = srcmgr
-        print("LogPlayDispatcher Init")
+        slog.DEBUG("-----LogPlayDispatcher Init-----")
         print(self.guiApp)
 
         self.testrawdata = []

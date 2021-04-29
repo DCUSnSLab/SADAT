@@ -3,6 +3,8 @@ import numpy as np
 from GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
 from utils.importer import Importer
+from utils.sadatlogger import slog
+
 
 class GrabberROSCam(GrabberROS):
     def __init__(self, _log):
@@ -26,7 +28,6 @@ class GrabberROSCam(GrabberROS):
                 #cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             elif self.selecting_sub_image == "raw":
                 cv_image = self.bridge.imgmsg_to_cv2(inputdata, "bgr8")
-
             self.sendData((cv_image,inputdata))
         except Exception as e:
             print(e)
