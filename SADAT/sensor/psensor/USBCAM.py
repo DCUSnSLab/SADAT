@@ -11,12 +11,18 @@ from utils.importer import Importer
 class USBCAM(pSensor):
     def __init__(self, name):
         super().__init__(SensorCategory.Camera, name)
-        self.bridge = Importer.importerLibrary('cv_bridge','CvBridge')
+        try:
+            self.bridge = Importer.importerLibrary('cv_bridge','CvBridge')
+        except:
+            self.bridge = None
+
         self.prevTime = 0
         self.selecting_sub_image = "compressed"  # you can choose image type "compressed", "raw"
 
     def _doWorkDataInput(self, msg):
         try:
+            if self.bridge is None:
+                pass
             cv_image = msg[0]
             inputdata = msg[1]
 

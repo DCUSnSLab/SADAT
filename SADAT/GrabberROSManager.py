@@ -8,5 +8,9 @@ from utils.importer import Importer
 
 class grabberROSManager:
     def __init__(self):
-        self.rospy = Importer.importerLibrary('rospy')
+        try:
+            self.rospy = Importer.importerLibrary('rospy')
+        except:
+            self.rospy = None
+
         print('rosmanager - ',self.rospy.get_published_topics())
