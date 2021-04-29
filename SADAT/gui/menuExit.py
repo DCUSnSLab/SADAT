@@ -12,4 +12,4 @@ class menuExit(QAction):
         self.setStatusTip('Exit application')
 
     def trig(self):
-        sys.exit()
+        self.prt.closeEvent(None)
