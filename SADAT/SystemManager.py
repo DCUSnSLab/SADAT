@@ -15,7 +15,7 @@ from task_post_plan import taskPostPlan
 from utils.sadatlogger import slog
 
 
-class SnSimulator:
+class SystemManager:
     processes = []
 
     def __init__(self, manager, gapp=None):
@@ -165,5 +165,5 @@ class SnSimulator:
 
 
 if __name__ == '__main__':
-    gm = SnSimulator(Manager())
+    gm = SystemManager(Manager())
     gm.StartManager()

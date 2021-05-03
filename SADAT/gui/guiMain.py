@@ -129,7 +129,7 @@ class MyApp(QMainWindow):
         self.prevy = list()
 
         # init Simulator Manager
-        self.simulator = SystemManager.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
+        self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
 

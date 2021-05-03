@@ -8,12 +8,15 @@ class slog(object):
         cls.mylogger = logging.getLogger('SADAT')
         cls.mylogger.setLevel(logging.DEBUG)
         stream_hander = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s(%(threadName)s) - %(levelname)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(name)s(%(processName)s-%(process)d) - %(levelname)s - %(message)s')
         stream_hander.setFormatter(formatter)
         cls.mylogger.addHandler(stream_hander)
 
     @classmethod
     def DEBUG(cls, message):
+        if cls.mylogger is None:
+            cls.init()
+            print('init mylogger')
         cls.mylogger.debug(message)
 
     @classmethod
