@@ -11,11 +11,10 @@ def get_now_timestamp():
     return get_now().timestamp()
 
 class GrabberROS(metaclass=ABCMeta):
-    def __init__(self, _log, senstype, nodename, topicname=None):
-        self._log = _log
+    def __init__(self, disp: 'LogPlayDispatcher', senstype, nodename, topicname=None):
         self._node = nodename
         self._senstype = senstype
-
+        self._dispatcher = disp
         self._initpass = True
         self.Signal = Value('i', 0)
 
@@ -57,7 +56,7 @@ class GrabberROS(metaclass=ABCMeta):
 
     def startGrab(self):
         print('start grab')
-        if self._log is not None and self._initpass is True:
+        if self._initpass is True:
             self.connect()
             self.doGrab()
             self.disconnect()
@@ -79,7 +78,7 @@ class GrabberROS(metaclass=ABCMeta):
 
     def sendData(self, data):
         senddata = {self._senstype:data}
-        self._log.enQueueDataNew(senddata)
+        self._dispatcher.logDispatch(senddata)
 
     @abstractmethod
     def userCallBack(self, msg):

@@ -7,8 +7,8 @@ from utils.sadatlogger import slog
 
 
 class GrabberROSCam(GrabberROS):
-    def __init__(self, _log):
-        super().__init__(_log, AttachedSensorName.USBCAM, 'usbCamGrabber')
+    def __init__(self, _dispatcher):
+        super().__init__(_dispatcher, AttachedSensorName.USBCAM, 'usbCamGrabber')
         self.bridge = Importer.importerLibrary('cv_bridge', 'CvBridge')
         self.selecting_sub_image = "compressed"  # you can choose image type "compressed", "raw"
 
