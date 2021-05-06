@@ -451,7 +451,7 @@ class MyApp(QMainWindow):
         #print(data)
         for rkey, rval in data.items():
             #print(rval.imagedata)
-            cv_image = cv2.imdecode(rval.imagedata, 1)
+            cv_image = rval.imagedata
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
             convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)

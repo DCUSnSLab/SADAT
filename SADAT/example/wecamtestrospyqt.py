@@ -38,7 +38,7 @@ class cvThread(QThread):
             elif self.selecting_sub_image == "raw":
                 cv_image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
             #cv_gray = cv2.cvtColor(cv_image, cv2.COLOR_RGB2GRAY)
-            siz = cv_image.nbytes
+            size = cv_image.nbytes
             curTime = time.time()
             sec = curTime - self.prevTime
             self.prevTime = curTime
