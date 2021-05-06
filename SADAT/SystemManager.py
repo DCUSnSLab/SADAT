@@ -12,9 +12,10 @@ from simMode import Mode
 
 from taskLoopPlay import taskLoopPlay
 from task_post_plan import taskPostPlan
+from utils.sadatlogger import slog
 
 
-class SnSimulator:
+class SystemManager:
     processes = []
 
     def __init__(self, manager, gapp=None):
@@ -46,11 +47,10 @@ class SnSimulator:
 
     def StartManager(self):
         # self.CommandMode()
-        print("exit")
+
         for p in self.processes:
             p.join()
 
-        print("end Process")
 
     def setAction(self, mode, logtype=None):
         if mode is Mode.MODE_SIM:
@@ -73,14 +73,14 @@ class SnSimulator:
         if mode is Mode.MODE_LOG and logtype is not None:
             proc.setLogType(logtype)
 
-        print("Start Process")
+        slog.DEBUG("Start Process")
         if proc is not None:
             # set Processes
             for pr in proc.getProcesses():
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
-                print("Start", p, p.is_alive())
+                #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
             #     time.sleep(0.01)
@@ -93,9 +93,9 @@ class SnSimulator:
             #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
 
     def cleanProcess(self):
-        print('clean process')
+        slog.DEBUG('clean process')
         if len(self.processes) != 0:
-            print('clean grabber')
+            slog.DEBUG('clean grabber')
             self.cleanGrabber(self.processes)
             # clean process start
 
@@ -117,6 +117,7 @@ class SnSimulator:
         self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
         self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        self.pvthread.infosignal.connect(self.guiApp.playbackstatus)
         self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
@@ -127,7 +128,7 @@ class SnSimulator:
         # init log process
         self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
-        print(self.procs)
+        slog.DEBUG(self.procs)
 
     def addProcess(self, procdata):
         if procdata.args is None:
@@ -165,5 +166,5 @@ class SnSimulator:
 
 
 if __name__ == '__main__':
-    gm = SnSimulator(Manager())
+    gm = SystemManager(Manager())
     gm.StartManager()

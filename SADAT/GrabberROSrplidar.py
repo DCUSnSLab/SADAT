@@ -15,8 +15,21 @@ def get_now_timestamp():
 
 
 class GrabberROSrplidar(GrabberROS):
-    def __init__(self, _log):
-        super().__init__(_log, AttachedSensorName.RPLidar2DA3, 'LidarGrabber', 'scan')
+    def __init__(self, disp):
+        super().__init__(disp, AttachedSensorName.RPLidar2DA3, 'LidarGrabber', 'scan')
+
+    def makeDatafromROS(self, angle, range, cnt, timestamp):
+        data = {}
+        if cnt == 0:
+            data['start_flag'] = True
+        else:
+            data['start_flag'] = False
+
+        data['quality'] = None
+        data['angle'] = angle
+        data['distance'] = range
+        data['timestamp'] = timestamp
+        return data
 
     def userCallBack(self, msg):
         # print(len(msg.ranges))
@@ -35,7 +48,7 @@ class GrabberROSrplidar(GrabberROS):
             range = data
             if data == inf:
                 range = 0
-            rosdata = self._log.makeDatafromROS(math.degrees(angle_min+(angle_inc * cnt)), range*1000, cnt, get_now_timestamp())
+            rosdata = self.makeDatafromROS(math.degrees(angle_min+(angle_inc * cnt)), range*1000, cnt, get_now_timestamp())
             distance.append(rosdata['distance'])
             angle.append(rosdata['angle'])
             timestamp = rosdata['timestamp']
@@ -45,4 +58,6 @@ class GrabberROSrplidar(GrabberROS):
         rpdata.angle = numpy.array(angle)
         rpdata.timestamp = timestamp
         rpdata.start_flag = True
+
+        #send to LogPlayDispatcher
         self.sendData(rpdata)

@@ -14,6 +14,7 @@ class playbackInfo():
         self.maxLength = 0
         self.currentIdx = 0
         self.setfps = 0
+        self.lidartimestamp = 0
 
 class taskLoopPlay(QThread):
     signal = pyqtSignal([playbackInfo])
@@ -22,6 +23,7 @@ class taskLoopPlay(QThread):
     PLAYMODE_PLAY = 2
     PLAYMODE_PAUSE = 3
     PLAYMODE_SETVALUE = 4
+    PLAYMODE_ETC = 5
 
     def __init__(self, parent=None, simlog=None, manager=None, srcmanager=None):
         super(taskLoopPlay, self).__init__(parent=parent)
@@ -93,7 +95,8 @@ class taskLoopPlay(QThread):
                         if data.getRealtimeDataQueue().qsize() > 0:
                             data = data.getRealtimeDataQueue().get()
                             ldata.append(tuple((key, data)))
-                    self.simlog.enQueuePlayData(ldata)
+                    if ldata != []:
+                        self.simlog.enQueuePlayData(ldata)
 
 
             #Sim Mode

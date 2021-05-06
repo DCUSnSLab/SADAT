@@ -34,11 +34,16 @@ class USBCAM(pSensor):
             #print(tstamp.to_sec(), type(tstamp))
             str = "FPS : %0.1f %0.3f" % (fps, tstamp)
             cv2.putText(cv_image, str, (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+            cv_image = cv2.resize(cv_image, dsize=(960,540), interpolation=cv2.INTER_CUBIC)
+
+            # encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+            # result,cv_image = cv2.imencode('.jpg',cv_image,encode_param)
+
             #print(str)
-            h, w, ch = cv_image.shape
+            #h, w, ch = cv_image.shape
             #self.addRealtimeData(dtype_camera(cv_image))
-            self.addRealtimeData(dtype_camera(cv_image))
-            bytesPerLine = ch * w
+            self.addRealtimeData(dtype_camera(cv_image, tstamp))
+            #bytesPerLine = ch * w
             # convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
             # p = convertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
             # self.signal.emit(convertToQtFormat)
