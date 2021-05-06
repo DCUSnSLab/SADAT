@@ -158,7 +158,7 @@ class MyApp(QMainWindow):
 
         self.items.setFloating(False)
         #self.items.setFixedSize(500,275)
-        self.items.setFixedSize(1024, 768)
+        self.items.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
 
         self.vwidth = self.items.frameGeometry().width()
