@@ -444,7 +444,11 @@ class MyApp(QMainWindow):
             self.gcontrol.getSlider().setValue(pbinfo.currentIdx)
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_SETVALUE:
             pass
-        stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
+
+        if pbinfo.mode != self.simulator.lpthread.PLAYMODE_ETC:
+            stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
+        else:
+            stxt = 'current idx - %s' % pbinfo.lidartimestamp # stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
     def updateCameraImage(self, data):

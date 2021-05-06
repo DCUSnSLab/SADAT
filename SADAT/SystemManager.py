@@ -117,6 +117,7 @@ class SystemManager:
         self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
         self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        self.pvthread.infosignal.connect(self.guiApp.playbackstatus)
         self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)

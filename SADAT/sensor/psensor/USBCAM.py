@@ -42,7 +42,7 @@ class USBCAM(pSensor):
             #print(str)
             #h, w, ch = cv_image.shape
             #self.addRealtimeData(dtype_camera(cv_image))
-            self.addRealtimeData(dtype_camera(cv_image))
+            self.addRealtimeData(dtype_camera(cv_image, tstamp))
             #bytesPerLine = ch * w
             # convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
             # p = convertToQtFormat.scaled(640, 480, Qt.KeepAspectRatio)
