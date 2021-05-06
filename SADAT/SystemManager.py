@@ -114,13 +114,15 @@ class SystemManager:
 
     def defineProcess(self):
         # init taskPostPlan thread
-        self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
-        self.pvthread.signal.connect(self.guiApp.changePosition)
-        self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
-        self.pvthread.start()
+        # self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
+        # self.pvthread.signal.connect(self.guiApp.changePosition)
+        # self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        # self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
         self.lpthread.signal.connect(self.guiApp.playbackstatus)
+        self.lpthread.dataSignal.connect(self.guiApp.changePosition)
+        self.lpthread.imageSignal.connect(self.guiApp.updateCameraImage)
         self.lpthread.setVelocity(60)
         self.lpthread.start()
 
