@@ -1,5 +1,6 @@
 import sys
 
+import cv2
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -450,7 +451,7 @@ class MyApp(QMainWindow):
         #print(data)
         for rkey, rval in data.items():
             #print(rval.imagedata)
-            cv_image = rval.imagedata
+            cv_image = cv2.imdecode(rval.imagedata, 1)
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
             convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
