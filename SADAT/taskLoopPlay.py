@@ -3,7 +3,6 @@ import time
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
 
-from dadatype.dtype_cate import DataGroup
 from sensor.SenAdptMgr import AttachedSensorName
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 
@@ -18,8 +17,6 @@ class playbackInfo():
 
 class taskLoopPlay(QThread):
     signal = pyqtSignal([playbackInfo])
-    dataSignal = pyqtSignal([dict])
-    imageSignal = pyqtSignal([dict])
     PLAYMODE_LOGPLAY = 0
     PLAYMODE_LOAD = 1
     PLAYMODE_PLAY = 2
@@ -92,18 +89,12 @@ class taskLoopPlay(QThread):
                 while True:
                     lq = self.sourcemanager.getActualSensors()
                     ldata.clear()
-                    dset = dict()
-                    imageset = dict()
-
                     for key, data in lq.items():
                         if data.getRealtimeDataQueue().qsize() > 0:
                             data = data.getRealtimeDataQueue().get()
-                            if data.dataGroup != DataGroup.GRP_DISPLAY:
-                                dset[key] = data
-                                self.dataSignal.emit(dset)
-                            else:
-                                imageset[key] = data
-                                self.imageSignal.emit(imageset)
+                            ldata.append(tuple((key, data)))
+                    if ldata != []:
+                        self.simlog.enQueuePlayData(ldata)
 
 
             #Sim Mode
