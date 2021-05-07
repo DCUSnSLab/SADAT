@@ -135,14 +135,14 @@ class MyApp(QMainWindow):
         self.planviewmanager = planviewManager()
 
         self.DockingWidget()
-        self.DockingWidget2()
+        self.CameraWidget()
         self.installEventFilter(self)
         self.initUI()
 
         self.dataview = DataView()
 
-    def DockingWidget2(self):
-        self.items=QDockWidget('Dockable',self)
+    def CameraWidget(self):
+        self.items=QDockWidget('Camera',self)
         self.items.installEventFilter(self)
         self.listWidget=QGroupBox()
         self.listWidget.setStyleSheet("color:black;"
@@ -258,6 +258,20 @@ class MyApp(QMainWindow):
         simmenu.addAction(menuSim('Play',self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
+        DockAction=QAction('DockWidget',self)
+        DockAction.setShortcut('Ctrl+D')
+        DockAction.setStatusTip('Show DockingWidget')
+        DockAction.triggered.connect(self.DockingWidget)
+
+        CameraAction=QAction('Camera',self)
+        CameraAction.setShortcut('Ctrl+C')
+        CameraAction.setStatusTip('Show Camera')
+        CameraAction.triggered.connect(self.CameraWidget)
+
+        widgetmenu = menubar.addMenu('&Tool Menu')
+        widgetmenu.addAction(DockAction)
+        widgetmenu.addAction(CameraAction)
+
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
         toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
@@ -282,7 +296,7 @@ class MyApp(QMainWindow):
 
         sbutton=QPushButton('Increase button')
         sbutton.setFixedWidth(50)
-        sbutton.setText("➡︎︎")
+        sbutton.setText("➡")
         sbutton.clicked.connect(self.IncreaseButton)
         self.toolbar.addWidget(sbutton)
 
