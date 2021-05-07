@@ -1,22 +1,24 @@
 import sys
 
+import cv2
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-import SnSimulator
+import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
-from gui.menuFiles import menuLoadSim, menuLogPlay
+from gui.menuFiles import menuLoadSim, menuLogPlay, menuLogPlayROS
 from gui.menuSim import menuSim
 
 from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from utils.sadatlogger import slog
 from views.planview_manager import planviewManager, guiInfo
 from views.DataView import DataView
 from dadatype.dtype_cate import DataTypeCategory
@@ -87,7 +89,6 @@ class MyWG(QWidget):
 
     '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
     def initUI(self):
-        self.pr.planviewmanager = planviewManager()
         p = self.palette()
         p.setColor(self.backgroundRole(), Qt.black)
         self.pr.setPalette(p)
@@ -100,8 +101,7 @@ class MyApp(QMainWindow):
         self.statusbar=self.statusBar()
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
-        print(self.hasMouseTracking())
-        self.DockingWidget()
+        slog.DEBUG(self.hasMouseTracking())
 
         #for Planview Size and Position
         self.panviewSize = 20       #화면에 출력되는 라이다 데이터
@@ -111,6 +111,11 @@ class MyApp(QMainWindow):
         self.pressY=0
         self.xp=0
         self.yp=0
+
+        #for Camera image
+        self.vwidth = 0
+        self.vheight = 0
+        self.widgetResizeFlag = False
 
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
@@ -125,11 +130,41 @@ class MyApp(QMainWindow):
         self.prevy = list()
 
         # init Simulator Manager
-        self.simulator = SnSimulator.SnSimulator(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
+        self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
+        self.planviewmanager = planviewManager()
 
+        self.DockingWidget()
+        self.DockingWidget2()
+        self.installEventFilter(self)
         self.initUI()
+
         self.dataview = DataView()
+
+    def DockingWidget2(self):
+        self.items=QDockWidget('Dockable',self)
+        self.items.installEventFilter(self)
+        self.listWidget=QGroupBox()
+        self.listWidget.setStyleSheet("color:black;"
+                                      "background-color:white;")
+        self.label = QLabel(self)
+        fInnerLayout = QHBoxLayout()
+        fInnerLayout.setContentsMargins(0,0,0,0)
+        fInnerLayout.setSpacing(0)
+        fInnerLayout.addWidget(self.label)
+        self.listWidget.setLayout(fInnerLayout)
+
+        self.items.setWidget(self.listWidget)
+
+        self.items.setFloating(False)
+        #self.items.setFixedSize(500,275)
+        self.items.setFixedSize(800, 450)
+        #self.label.setFixedSize(600, 600)
+
+        self.vwidth = self.items.frameGeometry().width()
+        self.vheight = self.vwidth * 0.75
+        self.setCentralWidget(MyWG(self))
+        self.addDockWidget(Qt.RightDockWidgetArea,self.items)
 
     def DockingWidget(self):
         self.items=QDockWidget('Dockable',self)
@@ -177,7 +212,7 @@ class MyApp(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
-        self.setWindowTitle('SADAT')
+        self.setWindowTitle('Autonomous Driving Analysis Tool')
         #self.setStyleSheet("background-color: dimgray;")
         self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
@@ -212,11 +247,11 @@ class MyApp(QMainWindow):
 
         #File Menu
         filemenu = menubar.addMenu('&File')
-        #filemenu.addAction(self.OnOpenDocument('Load log files..', self))
         filemenu.addAction(menuLoadSim('Load log files..', self))
-        #self.Open_Button.clicked.connect(self.OnOpenDocument3)₩
-        filemenu.addAction(menuLogPlay('Log Play',self))
-        #filemenu.addAction(QDockWidget.setVisible(True))
+        # Add LogPlay
+        logplaymenu = filemenu.addMenu('&Log Play')
+        logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
+        logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
         filemenu.addAction(menuExit('exit', self))
         #Simulation Menu
         simmenu = menubar.addMenu('&Simulation')
@@ -272,6 +307,21 @@ class MyApp(QMainWindow):
         if e.key()==Qt.Key_Right:
             self.IncreaseButton()
 
+    def eventFilter(self, obj: 'QObject', event: 'QEvent') -> bool:
+        if event.type() == QEvent.MouseButtonPress:
+            self.widgetResizeFlag = True
+            #self.vwidth -= 30
+        elif event.type() == QEvent.MouseButtonRelease:
+            self.widgetResizeFlag = False
+            #self.vwidth += 30
+
+        if self.widgetResizeFlag is True and obj is self.items and event.type() == QEvent.Resize:
+            #self.vwidth = self.items.frameGeometry().width() - 30
+            self.vwidth = self.items.frameGeometry().width()
+            self.vheight = self.vwidth * 0.75
+
+        return super().eventFilter(obj, event)
+
     def DecreaseButton(self):
         self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
@@ -291,7 +341,7 @@ class MyApp(QMainWindow):
         for name, member in DataTypeCategory.__members__.items():
             self.combo.addItem(name)
             item = self.combo.model().item(name.index(name), 0)
-            item.setCheckState(Qt.Unchecked)
+            item.setCheckState(Qt.Checked)
 
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
@@ -352,7 +402,7 @@ class MyApp(QMainWindow):
         for ikey, values in self.planviewmanager.getObjects():
             for idata in values:
                 if self.combo.item_checked(index=0):
-                    if ikey is AttachedSensorName.RPLidar2DVirtual:
+                    if ikey is AttachedSensorName.RPLidar2DVirtual or ikey is AttachedSensorName.RPLidar2DA3:
                         idata.setVisible(True)
                 if self.combo.item_checked(index=1):
                     if ikey is senarioBasicDataset.TRACK:
@@ -394,14 +444,30 @@ class MyApp(QMainWindow):
             self.gcontrol.getSlider().setValue(pbinfo.currentIdx)
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_SETVALUE:
             pass
-        stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
+
+        if pbinfo.mode != self.simulator.lpthread.PLAYMODE_ETC:
+            stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
+        else:
+            stxt = 'current idx - %s' % pbinfo.lidartimestamp # stxt는 tool 하단부에 나타나는 현재 index
         self.statusBar().showMessage(stxt)
         self.update()
+    def updateCameraImage(self, data):
+        #print(data)
+        for rkey, rval in data.items():
+            #print(rval.imagedata)
+            cv_image = rval.imagedata
+            h, w, ch = cv_image.shape
+            bytesPerLine = ch * w
+            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
+            p = convertToQtFormat.scaledToWidth(self.vwidth)
+            self.label.setPixmap(QPixmap.fromImage(p))
 
     def closeEvent(self, event):
+        self.simulator.cleanProcess()
         sys.exit()
 
 if __name__ == '__main__':
+    slog.init()
     app = QApplication(sys.argv)
     ex = MyApp()
     sys.exit(app.exec_())

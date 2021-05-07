@@ -1,5 +1,6 @@
 from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from sensor.SenAdptMgr import AttachedSensorName
 from views.viewpointcloud import viewPointCloud
 
 class guiInfo():
@@ -15,6 +16,8 @@ class planviewManager():
         self.objects = dict()
         self.guiinfo = None
 
+    #update data to display on planview
+    #All objects which are rawdata(DataTypeCategory) and externaldataset(ex. senarioBasicDataset) are updated and associated in 'objects' value in planviewmanager
     def updateview(self, inputs):
         for rkey, rval in inputs.items():
             ispc, value = self.__checkPointCloud(rval)

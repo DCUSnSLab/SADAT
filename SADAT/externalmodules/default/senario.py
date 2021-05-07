@@ -6,27 +6,26 @@ from externalmodules.extModule import extModule
 from externalmodules.ext_scheduler import extScheduler
 from enum import Enum
 
+from utils.sadatlogger import slog
+
+
 class senarioBasic(extScheduler):
     def __init__(self):
-        super().__init__()
-        print('init senario basic')
+        super().__init__('senario basic')
+        slog.DEBUG('-----init senario basic-----')
 
     def dataConstruction(self):
         self._initDataset(senarioBasicDataset.TRACK, list())
         self._initDataset(senarioBasicDataset.CAMTRACK, list()) #temporary
         self._initDataset(senarioBasicDataset.DELAYEDPOINTS, list())
 
-        self.sprint('data Construction loaded')
+        slog.DEBUG('-data Construction loaded')
         for key in self._dataset.keys():
-            self.sprint(key)
+            slog.DEBUG(key)
 
     def modConstruction(self):
         #self._addModules([delayedPoints(), trackerBasic()])
         self._addModules([trackerBasic()])
-        self.sprint('load Modules')
+        slog.DEBUG('-load Modules')
         for mod in self._modules:
-            self.sprint(mod.getName())
-
-
-    def sprint(self, val):
-        print('senarioBasic ====> ',val)
+            slog.DEBUG(self.name+mod.getName())

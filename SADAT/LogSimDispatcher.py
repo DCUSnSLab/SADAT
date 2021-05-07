@@ -1,11 +1,8 @@
-import math
-import json
-import time
-
 from Dispatcher import Dispatcher
 from log.makeRPLidarLog import makeRPLidarLog
 from sensor.SenAdptMgr import AttachedSensorName
 from sensor.SourceManager import SourceManager
+from utils.sadatlogger import slog
 
 
 class LogSimDispatcher(Dispatcher):
@@ -14,17 +11,15 @@ class LogSimDispatcher(Dispatcher):
         super().__init__()
         self.sourcemanager = srcmgr
         self.opensrc = opensrc
-        print("LogSimDispatcher Init")
-        print(self.guiApp)
+        slog.DEBUG("LogSimDispatcher Init")
 
     def dispatch(self):
         self.loadData()
         self.logDispatch()
         self.sendEvent()
-        print("end Process")
 
     def loadData(self):
-        print("lodata method called")
+        slog.DEBUG("-----lodata method called-----")
         if self.opensrc == "":
             self.opensrc = "../../Data/data_1.dat"
 
@@ -39,10 +34,10 @@ class LogSimDispatcher(Dispatcher):
                 val = self._rawdata[scate]
                 sensor = self.sourcemanager.AllSensors[scate]
                 sensor.doWork(val)
-        print("Data Load Finished")
+        slog.DEBUG("Data Load Finished")
 
     def sendEvent(self):
-        print("send Event")
+        slog.DEBUG("send Event")
         loadedsens = list()
         # send event to taskLoopPlay to wake up sim receive module
         for data in self._rawdata.keys():

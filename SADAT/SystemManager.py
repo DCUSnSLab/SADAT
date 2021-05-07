@@ -12,9 +12,10 @@ from simMode import Mode
 
 from taskLoopPlay import taskLoopPlay
 from task_post_plan import taskPostPlan
+from utils.sadatlogger import slog
 
 
-class SnSimulator:
+class SystemManager:
     processes = []
 
     def __init__(self, manager, gapp=None):
@@ -42,16 +43,16 @@ class SnSimulator:
         self.loadPlugin()
         self.defineProcess()
 
+        self.currentPlayMode = None
+
     def StartManager(self):
         # self.CommandMode()
-        print("exit")
+
         for p in self.processes:
             p.join()
 
-        print("end Process")
 
-    def setAction(self, mode):
-        #set mode change
+    def setAction(self, mode, logtype=None):
         if mode is Mode.MODE_SIM:
             self.lpthread.setSimMode()
         elif mode is Mode.MODE_LOG:
@@ -65,19 +66,37 @@ class SnSimulator:
         self.cleanProcess()
         proc = self.procs[mode]
 
+        # set mode change
+        self.currentPlayMode = mode
+
+        #set Log Type
+        if mode is Mode.MODE_LOG and logtype is not None:
+            proc.setLogType(logtype)
+
+        slog.DEBUG("Start Process")
         if proc is not None:
             # set Processes
             for pr in proc.getProcesses():
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
-                print("Start", p, p.is_alive())
+                #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
             #     time.sleep(0.01)
 
+    def cleanGrabber(self, procs=None):
+        if self.currentPlayMode is Mode.MODE_LOG:
+            #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
+            self.procs[Mode.MODE_LOG].grabber.disconnect()
+            self.procs[Mode.MODE_LOG].camgrabber.disconnect()
+            #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
+
     def cleanProcess(self):
+        slog.DEBUG('clean process')
         if len(self.processes) != 0:
+            slog.DEBUG('clean grabber')
+            self.cleanGrabber(self.processes)
             # clean process start
 
             # send interrupt message to logs
@@ -97,6 +116,8 @@ class SnSimulator:
         # init taskPostPlan thread
         self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         self.pvthread.signal.connect(self.guiApp.changePosition)
+        self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        self.pvthread.infosignal.connect(self.guiApp.playbackstatus)
         self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
@@ -105,9 +126,9 @@ class SnSimulator:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog)
+        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
-        print(self.procs)
+        slog.DEBUG(self.procs)
 
     def addProcess(self, procdata):
         if procdata.args is None:
@@ -145,5 +166,5 @@ class SnSimulator:
 
 
 if __name__ == '__main__':
-    gm = SnSimulator(Manager())
+    gm = SystemManager(Manager())
     gm.StartManager()

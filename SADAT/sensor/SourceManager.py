@@ -2,6 +2,7 @@ from enum import Enum
 from multiprocessing import Manager
 
 from sensor.Sensor import Sensor
+from utils.sadatlogger import slog
 
 
 class SourceManager:
@@ -13,7 +14,9 @@ class SourceManager:
         self.dataLoadQueue = manager.Queue()
 
     def init(self):
-        pass
+        self.ActualSensor.clear()
+        self.VirtualSensor.clear()
+        self.AllSensors.clear()
 
     def addActualSensor(self, sens, man):
         self.__addSensor(self.ActualSensor, sens, man)
@@ -28,6 +31,9 @@ class SourceManager:
             self.AllSensors[sensor.sensorName] = sensor
         else:
             print("error SensorName: %s already in SensorList" % sensor.sensorName)
+
+    def getActualSensors(self):
+        return self.ActualSensor
 
     def getSensorbyName(self, name:str):
         if name in self.AllSensors:
@@ -48,8 +54,6 @@ class SourceManager:
         return loadedSensor
 
     def printSensorList(self):
-        print("-"*30)
-        print("Adapted Sensor List")
+        slog.DEBUG("-----Adapted Sensor List-----")
         for sen in self.AllSensors.values():
-            print("stype: %s, scate : %s, sname : %s" % (str(sen.sensorType), str(sen.sensorCategory), sen.sensorName))
-        print("-" * 30)
+            slog.DEBUG("stype: %s, scate : %s, sname : %s" % (str(sen.sensorType), str(sen.sensorCategory), sen.sensorName))
