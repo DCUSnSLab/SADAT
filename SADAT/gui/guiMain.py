@@ -315,7 +315,7 @@ class MyApp(QMainWindow):
         self.camera.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
 
-        self.vwidth = self.items.frameGeometry().width()
+        self.vwidth = self.camera.frameGeometry().width()
         self.vheight = self.vwidth * 0.75
         self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.RightDockWidgetArea,self.camera)
