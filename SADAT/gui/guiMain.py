@@ -134,37 +134,118 @@ class MyApp(QMainWindow):
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
 
-        self.DockingWidget()
-        self.CameraWidget()
         self.installEventFilter(self)
         self.initUI()
 
         self.dataview = DataView()
 
-    def CameraWidget(self):
-        self.items=QDockWidget('Camera',self)
-        self.items.installEventFilter(self)
-        self.listWidget=QGroupBox()
-        self.listWidget.setStyleSheet("color:black;"
-                                      "background-color:white;")
-        self.label = QLabel(self)
-        fInnerLayout = QHBoxLayout()
-        fInnerLayout.setContentsMargins(0,0,0,0)
-        fInnerLayout.setSpacing(0)
-        fInnerLayout.addWidget(self.label)
-        self.listWidget.setLayout(fInnerLayout)
+    def initUI(self):
+        self.setWindowTitle('Autonomous Driving Analysis Tool')
+        #self.setStyleSheet("background-color: dimgray;")
+        self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
+        self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
+        self.statusBar()
+        self.statusBar().setStyleSheet("background-color : white")
+        self.initMenubar()
+        self.initToolbar()
+        self.ComboToolbar()
+        self.DockingWidget()
+        self.CameraWidget()
+        self.setStyleSheet("""QMenuBar {
+                         background-color: Gray;
+                         color: white;
+                        }
 
-        self.items.setWidget(self.listWidget)
+                     QMenuBar::item {
+                         background: Gray;
+                         color: white;
+                     }""")
 
-        self.items.setFloating(False)
-        #self.items.setFixedSize(500,275)
-        self.items.setFixedSize(800, 450)
-        #self.label.setFixedSize(600, 600)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+        self.modeChanger(GUI_GROUP.ALL, False)
 
-        self.vwidth = self.items.frameGeometry().width()
-        self.vheight = self.vwidth * 0.75
-        self.setCentralWidget(MyWG(self))
-        self.addDockWidget(Qt.RightDockWidgetArea,self.items)
+        self.setGeometry(300, 300, 1500, 1000)
+        self.show()
+
+    def initMenubar(self):
+        #create MenuBar
+        self.menubar = self.menuBar()
+        self.menubar.setNativeMenuBar(False)
+        self.statusBar()
+
+        #File Menu
+        filemenu = self.menubar.addMenu('&File')
+        filemenu.addAction(menuLoadSim('Load log files..', self))
+
+        # Add LogPlay
+        logplaymenu = filemenu.addMenu('&Log Play')
+        logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
+        logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
+        filemenu.addAction(menuExit('exit', self))
+
+        #Simulation Menu
+        simmenu = self.menubar.addMenu('&Simulation')
+        simmenu.addAction(menuSim('Play',self))
+        self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
+
+        #Widget Menu
+        DockAction = QAction('DockWidget', self)
+        DockAction.setStatusTip('Show DockingWidget')
+        DockAction.setShortcut('Ctrl+D')
+        DockAction.triggered.connect(self.show_DockingWidget)
+
+        CameraAction=QAction('Camera',self)
+        CameraAction.setShortcut('Ctrl+C')
+        CameraAction.setStatusTip('Show Camera')
+        CameraAction.triggered.connect(self.show_CameraWidget)
+
+        self.widgetmenu = self.menubar.addMenu('&Tool Menu')
+        self.widgetmenu.addAction(DockAction)
+        self.widgetmenu.addAction(CameraAction)
+
+    def initToolbar(self):
+        self.toolbar = self.addToolBar('Navigator')
+        toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
+        toolpause = toolbarPlay('Pause', self, self.simulator.PauseMode)            #중지
+        toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)         #재생
+        self.toolvel = toolbarEditor('10', self, self.simulator.setVelocity)
+        self.toolvel.setText(str(self.simulator.getVelocity()))
+        self.toolvel.setFixedWidth(50)
+
+        self.toolbar.addAction(toolplay)
+        self.toolbar.addAction(toolpause)
+        self.toolbar.addAction(toolresume)
+        self.toolbar.addWidget(self.toolvel)
+        #self.toolbar.setStyleSheet("color: white")
+
+        #step by step
+        fbutton=QPushButton('Decrease button')
+        fbutton.setFixedWidth(50)
+        fbutton.setText("⬅")
+        fbutton.clicked.connect(self.DecreaseButton)
+        self.toolbar.addWidget(fbutton)
+
+        sbutton=QPushButton('Increase button')
+        sbutton.setFixedWidth(50)
+        sbutton.setText("➡")
+        sbutton.clicked.connect(self.IncreaseButton)
+        self.toolbar.addWidget(sbutton)
+
+        #slider
+        slider = toolbarSlider(Qt.Horizontal, self)
+        slider.sliderMoved.connect(self.sliderMoved)
+        slider.sliderReleased.connect(self.sliderMoved)
+        self.toolbar.addWidget(slider)
+
+        self.gcontrol.addToolbar(toolplay, toolplay.text())
+        self.gcontrol.addToolbar(toolpause, toolpause.text())
+        self.gcontrol.addToolbar(toolresume, toolresume.text())
+        self.gcontrol.addToolbar(slider, 'logslider')
+        self.gcontrol.addSlider(slider)
+        self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
+        self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
     def DockingWidget(self):
         self.items=QDockWidget('Dockable',self)
@@ -211,109 +292,36 @@ class MyApp(QMainWindow):
         self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
-    def initUI(self):
-        self.setWindowTitle('Autonomous Driving Analysis Tool')
-        #self.setStyleSheet("background-color: dimgray;")
-        self.guiGroup[GUI_GROUP.LOGGING_MODE] = []
-        self.guiGroup[GUI_GROUP.LOGPLAY_MODE] = []
-        self.statusBar()
-        self.statusBar().setStyleSheet("background-color : white")
-        self.initMenubar()
-        self.initToolbar()
-        self.ComboToolbar()
-        self.setStyleSheet("""QMenuBar {
-                         background-color: Gray;
-                         color: white;
-                        }
+    def show_DockingWidget(self):
+        self.items.show()
 
-                     QMenuBar::item {
-                         background: Gray;
-                         color: white;
-                     }""")
+    def CameraWidget(self):
+        self.camera=QDockWidget('Camera',self)
+        self.camera.installEventFilter(self)
+        self.listWidget=QGroupBox()
+        self.listWidget.setStyleSheet("color:black;"
+                                      "background-color:white;")
+        self.label = QLabel(self)
+        fInnerLayout = QHBoxLayout()
+        fInnerLayout.setContentsMargins(0,0,0,0)
+        fInnerLayout.setSpacing(0)
+        fInnerLayout.addWidget(self.label)
+        self.listWidget.setLayout(fInnerLayout)
 
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        self.setPalette(p)
-        self.modeChanger(GUI_GROUP.ALL, False)
+        self.camera.setWidget(self.listWidget)
 
-        self.setGeometry(300, 300, 1500, 1000)
-        self.show()
+        self.camera.setFloating(False)
+        #self.items.setFixedSize(500,275)
+        self.camera.setFixedSize(800, 450)
+        #self.label.setFixedSize(600, 600)
 
-    def initMenubar(self):
-        #create MenuBar
-        menubar = self.menuBar()
-        menubar.setNativeMenuBar(False)
-        self.statusBar()
+        self.vwidth = self.items.frameGeometry().width()
+        self.vheight = self.vwidth * 0.75
+        self.setCentralWidget(MyWG(self))
+        self.addDockWidget(Qt.RightDockWidgetArea,self.camera)
 
-        #File Menu
-        filemenu = menubar.addMenu('&File')
-        filemenu.addAction(menuLoadSim('Load log files..', self))
-        # Add LogPlay
-        logplaymenu = filemenu.addMenu('&Log Play')
-        logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
-        logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
-        filemenu.addAction(menuExit('exit', self))
-        #Simulation Menu
-        simmenu = menubar.addMenu('&Simulation')
-        simmenu.addAction(menuSim('Play',self))
-        self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
-
-        DockAction=QAction('DockWidget',self)
-        DockAction.setShortcut('Ctrl+D')
-        DockAction.setStatusTip('Show DockingWidget')
-        DockAction.triggered.connect(self.DockingWidget)
-
-        CameraAction=QAction('Camera',self)
-        CameraAction.setShortcut('Ctrl+C')
-        CameraAction.setStatusTip('Show Camera')
-        CameraAction.triggered.connect(self.CameraWidget)
-
-        widgetmenu = menubar.addMenu('&Tool Menu')
-        widgetmenu.addAction(DockAction)
-        widgetmenu.addAction(CameraAction)
-
-    def initToolbar(self):
-        self.toolbar = self.addToolBar('Navigator')
-        toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
-        toolpause = toolbarPlay('Pause', self, self.simulator.PauseMode)            #중지
-        toolresume = toolbarPlay('Resume', self, self.simulator.ResumeMode)         #재생
-        self.toolvel = toolbarEditor('10', self, self.simulator.setVelocity)
-        self.toolvel.setText(str(self.simulator.getVelocity()))
-        self.toolvel.setFixedWidth(50)
-
-        self.toolbar.addAction(toolplay)
-        self.toolbar.addAction(toolpause)
-        self.toolbar.addAction(toolresume)
-        self.toolbar.addWidget(self.toolvel)
-        #self.toolbar.setStyleSheet("color: white")
-
-        #step by step
-        fbutton=QPushButton('Decrease button')
-        fbutton.setFixedWidth(50)
-        fbutton.setText("⬅")
-        fbutton.clicked.connect(self.DecreaseButton)
-        self.toolbar.addWidget(fbutton)
-
-        sbutton=QPushButton('Increase button')
-        sbutton.setFixedWidth(50)
-        sbutton.setText("➡")
-        sbutton.clicked.connect(self.IncreaseButton)
-        self.toolbar.addWidget(sbutton)
-
-
-        #slider
-        slider = toolbarSlider(Qt.Horizontal, self)
-        slider.sliderMoved.connect(self.sliderMoved)
-        slider.sliderReleased.connect(self.sliderMoved)
-        self.toolbar.addWidget(slider)
-
-        self.gcontrol.addToolbar(toolplay, toolplay.text())
-        self.gcontrol.addToolbar(toolpause, toolpause.text())
-        self.gcontrol.addToolbar(toolresume, toolresume.text())
-        self.gcontrol.addToolbar(slider, 'logslider')
-        self.gcontrol.addSlider(slider)
-        self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
-        self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
+    def show_CameraWidget(self):
+        self.camera.show()
 
     def keyPressEvent(self, e):
         if e.key()==Qt.Key_Left:
