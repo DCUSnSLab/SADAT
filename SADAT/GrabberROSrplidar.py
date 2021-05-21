@@ -16,7 +16,7 @@ def get_now_timestamp():
 
 class GrabberROSrplidar(GrabberROS):
     def __init__(self, disp):
-        super().__init__(disp, AttachedSensorName.RPLidar2DA3, 'LidarGrabber', 'scan')
+        super().__init__(disp, [AttachedSensorName.RPLidar2DA3], 'LidarGrabber', 'scan')
 
     def makeDatafromROS(self, angle, range, cnt, timestamp):
         data = {}
@@ -31,7 +31,8 @@ class GrabberROSrplidar(GrabberROS):
         data['timestamp'] = timestamp
         return data
 
-    def userCallBack(self, msg):
+    def userCallBack(self, msgs):
+        msg = msgs[0]
         # print(len(msg.ranges))
         angle_min = msg.angle_min
         angle_max = msg.angle_max

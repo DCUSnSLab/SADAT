@@ -11,17 +11,23 @@ def get_now_timestamp():
     return get_now().timestamp()
 
 class GrabberROS(metaclass=ABCMeta):
-    def __init__(self, disp: 'LogPlayDispatcher', senstype, nodename, topicname=None):
+    def __init__(self, disp: 'LogPlayDispatcher', senstype=list(), nodename=None, topicname=None):
         self._node = nodename
         self._senstype = senstype
+        self._rosTopic = dict()
         self._dispatcher = disp
         self._initpass = True
         self.Signal = Value('i', 0)
 
-        self._msgtype = None
+        self._msgtype = list()
+        print(topicname)
         if topicname != None:
-            self._topicName = '/'+topicname
-            print(self._topicName)
+            if isinstance(topicname, list) is True:
+                for tn in topicname:
+                    self._rosTopic['/'+tn] = None
+            else:
+                self._rosTopic['/'+topicname] = None
+
             self._initMsgType()
         else:
             self._initpass = False
@@ -32,17 +38,11 @@ class GrabberROS(metaclass=ABCMeta):
             checkinit = True
             # Import LaserScan
             self.rospy = Importer.importerLibrary('rospy')
-            if self._topicName == '/scan':
-                print('set msgtype')
-                self._msgtype = Importer.importerLibrary('sensor_msgs.msg','LaserScan')
-            elif self._topicName == '/usb_cam/image_raw/compressed':
-                self._msgtype = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
-            elif self._topicName == '/usb_cam/image_raw':
-                self._msgtype = Importer.importerLibrary('sensor_msgs.msg', 'Image')
-            else:
-                self._msgtype = None
-                checkinit = False
+            self.message_filters = Importer.importerLibrary('message_filters')
 
+            for tn in self._rosTopic.keys():
+                self._rosTopic[tn] = self.__getMsgType(tn)
+            print(self._rosTopic)
             if checkinit is True:
                 self._initpass = True
             else:
@@ -50,6 +50,20 @@ class GrabberROS(metaclass=ABCMeta):
         except Exception as e:
             print("Exception",e)
             self._initpass = False
+
+    def __getMsgType(self, topicname):
+        msgt = None
+        if topicname == '/scan':
+            print('set msgtype')
+            msgt = Importer.importerLibrary('sensor_msgs.msg', 'LaserScan')
+        elif topicname == '/usb_cam/image_raw/compressed':
+            msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
+        elif topicname == '/usb_cam/image_raw':
+            msgt = Importer.importerLibrary('sensor_msgs.msg', 'Image')
+        else:
+            msgt = None
+
+        return msgt
 
     def connect(self):
         pass
@@ -66,22 +80,34 @@ class GrabberROS(metaclass=ABCMeta):
     def doGrab(self):
         print('init ROS Node -',self._node)
         self.rospy.init_node(self._node)
-        sub = self.rospy.Subscriber(self._topicName, self._msgtype, self.callback)
+        sub = list()
+        if len(self._senstype) == 1:
+            for key, value in self._rosTopic.items():
+                sub.append(self.rospy.Subscriber(key, value, self.callback))
+        else:
+            for key, value in self._rosTopic.items():
+                sub.append(self.message_filters.Subscriber(key, value))
+
+            ts = self.message_filters.ApproximateTimeSynchronizer(sub, 10, 0.1, allow_headerless=True)
+            ts.registerCallback(self.callback)
         self.rospy.spin()
 
-    def callback(self, msg):
+    def callback(self, *msgs):
         if self.Signal.value == 1:
             print("Set Signal 1")
             self.disconnectSignal()
         else:
-            self.userCallBack(msg)
+            self.userCallBack(msgs)
 
-    def sendData(self, data):
-        senddata = {self._senstype:data}
+    def sendData(self, data, senstype: 'AttachedSensorName'=None):
+        if senstype is None:
+            senstype = self._senstype[0]
+
+        senddata = {senstype: data}
         self._dispatcher.logDispatch(senddata)
 
     @abstractmethod
-    def userCallBack(self, msg):
+    def userCallBack(self, msgs):
         pass
 
     def disconnect(self):

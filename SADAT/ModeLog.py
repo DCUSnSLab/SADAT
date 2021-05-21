@@ -1,6 +1,7 @@
 from Grabber import Grabber
 from GrabberROS import GrabberROS
 from GrabberROSCam import GrabberROSCam
+from GrabberROSSync import GrabberROSSync
 from GrabberROSrplidar import GrabberROSrplidar
 from LogPlayDispatcher import LogPlayDispatcher
 from Logger import Logger
@@ -23,8 +24,10 @@ class ModeLog(Mode):
         else:
             self.grabber = GrabberROSrplidar(self.dispatcher)
             self.camgrabber = GrabberROSCam(self.dispatcher)
+            #self.syncgrabber = GrabberROSSync(self.dispatcher)
             self.addProcess("ROS Grabber", self.grabber.startGrab, None)
             self.addProcess("ROS Grabber Cam", self.camgrabber.startGrab, None)
+            #self.addProcess("ROS Grabber Sync", self.syncgrabber.startGrab, None)
 
         self.addProcess("Logger", self.logger.LogWorker, None)
         #self.addProcess("LogDispatcher", self.dispatcher.dispatch, None)
