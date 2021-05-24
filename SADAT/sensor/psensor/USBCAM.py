@@ -32,9 +32,10 @@ class USBCAM(pSensor):
             fps = 1 / (sec)
             tstamp = float(inputdata.header.stamp.to_sec())
             #print(tstamp.to_sec(), type(tstamp))
-            str = "FPS : %0.1f %0.3f" % (fps, tstamp)
+            h, w, ch = cv_image.shape
+            str = "FPS : %0.1f %0.3f, res : %d %d" % (fps, tstamp, w, h)
             cv2.putText(cv_image, str, (0, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-            cv_image = cv2.resize(cv_image, dsize=(960,540), interpolation=cv2.INTER_CUBIC)
+            #cv_image = cv2.resize(cv_image, dsize=(960,540), interpolation=cv2.INTER_CUBIC)
 
             # encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
             # result,cv_image = cv2.imencode('.jpg',cv_image,encode_param)
