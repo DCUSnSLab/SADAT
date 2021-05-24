@@ -1,8 +1,13 @@
+import time
+
+from PyQt5.QtCore import QTimer, pyqtSlot
+from PyQt5.QtWidgets import QWidget, QApplication, QHBoxLayout
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph.opengl as gl
 import pyqtgraph as pg
 import OpenGL.GL as ogl
 import numpy as np
+
 
 class CustomTextItem(gl.GLGraphicsItem.GLGraphicsItem):
     def __init__(self, X, Y, Z, text):
@@ -103,34 +108,66 @@ class Custom3DAxis(gl.GLAxisItem):
         ogl.glVertex3f(x, 0, 0)
         ogl.glEnd()
 
+class mainclass(QWidget):
+    def __init__(self):
+        super().__init__()
+        hbox = QHBoxLayout()
+        self.fig1 = gl.GLViewWidget()
+        #self.background_color = self.app.palette().color(QtGui.QPalette.Background)
+        self.fig1.setBackgroundColor((0, 0, 0))
+        self.fig1.opts['distance'] = 100
+        hbox.addWidget(self.fig1)
+        self.setLayout(hbox)
 
-app = QtGui.QApplication([])
-fig1 = gl.GLViewWidget()
-background_color = app.palette().color(QtGui.QPalette.Background)
-fig1.setBackgroundColor(background_color)
+        self.mytimer = QTimer()
+        self.mytimer.start(100)
+        self.mytimer.timeout.connect(self.draw_graph)
+        self.draw_graph()
+        self.setGeometry(300,100,800,500)
+        self.show()
+        # n = 10
+        # y = np.linspace(-10, 10, n)
+        # x = np.linspace(-10, 10, 100)
+        # for i in range(n):
+        #     yi = np.array([y[i]] * 100)
+        #     d = (x ** 2 + yi ** 2) ** 0.5
+        #     z = 10 * np.cos(d) / (d + 1)
+        #     pts = np.vstack([x, yi, z]).transpose()
+        #     # print(pts)
+        #     # plt = gl.GLLinePlotItem(pos=pts, color=pg.glColor((i,n*1.3)), width=(i+1)/10., antialias=True)
+        #     plt = gl.GLScatterPlotItem(pos=pts, color=pg.glColor((255, 0, 0, 255)), size=1, pxMode=False)
+        #     # fig1.addItem(plt)
+        #     # time.sleep(0.1)
 
-# n = 51
-# y = np.linspace(-10,10,n)
-# x = np.linspace(-10,10,100)
-# for i in range(n):
-#     yi = np.array([y[i]]*100)
-#     d = (x**2 + yi**2)**0.5
-#     z = 10 * np.cos(d) / (d+1)
-#     pts = np.vstack([x,yi,z]).transpose()
-#     plt = gl.GLLinePlotItem(pos=pts, color=pg.glColor((i,n*1.3)), width=(i+1)/10., antialias=True)
-#     #plt = gl.GLScatterPlotItem(pos=pts, color=pg.glColor((i, n * 1.3)), size=5, pxMode=True)
-#     fig1.addItem(plt)
+        #print(pos)
+    @pyqtSlot()
+    def draw_graph(self):
+        self.fig1.clear()
+        pts = [[1.0, 1.0, 0.0], [10.0, 10.0, 10.0], [1000, 10, 10]]
+        pts = np.random.random(size=(3, 3))
+        pts *= [10, -10, 0]
+        color = [pg.glColor((255, 0, 0, 255)), pg.glColor((0, 255, 0, 255)), pg.glColor((0, 0, 255, 255))]
+        pts = np.array(pts)
+        color = np.array(color)
+        #print(pts)
+        #print(color)
+        gv = gl.GLGridItem()
+        gv.setSize(100,100,100)
+        self.fig1.addItem(gv)
+        plt = gl.GLScatterPlotItem(pos=pts, color=color, size=1, pxMode=False)
+        self.fig1.addItem(plt)
 
-pos = np.random.random(size=(512 * 256, 3))
-pos *= [10, -10, 10]
-d2 = (pos ** 2).sum(axis=1) ** 0.5
-pos[:, 2] = d2
-color = [1, 0, 0, 0.5]
-size = 5
-print(pos)
-sp = gl.GLScatterPlotItem(pos=pos, color = pg.glColor((0,3)), size=5, pxMode=False)
-sp.translate(-127.5, -127.5, -127.5)
-fig1.addItem(sp)
+
+
+# pos = np.random.random(size=(512 * 256, 3))
+# # pos *= [10, -10, 10]
+# # d2 = (pos ** 2).sum(axis=1) ** 0.5
+# # pos[:, 2] = d2
+# color = [1, 1, 1, 1]
+# size = 5
+# sp = gl.GLScatterPlotItem(pos=pos, color=color, size=5, pxMode=False)
+# sp.translate(-127.5, -127.5, -127.5)
+# fig1.addItem(sp)
 
 # axis = Custom3DAxis(fig1, color=(0.2,0.2,0.2,.6))
 # axis.setSize(x=12, y=12, z=12)
@@ -139,11 +176,13 @@ fig1.addItem(sp)
 # # Add axes tick values
 # axis.add_tick_values(xticks=[0,4,8,12], yticks=[0,6,12], zticks=[0,3,6,9,12])
 # fig1.addItem(axis)
-fig1.opts['distance'] = 40
 
-fig1.show()
+
 
 if __name__ == '__main__':
     import sys
-    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        QtGui.QApplication.instance().exec_()
+    app = QApplication(sys.argv)
+    ex = mainclass()
+    sys.exit(app.exec_())
+    #if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        #QtGui.QApplication.instance().exec_()
