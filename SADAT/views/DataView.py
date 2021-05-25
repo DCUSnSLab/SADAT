@@ -1,7 +1,7 @@
 class DataView:
     def __init__(self, rawdata=None):
         self.rawdata = rawdata
-        self.isVisible = False
+        self.isVisible = True
         self.viewType = None
 
         self.guiinfo = None
@@ -28,13 +28,21 @@ class DataView:
     def _updatePlanviewSub(self):
         pass
 
-    def draw(self, qp,ikey):
+    def draw(self, ikey, gl=None, qp=None):
         if self.isVisible:
-            for tdata in self.pos_xy:
-                xp=int(tdata[0])
-                yp=int(tdata[1])
-                self.drawIndividual(qp,xp,yp,ikey)
+            if gl is not None:
+                print(type(self.rawdata.getPoints()))
+                return None
+                #self.drawPyqtGraph()
+            else:
+                for tdata in self.pos_xy:
+                    xp=int(tdata[0])
+                    yp=int(tdata[1])
+                    self.drawIndividual(qp,xp,yp,ikey)
 
+
+    def drawPyqtGraph(self, pos, ikey, gl):
+        pass
 
     def drawIndividual(self,qp,xp,yp,ikey):
         pass

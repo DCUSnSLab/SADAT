@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 
 import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from gui.planview import planView
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -134,6 +135,8 @@ class MyApp(QMainWindow):
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
 
+        #init planview widget
+        self.pvWidget = planView(self.planviewmanager)
         self.DockingWidget()
         self.DockingWidget2()
         self.installEventFilter(self)
@@ -156,14 +159,14 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
 
-        self.items.setFloating(False)
+        self.items.setFloating(True)
+        self.items.setGeometry(1200,300,800,450)
         #self.items.setFixedSize(500,275)
         self.items.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
-
         self.vwidth = self.items.frameGeometry().width()
         self.vheight = self.vwidth * 0.75
-        self.setCentralWidget(MyWG(self))
+        #self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.RightDockWidgetArea,self.items)
 
     def DockingWidget(self):
@@ -208,7 +211,7 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
         self.items.setFloating(False)
-        self.setCentralWidget(MyWG(self))
+        #self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
@@ -221,7 +224,9 @@ class MyApp(QMainWindow):
         self.initMenubar()
         self.initToolbar()
         self.ComboToolbar()
-        self.setStyleSheet("""QMenuBar {
+        self.setCentralWidget(self.pvWidget)
+        self.setStyleSheet("""QMenuBar {        self.draw()
+
                          background-color: Gray;
                          color: white;
                         }
@@ -351,6 +356,7 @@ class MyApp(QMainWindow):
         qp.begin(self)
         self.draw(qp)
         qp.end()
+        #self.pvWidget.draw()
 
     #event
     def wheelEvent(self, e):            #whellEvent 함수, 마우스 휠을 조정해 panview 사이즈 조정 가능
@@ -393,7 +399,7 @@ class MyApp(QMainWindow):
         self.updatePosition()
 
     #qp를 넘겨주어야 함
-    def draw(self, qp):
+    def draw(self,qp):
         #draw paint
         self.xp= self.relx
         self.yp=self.rely
@@ -407,7 +413,7 @@ class MyApp(QMainWindow):
                 if self.combo.item_checked(index=1):
                     if ikey is senarioBasicDataset.TRACK:
                         idata.setVisible(True)
-                idata.draw(qp,ikey)
+                idata.draw(ikey, gl=None, qp=qp)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -430,7 +436,11 @@ class MyApp(QMainWindow):
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
-        self.update()
+        #play with pyqt painter
+        #self.update()
+
+        #play with opengl
+        self.pvWidget.draw()
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
