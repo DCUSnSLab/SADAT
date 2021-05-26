@@ -9,7 +9,7 @@ class RPLidar2DA3(pSensor):
 
     def _doWorkDataInput(self, inputdata):
         tempX, tempY = self._inputdataArray(inputdata)
-        X_Y = np.array([(tempX[i], tempY[i]) for i in range(len(tempX))])
+        X_Y = np.array([(tempX[i], tempY[i], 0) for i in range(len(tempX))], dtype=np.float32)
         lgrp = grp_rplidar(X_Y, inputdata.distance, inputdata.angle, inputdata.timestamp, inputdata.start_flag)
         if len(lgrp.getPoints()) == 0:
             print('inSensor - ', lgrp.getPoints())

@@ -1,7 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
+from PyQt5 import QtGui
 import pyqtgraph.opengl as gl
 import pyqtgraph as pg
 import numpy as np
+from pyqtgraph.opengl import GLScatterPlotItem, GLMeshItem
+
+from dadatype.dtype_cate import DataTypeCategory
 
 
 class planView(QWidget):
@@ -10,26 +14,44 @@ class planView(QWidget):
         self.cnt = 0
         #set planview manager
         self.pvmanager = planviewmanager
-
+        #view item list
+        self.itemlist = dict()
         hbox = QHBoxLayout()
         self.glwidget = gl.GLViewWidget()
         self.glwidget.setBackgroundColor((0,0,0))
         self.glwidget.opts['distance'] = 100
         hbox.addWidget(self.glwidget)
         self.setLayout(hbox)
+
+        gv = gl.GLGridItem()
+        gv.setSize(size=QtGui.QVector3D(300,300,1))
+        gv.setSpacing(10,10,0)
+        self.glwidget.addItem(gv)
+
         self.draw()
 
     def draw(self):
-        print('draw planview',self.cnt)
-        self.cnt+=1
         for ikey, values in self.pvmanager.getObjects():
-            for idata in values:
-                # if self.combo.item_checked(index=0):
-                #         idata.setVisible(True)
-                item = idata.draw(ikey, gl)
-                if item is not None:
-                    self.glwidget.addItem(item)
+            self.addItems(ikey, values)
+            for i, idata in enumerate(values):
+                pos, color = idata.draw(ikey, True)
+                self.itemlist[ikey][i].setData(pos=pos, color=color)
 
+    def addItems(self, key, values):
+        if (key in self.itemlist) is False:
+            self.itemlist[key] = list()
+            il = self.itemlist[key]
+            for item in values:
+                it = self.applyGLObject(item)
+                il.append(it)
+                self.glwidget.addItem(it)
+            #self.itemlist.append(key)
+
+    def applyGLObject(self, dataview):
+        if dataview.viewType == DataTypeCategory.POINT_CLOUD:
+            return GLScatterPlotItem(size=0.25, pxMode=False)
+        else:
+            return None
     # def draw(self):
     #     self.glwidget.clear()
     #     ts = [[1.0, 1.0, 0.0], [10.0, 10.0, 10.0], [1000, 10, 10]]

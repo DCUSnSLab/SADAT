@@ -154,7 +154,7 @@ class mainclass(QWidget):
         gv = gl.GLGridItem()
         gv.setSize(100,100,100)
         self.fig1.addItem(gv)
-        plt = gl.GLScatterPlotItem(pos=pts, color=color, size=1, pxMode=False)
+        plt = gl.GLScatterPlotItem(pos=pts, color=color, size=0.1, pxMode=False)
         self.fig1.addItem(plt)
 
 

@@ -21,7 +21,6 @@ from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from utils.sadatlogger import slog
 from views.planview_manager import planviewManager, guiInfo
-from views.DataView import DataView
 from dadatype.dtype_cate import DataTypeCategory
 
 '''GUI 그룹'''
@@ -142,7 +141,6 @@ class MyApp(QMainWindow):
         self.installEventFilter(self)
         self.initUI()
 
-        self.dataview = DataView()
 
     def DockingWidget2(self):
         self.items=QDockWidget('Dockable',self)
@@ -352,10 +350,11 @@ class MyApp(QMainWindow):
         self.toolbar.addWidget(self.combo)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
-        qp = QPainter()
-        qp.begin(self)
-        self.draw(qp)
-        qp.end()
+        pass
+        # qp = QPainter()
+        # qp.begin(self)
+        # self.draw(qp)
+        # qp.end()
         #self.pvWidget.draw()
 
     #event
@@ -457,9 +456,7 @@ class MyApp(QMainWindow):
 
         if pbinfo.mode != self.simulator.lpthread.PLAYMODE_ETC:
             stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
-        else:
-            stxt = 'current idx - %s' % pbinfo.lidartimestamp # stxt는 tool 하단부에 나타나는 현재 index
-        self.statusBar().showMessage(stxt)
+            self.statusBar().showMessage(stxt)
         self.update()
     def updateCameraImage(self, data):
         #print(data)
