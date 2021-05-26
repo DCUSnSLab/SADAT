@@ -1,5 +1,6 @@
 import sys
 
+import vispy.scene
 import cv2
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
