@@ -239,8 +239,10 @@ class MyApp(QMainWindow):
         p.setColor(self.backgroundRole(), Qt.black)
         self.setPalette(p)
         self.modeChanger(GUI_GROUP.ALL, False)
-
+        display_monitor = 0
+        monitor = QDesktopWidget().screenGeometry(display_monitor)
         self.setGeometry(300, 300, 1500, 1000)
+        self.move(monitor.left()+300, monitor.top()+300)
         self.show()
 
     def initMenubar(self):

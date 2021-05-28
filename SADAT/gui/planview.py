@@ -20,8 +20,8 @@ class planView(QWidget):
         self.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True)
         self.view = self.canvas.central_widget.add_view()
         axis = visuals.XYZAxis(parent=self.view.scene)
-        grid1 = visuals.GridLines(parent=self.view.scene)
-        self.view.camera = TurntableCamera(fov=0.0, elevation=90.0, azimuth=0.0, distance=40)
+        grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
+        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=0.0, distance=500, translate_speed=100.0)
         hbox.addWidget(self.canvas.native)
         self.setLayout(hbox)
 
@@ -33,7 +33,7 @@ class planView(QWidget):
             self.addItems(ikey, values)
             for i, idata in enumerate(values):
                 pos, color = idata.draw(ikey, True)
-                self.itemlist[ikey][i].set_data(pos=pos, edge_color=None, face_color=color, size=3)
+                self.itemlist[ikey][i].set_data(pos=pos, edge_color=None, face_color=color, size=5)
 
     def addItems(self, key, values):
         if (key in self.itemlist) is False:
