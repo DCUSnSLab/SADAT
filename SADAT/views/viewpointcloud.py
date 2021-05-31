@@ -59,7 +59,7 @@ class viewPointCloud(DataView):
     def drawIndividual(self,qp,xp,yp,ikey):
         qp.drawEllipse(xp,yp,6,6)
 
-    def drawPyqtGraph(self, pos, ikey):
+    def draw3DVisual(self, pos, ikey):
         color = [pg.glColor((0, 0, 0, 0)) for i in range(len(pos))]
         color = np.array(color, dtype=np.float32)
         npos = list()

@@ -30,24 +30,31 @@ class planView(QWidget):
 
     def draw(self):
         for ikey, values in self.pvmanager.getObjects():
-            self.addItems(ikey, values)
+            self.updateItems(ikey, values)
             for i, idata in enumerate(values):
                 pos, color = idata.draw(ikey, True)
-                self.itemlist[ikey][i].set_data(pos=pos, edge_color=None, face_color=color, size=5)
+                self.itemlist[ikey][idata.rawid].set_data(pos=pos, face_color=color, size=5)
 
-    def addItems(self, key, values):
+    def updateItems(self, key, values):
         if (key in self.itemlist) is False:
-            self.itemlist[key] = list()
+            self.itemlist[key] = dict()
             il = self.itemlist[key]
-            for item in values:
-                it = self.applyGLObject(item)
-                il.append(it)
+            for i, item in enumerate(values):
+                it, id = self.applyGLObject(item)
+                il[id] = it
                 self.view.add(it)
+        #execept pointcloud, all data need to be updated.
+        #else:
+        #   position update, delete objects which are disappeared
+        #case 1: delete all items -. add new visual object(cube, line and so on)
+        #case 2: ??????
             #self.itemlist.append(key)
 
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            return visuals.Markers()
+            return visuals.Markers(edge_color=None, size=3), dataview.rawid
+        elif dataview.viewType == DataTypeCategory.TRACK:
+            return visuals.Cube(color=(0.5, 0.5, 1, 0), edge_color='black'), dataview.rawid
         else:
             return None
 

@@ -3,10 +3,11 @@ from dadatype.dtype_cate import DataTypeCategory
 
 
 class dtype_tracker(DataWrapper):
-    def __init__(self, id, minX, maxX, minY, maxY, posx, posy, subX, subY, distance, color = "#ffffff"):
+    def __init__(self, id, minX, maxX, minY, maxY, posx, posy, posz, subX, subY, distance, color = "#ffffff"):
         super().__init__(id=id, dtypecate=DataTypeCategory.TRACK)
         self.posx = posx
         self.posy = posy
+        self.posz = posz
 
         self.ref_point = 0
 
