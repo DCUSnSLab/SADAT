@@ -15,6 +15,7 @@ class Velodyne3D(pSensor):
         ros_numpy = Importer.importerLibrary('ros_numpy')
         pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
         #print(inputdata)
+        field_names = [f.name for f in inputdata.fields]
         #print(field_names)
         pc = ros_numpy.numpify(inputdata)
         # datasize = 5000
@@ -22,10 +23,11 @@ class Velodyne3D(pSensor):
         # points[:datasize, 0] = pc['x'][:datasize]
         # points[:datasize, 1] = pc['y'][:datasize]
         # points[:datasize, 2] = pc['z'][:datasize]
-        points = np.zeros((pc.shape[0], 3))
+        points = np.zeros((pc.shape[0], 4))
         points[:, 0] = pc['x']
         points[:, 1] = pc['y']
         points[:, 2] = pc['z']
+        points[:, 3] = pc['intensity']
         #print(len(points))
         # print(pc[0])
         # print(points[0])
@@ -37,5 +39,5 @@ class Velodyne3D(pSensor):
         sec = curTime - self.prevTime
         self.prevTime = curTime
         fps = 1 / (sec)
-        print(len(pc), 'fps - ', fps)
+        #print(len(pc), 'fps - ', fps)
         self.addRealtimeData(lgrp)

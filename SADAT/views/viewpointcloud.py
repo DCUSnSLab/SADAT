@@ -1,3 +1,5 @@
+import math
+
 from pyqtgraph.opengl import GLScatterPlotItem
 
 from views.DataView import DataView
@@ -59,8 +61,22 @@ class viewPointCloud(DataView):
     def drawIndividual(self,qp,xp,yp,ikey):
         qp.drawEllipse(xp,yp,6,6)
 
+    def num_to_rgb(self, val, max_val=141):
+        i = (val * 255 / max_val);
+        r = math.sin(0.024 * i + 0) * 127 + 128
+        g = math.sin(0.024 * i + 2) * 127 + 128
+        b = math.sin(0.024 * i + 4) * 127 + 128
+        return [r/255, g/255, b/255, 1]
+
     def draw3DVisual(self, pos, ikey):
-        #color = [pg.glColor((255, 255, 255, 255)) for i in range(len(pos))]
+        #np.save('pdata', pos)
+        #print(pos[0])
+        color = [self.num_to_rgb(pos[i][3]) for i in range(len(pos))]
+        #color = np.zeros((pos.shape[0], 4))
+        #color[:] = [1,1,1,1]
+
+        #color = np.apply_along_axis(self.num_to_rgb, 1, pos)
+
         #color = np.array(color, dtype=np.float32)
         #print(type(pos), len(pos))
         # npos = list()
@@ -72,7 +88,7 @@ class viewPointCloud(DataView):
         # color = np.vstack(cpos)
         #print(pos.dtype, color.dtype)
 
-        return pos, None
+        return pos, color
         #self.globject.setData(pos=pos, color=color, size=0.5, pxMode=False)
         #print(pos)
         #plt = gl.GLScatterPlotItem(pos=pos, color=color, size=0.5, pxMode=False)
