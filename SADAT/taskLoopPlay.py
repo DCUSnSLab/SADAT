@@ -2,7 +2,7 @@ import math
 import time
 from PyQt5.QtCore import QThread
 from PyQt5.QtCore import pyqtSignal
-
+from dadatype.dtype_cate import DataGroup
 from sensor.SenAdptMgr import AttachedSensorName
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 
@@ -18,6 +18,8 @@ class playbackInfo():
 
 class taskLoopPlay(QThread):
     signal = pyqtSignal([playbackInfo])
+    dataSignal = pyqtSignal([dict])
+    imageSignal = pyqtSignal([dict])
     PLAYMODE_LOGPLAY = 0
     PLAYMODE_LOAD = 1
     PLAYMODE_PLAY = 2
@@ -85,18 +87,25 @@ class taskLoopPlay(QThread):
             #Realtime Play Mode
             if td == self.PLAYMODE_LOGPLAY:
                 ldata = list()
+
                 #Through all rawdata to post plan and planviewmanager
                 #need to split an image data and sensor(Lidar, track, radar and so on)
                 #it means that image data should be processed in other thread(process)
                 while True:
                     lq = self.sourcemanager.getActualSensors()
                     ldata.clear()
+                    dset = dict()
+                    imageset = dict()
+
                     for key, data in lq.items():
                         if data.getRealtimeDataQueue().qsize() > 0:
                             data = data.getRealtimeDataQueue().get()
-                            ldata.append(tuple((key, data)))
-                    if ldata != []:
-                        self.simlog.enQueuePlayData(ldata)
+                            if data.dataGroup != DataGroup.GRP_DISPLAY:
+                                dset[key] = data
+                                self.dataSignal.emit(dset)
+                            else:
+                                imageset[key] = data
+                                self.imageSignal.emit(imageset)
 
 
             #Sim Mode
