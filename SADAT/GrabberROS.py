@@ -20,6 +20,11 @@ class GrabberROS(metaclass=ABCMeta):
         self.Signal = Value('i', 0)
 
         self._msgtype = list()
+
+        #init ros library
+        self.rospy = None
+        self.message_filters = None
+
         print(topicname)
         if topicname != None:
             if isinstance(topicname, list) is True:
@@ -60,6 +65,8 @@ class GrabberROS(metaclass=ABCMeta):
             msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
         elif topicname == '/usb_cam/image_raw':
             msgt = Importer.importerLibrary('sensor_msgs.msg', 'Image')
+        elif topicname == '/velodyne_points':
+            msgt = Importer.importerLibrary('sensor_msgs.msg', 'PointCloud2')
         else:
             msgt = None
 
