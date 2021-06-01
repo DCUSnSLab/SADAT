@@ -90,6 +90,7 @@ class SystemManager:
             #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
             self.procs[Mode.MODE_LOG].grabber.disconnect()
             self.procs[Mode.MODE_LOG].camgrabber.disconnect()
+            self.procs[Mode.MODE_LOG].velograbber.disconnect()
             #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
 
     def cleanProcess(self):

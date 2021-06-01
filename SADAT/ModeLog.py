@@ -27,9 +27,9 @@ class ModeLog(Mode):
             self.camgrabber = GrabberROSCam(self.dispatcher)
             self.velograbber = GrabberROSVelodyne(self.dispatcher)
             #self.syncgrabber = GrabberROSSync(self.dispatcher)
-            self.addProcess("ROS Grabber", self.grabber.startGrab, None)
+            #self.addProcess("ROS Grabber", self.grabber.startGrab, None)
             self.addProcess("ROS Grabber Cam", self.camgrabber.startGrab, None)
-            #self.addProcess("ROS Velodyne Lidar", self.velograbber.startGrab, None)
+            self.addProcess("ROS Velodyne Lidar", self.velograbber.startGrab, None)
             #self.addProcess("ROS Grabber Sync", self.syncgrabber.startGrab, None)
 
         self.addProcess("Logger", self.logger.LogWorker, None)

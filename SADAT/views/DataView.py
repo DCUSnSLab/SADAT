@@ -43,7 +43,7 @@ class DataView:
         pass
 
     def _getPos(self, points):
-        return points  * [0.01, 0.01, 0.01]
+        return points#  * [0.01, 0.01, 0.01]
 
     def _getSize(self, w, h):
         w = w / self.guiinfo.planviewsize

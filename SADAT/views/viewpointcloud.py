@@ -60,18 +60,19 @@ class viewPointCloud(DataView):
         qp.drawEllipse(xp,yp,6,6)
 
     def draw3DVisual(self, pos, ikey):
-        color = [pg.glColor((0, 0, 0, 0)) for i in range(len(pos))]
-        color = np.array(color, dtype=np.float32)
-        npos = list()
-        cpos = list()
-        for i in range(0, 20, 1):
-            npos.append(pos + [0, 0, i])
-            cpos.append(color + self.colorrange[i])
-        pos = np.vstack(npos)
-        color = np.vstack(cpos)
+        #color = [pg.glColor((255, 255, 255, 255)) for i in range(len(pos))]
+        #color = np.array(color, dtype=np.float32)
+        #print(type(pos), len(pos))
+        # npos = list()
+        # cpos = list()
+        # for i in range(0, 20, 1):
+        #     npos.append(pos + [0, 0, i])
+        #     cpos.append(color + self.colorrange[i])
+        # pos = np.vstack(npos)
+        # color = np.vstack(cpos)
         #print(pos.dtype, color.dtype)
 
-        return pos, color
+        return pos, None
         #self.globject.setData(pos=pos, color=color, size=0.5, pxMode=False)
         #print(pos)
         #plt = gl.GLScatterPlotItem(pos=pos, color=color, size=0.5, pxMode=False)
