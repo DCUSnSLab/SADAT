@@ -468,7 +468,7 @@ class MyApp(QMainWindow):
             cv_image = rval.imagedata
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
-            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
+            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_RGB888)
             p = convertToQtFormat.scaledToWidth(self.vwidth)
             self.label.setPixmap(QPixmap.fromImage(p))
 
