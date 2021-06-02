@@ -71,12 +71,12 @@ class viewPointCloud(DataView):
     def draw3DVisual(self, pos, ikey):
         #np.save('pdata', pos)
         #print(pos[0])
-        color = [self.num_to_rgb(pos[i][3]) for i in range(len(pos))]
+        #color = [self.num_to_rgb(pos[i][3]) for i in range(len(pos))]
         #color = np.zeros((pos.shape[0], 4))
         #color[:] = [1,1,1,1]
 
         #color = np.apply_along_axis(self.num_to_rgb, 1, pos)
-
+        color = pos[:,3:7]
         #color = np.array(color, dtype=np.float32)
         #print(type(pos), len(pos))
         # npos = list()
