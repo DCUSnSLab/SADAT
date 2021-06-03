@@ -22,7 +22,7 @@ class RPLidar2Dv(vSensor):
             tempY = []
 
             tempX, tempY = self._inputdataArray(rdata)
-            X_Y = [(tempX[i], tempY[i], 0) for i in range(len(tempX))]
+            X_Y = [(tempX[i]*0.001, tempY[i]*0.001, 0, 1, 1, 1, 1) for i in range(len(tempX))]
             X_Y_n = np.array(X_Y)
             lgrp = grp_rplidar(X_Y_n, rdata.distance, rdata.angle, rdata.timestamp[0], rdata.start_flag[0])
 

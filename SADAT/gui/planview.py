@@ -33,7 +33,7 @@ class planView(QWidget):
             self.updateItems(ikey, values)
             for i, idata in enumerate(values):
                 pos, color = idata.draw(ikey, True)
-                self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=4, edge_color=color)
+                self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
 
     def updateItems(self, key, values):
         if (key in self.itemlist) is False:
