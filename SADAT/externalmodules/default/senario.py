@@ -1,4 +1,3 @@
-from dadatype.dtype_tracker import dtype_tracker
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from externalmodules.default.delayed_points import delayedPoints
 from externalmodules.default.tracker import trackerBasic

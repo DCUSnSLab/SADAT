@@ -120,7 +120,11 @@ class GrabberROS(metaclass=ABCMeta):
     def disconnect(self):
         print("ROS Grappber disconnect", self._node)
         self.Signal.value = 1
+        #self.rospy.signal_shutdown("reason")
+        #self.rospy.on_shutdown(self.callback)
+        #print('ROS Disconnected 1')
 
     def disconnectSignal(self):
+        print('ROS Disconnected 2')
         self.rospy.signal_shutdown("reason")
-        print('ROS Disconnected')
+        print('ROS Disconnected 3')

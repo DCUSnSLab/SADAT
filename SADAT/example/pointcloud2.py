@@ -41,3 +41,6 @@ rospy.init_node('listener', anonymous=True)
 #rospy.Subscriber("/usb_cam/image_raw/compressed", CompressedImage, imagecallback)
 rospy.Subscriber("/velodyne_points", PointCloud2, callback)
 rospy.spin()
+while True:
+    time.sleep(1)
+    print('test')

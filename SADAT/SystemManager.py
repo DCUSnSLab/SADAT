@@ -1,7 +1,7 @@
 import sys
 from multiprocessing import Manager, Process
 from LidarLog import LidarLog
-from ModeLog import ModeLog
+from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
 from externalmodules.ext_module_manager import extModuleManager
@@ -88,9 +88,14 @@ class SystemManager:
     def cleanGrabber(self, procs=None):
         if self.currentPlayMode is Mode.MODE_LOG:
             #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
-            self.procs[Mode.MODE_LOG].grabber.disconnect()
-            self.procs[Mode.MODE_LOG].camgrabber.disconnect()
-            self.procs[Mode.MODE_LOG].velograbber.disconnect()
+            for pr in self.procs[Mode.MODE_LOG].getHandledProcesses():
+                if pr.is_alive():
+                    pr.terminate()
+
+            # self.procs[Mode.MODE_LOG].grabber.disconnect()
+            # self.procs[Mode.MODE_LOG].camgrabber.disconnect()
+            # self.procs[Mode.MODE_LOG].velograbber.disconnect()
+
             #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
 
     def cleanProcess(self):
@@ -114,6 +119,7 @@ class SystemManager:
             print("Clean, process length :", len(self.processes))
 
     def defineProcess(self):
+        # define system processes
         # init taskPostPlan thread
         # self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
         # self.pvthread.signal.connect(self.guiApp.changePosition)
@@ -129,15 +135,19 @@ class SystemManager:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
+        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         slog.DEBUG(self.procs)
 
     def addProcess(self, procdata):
+        pr = None
         if procdata.args is None:
-            self.processes.append(Process(name=procdata.name, target=procdata.target))
+            pr = Process(name=procdata.name, target=procdata.target)
         else:
-            self.processes.append(Process(name=procdata.name, target=procdata.target, args=procdata.args))
+            pr = Process(name=procdata.name, target=procdata.target, args=procdata.args)
+        procdata.setProcess(pr)
+        self.processes.append(pr)
+
 
     def getNumofProc(self):
         return len(self.processes)

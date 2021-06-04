@@ -2,7 +2,7 @@ from dadatype.datawrapper import DataWrapper
 from dadatype.dtype_cate import DataTypeCategory
 
 
-class dtype_tracker(DataWrapper):
+class dtype_track(DataWrapper):
     def __init__(self, id, minX, maxX, minY, maxY, posx, posy, posz, subX, subY, distance, color = "#ffffff"):
         super().__init__(id=id, dtypecate=DataTypeCategory.TRACK)
         self.posx = posx

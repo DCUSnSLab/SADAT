@@ -1,6 +1,6 @@
 from multiprocessing import Manager, Process
 from LidarLog import LidarLog
-from ModeLog import ModeLog
+from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
 from simMode import Mode
 
@@ -33,7 +33,7 @@ class GrabManager:
                 print("Start", p, p.is_alive())
 
     def defineProcess(self):
-        self.procs[Mode.MODE_LOG] = ModeLog(self.log)
+        self.procs[Mode.MODE_LOG] = ModeRealTime(self.log)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.log)
 
     def addProcess(self, procdata):

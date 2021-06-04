@@ -1,6 +1,6 @@
 import math
 
-from dadatype.grp_rplidar import grp_rplidar
+from dadatype.grp_pointclouds import grp_pointclouds
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
 import numpy as np
@@ -43,7 +43,7 @@ class Velodyne3D(pSensor):
         color = np.array([self.cmap[inten[i]] for i in range(len(inten))])
         points[:, 3:7] = color[:, 0:4]
         tstamp = inputdata.header.stamp
-        lgrp = grp_rplidar(points, None, None, tstamp.to_sec(), True)
+        lgrp = grp_pointclouds(points, None, None, tstamp.to_sec(), True)
 
         #curTime = time.time()
         #sec = curTime - self.prevTime

@@ -1,4 +1,4 @@
-from dadatype.grp_rplidar import grp_rplidar
+from dadatype.grp_pointclouds import grp_pointclouds
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
 from numpy import inf
@@ -64,7 +64,7 @@ class RPLidar2DA3(pSensor):
         tempX, tempY = self._inputdataArray(rpdata)
         X_Y = np.array([(tempX[i] * 0.001, tempY[i] * 0.001, 0, 1, 1, 1, 1) for i in range(len(tempX))], dtype=np.float32)
 
-        lgrp = grp_rplidar(X_Y, rpdata.distance, rpdata.angle, rpdata.timestamp, rpdata.start_flag)
+        lgrp = grp_pointclouds(X_Y, rpdata.distance, rpdata.angle, rpdata.timestamp, rpdata.start_flag)
         if len(lgrp.getPoints()) == 0:
             print('inSensor - ', lgrp.getPoints())
             print('lgrp is None',lgrp.getTimeStamp())

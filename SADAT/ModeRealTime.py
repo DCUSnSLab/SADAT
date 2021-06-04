@@ -9,7 +9,7 @@ from Logger import Logger
 from simMode import Mode
 
 
-class ModeLog(Mode):
+class ModeRealTime(Mode):
     def __init__(self, log, simlog, srcmgr):
         super().__init__(log)
         #init grabber
@@ -27,7 +27,7 @@ class ModeLog(Mode):
             self.camgrabber = GrabberROSCam(self.dispatcher)
             self.velograbber = GrabberROSVelodyne(self.dispatcher)
             #self.syncgrabber = GrabberROSSync(self.dispatcher)
-            #self.addProcess("ROS Grabber RPlidar", self.grabber.startGrab, None)
+            self.addProcess("ROS Grabber RPlidar", self.grabber.startGrab, None)
             self.addProcess("ROS Grabber Cam", self.camgrabber.startGrab, None)
             self.addProcess("ROS Velodyne Lidar", self.velograbber.startGrab, None)
             #self.addProcess("ROS Grabber Sync", self.syncgrabber.startGrab, None)
