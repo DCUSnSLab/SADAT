@@ -1,5 +1,6 @@
 import sys
 
+import vispy.scene
 import cv2
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -7,6 +8,7 @@ from PyQt5.QtCore import *
 
 import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from gui.planview import planView
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -20,7 +22,6 @@ from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
 from utils.sadatlogger import slog
 from views.planview_manager import planviewManager, guiInfo
-from views.DataView import DataView
 from dadatype.dtype_cate import DataTypeCategory
 
 '''GUI 그룹'''
@@ -134,12 +135,13 @@ class MyApp(QMainWindow):
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
 
+        #init planview widget
+        self.pvWidget = planView(self.planviewmanager)
         self.DockingWidget()
         self.DockingWidget2()
         self.installEventFilter(self)
         self.initUI()
 
-        self.dataview = DataView()
 
     def DockingWidget2(self):
         self.items=QDockWidget('Dockable',self)
@@ -156,14 +158,14 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
 
-        self.items.setFloating(False)
+        self.items.setFloating(True)
+        self.items.setGeometry(1200,300,800,450)
         #self.items.setFixedSize(500,275)
         self.items.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
-
         self.vwidth = self.items.frameGeometry().width()
         self.vheight = self.vwidth * 0.75
-        self.setCentralWidget(MyWG(self))
+        #self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.RightDockWidgetArea,self.items)
 
     def DockingWidget(self):
@@ -208,7 +210,7 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
         self.items.setFloating(False)
-        self.setCentralWidget(MyWG(self))
+        #self.setCentralWidget(MyWG(self))
         self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
@@ -221,7 +223,9 @@ class MyApp(QMainWindow):
         self.initMenubar()
         self.initToolbar()
         self.ComboToolbar()
-        self.setStyleSheet("""QMenuBar {
+        self.setCentralWidget(self.pvWidget)
+        self.setStyleSheet("""QMenuBar {        self.draw()
+
                          background-color: Gray;
                          color: white;
                         }
@@ -235,8 +239,10 @@ class MyApp(QMainWindow):
         p.setColor(self.backgroundRole(), Qt.black)
         self.setPalette(p)
         self.modeChanger(GUI_GROUP.ALL, False)
-
+        display_monitor = 0
+        monitor = QDesktopWidget().screenGeometry(display_monitor)
         self.setGeometry(300, 300, 1500, 1000)
+        self.move(monitor.left()+300, monitor.top()+300)
         self.show()
 
     def initMenubar(self):
@@ -347,10 +353,12 @@ class MyApp(QMainWindow):
         self.toolbar.addWidget(self.combo)
 
     def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
-        qp = QPainter()
-        qp.begin(self)
-        self.draw(qp)
-        qp.end()
+        pass
+        # qp = QPainter()
+        # qp.begin(self)
+        # self.draw(qp)
+        # qp.end()
+        #self.pvWidget.draw()
 
     #event
     def wheelEvent(self, e):            #whellEvent 함수, 마우스 휠을 조정해 panview 사이즈 조정 가능
@@ -393,7 +401,7 @@ class MyApp(QMainWindow):
         self.updatePosition()
 
     #qp를 넘겨주어야 함
-    def draw(self, qp):
+    def draw(self,qp):
         #draw paint
         self.xp= self.relx
         self.yp=self.rely
@@ -407,7 +415,7 @@ class MyApp(QMainWindow):
                 if self.combo.item_checked(index=1):
                     if ikey is senarioBasicDataset.TRACK:
                         idata.setVisible(True)
-                idata.draw(qp,ikey)
+                idata.draw(ikey, gl=None, qp=qp)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -430,7 +438,11 @@ class MyApp(QMainWindow):
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
-        self.update()
+        #play with pyqt painter
+        #self.update()
+
+        #play with opengl
+        self.pvWidget.draw()
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
@@ -447,9 +459,7 @@ class MyApp(QMainWindow):
 
         if pbinfo.mode != self.simulator.lpthread.PLAYMODE_ETC:
             stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
-        else:
-            stxt = 'current idx - %s' % pbinfo.lidartimestamp # stxt는 tool 하단부에 나타나는 현재 index
-        self.statusBar().showMessage(stxt)
+            self.statusBar().showMessage(stxt)
         self.update()
     def updateCameraImage(self, data):
         #print(data)
@@ -458,7 +468,7 @@ class MyApp(QMainWindow):
             cv_image = rval.imagedata
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
-            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_BGR888)
+            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_RGB888)
             p = convertToQtFormat.scaledToWidth(self.vwidth)
             self.label.setPixmap(QPixmap.fromImage(p))
 

@@ -1,6 +1,5 @@
 from abc import *
 
-from dadatype.dtype_rplidar import dtype_rplidar
 from externalmodules.extModule import extModule
 
 '''

@@ -54,7 +54,7 @@ class USBCAM(pSensor):
             print(e)
         # tempX, tempY = self._inputdataArray(inputdata)
         # X_Y = np.array([(tempX[i], tempY[i]) for i in range(len(tempX))])
-        # lgrp = grp_rplidar(X_Y, inputdata.distance, inputdata.angle, inputdata.timestamp, inputdata.start_flag)
+        # lgrp = grp_pointclouds(X_Y, inputdata.distance, inputdata.angle, inputdata.timestamp, inputdata.start_flag)
         # if len(lgrp.getPoints()) == 0:
         #     print('inSensor - ', lgrp.getPoints())
         #     print('lgrp is None',lgrp.getTimeStamp())

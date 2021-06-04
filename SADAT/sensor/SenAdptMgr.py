@@ -1,6 +1,7 @@
 from enum import Enum
 from sensor.psensor.RPLidar2D import RPLidar2DA3
 from sensor.psensor.USBCAM import USBCAM
+from sensor.psensor.Velodyne3D import Velodyne3D
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 from sensor.vsensor.Track import Track
 
@@ -9,6 +10,7 @@ class AttachedSensorName(Enum):
     RPLidar2DVirtual = 2
     Tracker1 = 3
     USBCAM = 4
+    VelodyneVLC16 = 5
 
 class SenAdptMgr:
     def __init__(self, srcmanager, manager):
@@ -21,6 +23,7 @@ class SenAdptMgr:
         #actual Device
         self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
         self.__addActualSensor(USBCAM(AttachedSensorName.USBCAM))
+        self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16))
 
         #virtual Device
         self.__addVirtualSensor(Track(AttachedSensorName.Tracker1))
