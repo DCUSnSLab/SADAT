@@ -1,6 +1,7 @@
 from enum import Enum
 from multiprocessing import Manager
 
+from sensor.SenAdptMgr import AttachedSensorName
 from sensor.Sensor import Sensor
 from utils.sadatlogger import slog
 

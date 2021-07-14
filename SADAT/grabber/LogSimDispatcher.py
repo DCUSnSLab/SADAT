@@ -1,4 +1,4 @@
-from Dispatcher import Dispatcher
+from grabber.Dispatcher import Dispatcher
 from log.makeRPLidarLog import makeRPLidarLog
 from sensor.SenAdptMgr import AttachedSensorName
 from sensor.SourceManager import SourceManager

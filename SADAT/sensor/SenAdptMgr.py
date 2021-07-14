@@ -6,11 +6,11 @@ from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 from sensor.vsensor.Track import Track
 
 class AttachedSensorName(Enum):
-    RPLidar2DA3 = 1
-    RPLidar2DVirtual = 2
-    Tracker1 = 3
-    USBCAM = 4
-    VelodyneVLC16 = 5
+    RPLidar2DA3 = '/scan'
+    RPLidar2DVirtual = '/scanv'
+    Tracker1 = '/track'
+    USBCAM = '/usb_cam/image_raw/compressed'
+    VelodyneVLC16 = '/velodyne_points'
 
 class SenAdptMgr:
     def __init__(self, srcmanager, manager):

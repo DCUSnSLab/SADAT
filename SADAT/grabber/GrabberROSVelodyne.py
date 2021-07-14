@@ -1,5 +1,5 @@
 import datetime as pydatetime
-from GrabberROS import GrabberROS
+from grabber.GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
 from utils.importer import Importer
 import time

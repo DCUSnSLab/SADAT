@@ -5,6 +5,7 @@ from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
 from externalmodules.ext_module_manager import extModuleManager
+from grabber.ROSManager import ROSManager
 from gui.guiMain import GUI_CONTROLLER
 from sensor.SenAdptMgr import SenAdptMgr
 from sensor.SourceManager import SourceManager
@@ -25,6 +26,7 @@ class SystemManager:
         #sensor devices
         self.srcmanager = SourceManager(manager)
         self.senadapter = SenAdptMgr(self.srcmanager, manager)
+        self.rosManager = ROSManager(self.srcmanager)
         self.rawlog = LidarLog(manager)
         self.simlog = SimLog(manager)
         self.procs = {}
@@ -135,7 +137,7 @@ class SystemManager:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager)
+        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager, self.rosManager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         slog.DEBUG(self.procs)
 

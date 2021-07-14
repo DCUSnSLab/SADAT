@@ -1,4 +1,4 @@
-from GrabberROS import GrabberROS
+from grabber.GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
 
 class GrabberROSrplidar(GrabberROS):

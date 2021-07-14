@@ -3,7 +3,7 @@ import json
 import time
 from PyQt5.QtCore import pyqtSignal
 
-from Dispatcher import Dispatcher
+from grabber.Dispatcher import Dispatcher
 from sensor.SenAdptMgr import AttachedSensorName
 from utils.sadatlogger import slog
 

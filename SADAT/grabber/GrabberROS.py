@@ -1,4 +1,3 @@
-from abc import *
 import datetime as pydatetime
 from multiprocessing import Value
 from utils.importer import Importer
@@ -10,12 +9,13 @@ def get_now():
 def get_now_timestamp():
     return get_now().timestamp()
 
-class GrabberROS(metaclass=ABCMeta):
-    def __init__(self, disp: 'LogPlayDispatcher', senstype=list(), nodename=None, topicname=None):
+class GrabberROS():
+    def __init__(self, disp: 'LogPlayDispatcher', senstype=list(), nodename=None, topicname=None, topic=None):
         self._node = nodename
         self._senstype = senstype
         self._rosTopic = dict()
         self._dispatcher = disp
+        self._topic = topic
         self._initpass = True
         self.Signal = Value('i', 0)
 
@@ -34,6 +34,9 @@ class GrabberROS(metaclass=ABCMeta):
                 self._rosTopic['/'+topicname] = None
 
             self._initMsgType()
+        elif topic != None:
+            self._rosTopic[topic[0]] = topic[1]
+            self._initMsgType()
         else:
             self._initpass = False
 
@@ -45,8 +48,10 @@ class GrabberROS(metaclass=ABCMeta):
             self.rospy = Importer.importerLibrary('rospy')
             self.message_filters = Importer.importerLibrary('message_filters')
 
-            for tn in self._rosTopic.keys():
-                self._rosTopic[tn] = self.__getMsgType(tn)
+            if self._topic != None:
+                for tn in self._rosTopic.keys():
+                    self._rosTopic[tn] = self.__getMsgType(tn)
+
             print(self._rosTopic)
             if checkinit is True:
                 self._initpass = True
@@ -113,9 +118,8 @@ class GrabberROS(metaclass=ABCMeta):
         senddata = {senstype: data}
         self._dispatcher.logDispatch(senddata)
 
-    @abstractmethod
     def userCallBack(self, msgs):
-        pass
+        self.sendData(msgs[0])
 
     def disconnect(self):
         print("ROS Grappber disconnect", self._node)

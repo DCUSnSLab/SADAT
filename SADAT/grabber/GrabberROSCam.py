@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from GrabberROS import GrabberROS
+from grabber.GrabberROS import GrabberROS
 from sensor.SenAdptMgr import AttachedSensorName
 from utils.importer import Importer
 from utils.sadatlogger import slog
