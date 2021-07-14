@@ -31,7 +31,7 @@ class USBCAM(pSensor):
                 # converting compressed image to opencv image
                 np_arr = np.fromstring(msg.data, np.uint8)
                 cv_image = cv2.imdecode(np_arr, cv2.COLOR_BGR2RGB)
-                # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+                cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
             elif self.selecting_sub_image == "raw":
                 cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
 
