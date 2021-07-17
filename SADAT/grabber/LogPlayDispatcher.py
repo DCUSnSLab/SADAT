@@ -14,7 +14,7 @@ class LogPlayDispatcher(Dispatcher):
         super().__init__()
         self.sourcemanager = srcmgr
         slog.DEBUG("-----LogPlayDispatcher Init-----")
-        print(self.guiApp)
+        #print(self.guiApp)
 
     def dispatch(self):
         time.sleep(1)

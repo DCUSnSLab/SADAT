@@ -25,7 +25,7 @@ class GrabberROS():
         self.rospy = None
         self.message_filters = None
 
-        print(topicname)
+        #print(topicname)
         if topicname != None:
             if isinstance(topicname, list) is True:
                 for tn in topicname:
@@ -50,9 +50,9 @@ class GrabberROS():
 
             if self._topic != None:
                 for tn in self._rosTopic.keys():
-                    self._rosTopic[tn] = self.__getMsgType(tn)
+                    self._rosTopic[tn] = self.__getMsgType_deprecated(tn)
 
-            print(self._rosTopic)
+            #print(self._rosTopic)
             if checkinit is True:
                 self._initpass = True
             else:
@@ -61,7 +61,8 @@ class GrabberROS():
             print("Exception",e)
             self._initpass = False
 
-    def __getMsgType(self, topicname):
+    #더이상 사용하지 않음
+    def __getMsgType_deprecated(self, topicname):
         msgt = None
         if topicname == '/scan':
             print('set msgtype')

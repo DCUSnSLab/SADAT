@@ -37,6 +37,7 @@ class ROSManager:
             attchedsensor = v2mmap[et]
             #print(sectopic, attchedsensor)
             grabname = str(attchedsensor).split('.')[1] + 'grabber'
+            print(et, sectopic)
             grablist.append(GrabberROS(disp=dispatcher, senstype=[attchedsensor], nodename=grabname, topic=[et, sectopic]))
         return grablist
 
@@ -55,9 +56,14 @@ class ROSManager:
                 msgs = data[1].split('/')
                 from_str = msgs[0] + '.msg'
                 import_str = msgs[1]
-                msg = Importer.importerLibrary(from_str, import_str)
-                self.topic_lists[data[0]] = msg
+                try:
+                    msg = Importer.importerLibrary(from_str, import_str)
+                    self.topic_lists[data[0]] = msg
+                except Exception as e:
+                    db = 'Import error - No Modules as ' + str(e)
+                    slog.DEBUG(db)
         except Exception as e:
-            slog.DEBUG(e)
+            db = 'refresh error - '+str(e)
+            slog.DEBUG(db)
 
         return self.topic_lists

@@ -142,7 +142,7 @@ class MyApp(QMainWindow):
         self.installEventFilter(self)
         self.initUI()
 
-
+    #카메라 독
     def DockingWidget2(self):
         self.items=QDockWidget('Dockable',self)
         self.items.installEventFilter(self)
@@ -158,8 +158,10 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
 
+        display_monitor = 0
+        monitor = QDesktopWidget().screenGeometry(display_monitor)
         self.items.setFloating(True)
-        self.items.setGeometry(1200,300,800,450)
+        self.items.setGeometry(monitor.left() +1200, monitor.top() + 300,800,450)
         #self.items.setFixedSize(500,275)
         self.items.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
