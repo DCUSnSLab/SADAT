@@ -96,6 +96,7 @@ class GrabberROS():
         sub = list()
         if len(self._senstype) == 1:
             for key, value in self._rosTopic.items():
+                print(key, value)
                 sub.append(self.rospy.Subscriber(key, value, self.callback))
         else:
             for key, value in self._rosTopic.items():

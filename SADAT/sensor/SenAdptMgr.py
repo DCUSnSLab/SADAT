@@ -10,6 +10,7 @@ class AttachedSensorName(Enum):
     RPLidar2DVirtual = '/scanv'
     Tracker1 = '/track'
     USBCAM = '/usb_cam/image_raw/compressed'
+    ZEDCAM = '/zed2/zed_node/right/image_rect_color/compressed'
     VelodyneVLC16 = '/velodyne_points'
 
 class SenAdptMgr:
