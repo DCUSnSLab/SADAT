@@ -29,5 +29,12 @@ class ModeRealTime(Mode):
                 self.addProcess(grab._node, grab.startGrab, None)
 
 
+    def patrol(self):
+        print('test')
+        while True:
+            print(self.getHandledProcesses())
+            sleep(1)
+
+
         #self.addProcess("Logger", self.logger.LogWorker, None)
         #self.addProcess("LogDispatcher", self.dispatcher.dispatch, None)

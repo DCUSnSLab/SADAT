@@ -100,17 +100,18 @@ class GrabberROS():
         sub = list()
         if len(self._senstype) == 1:
             for key, value in self._rosTopic.items():
-                print('dograb - sentype 1',key, value)
+                #print('dograb - sentype 1',key, value)
                 sub.append(self.rospy.Subscriber(key, value, self.callback))
+                #print('dograb - done', key, value)
         else:
             for key, value in self._rosTopic.items():
-                print('dograb - sentype 2', key, value)
+                #print('dograb - sentype 2', key, value)
                 sub.append(self.message_filters.Subscriber(key, value))
 
             ts = self.message_filters.ApproximateTimeSynchronizer(sub, 10, 0.1, allow_headerless=True)
             ts.registerCallback(self.callback)
-        print('print sub - ',sub)
         self.rospy.spin()
+
 
     def callback(self, *msgs):
         if self.Signal.value == 1:

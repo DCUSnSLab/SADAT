@@ -1,5 +1,7 @@
 import sys
 from multiprocessing import Manager, Process
+from time import sleep
+
 from LidarLog import LidarLog
 from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
@@ -88,6 +90,7 @@ class SystemManager:
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
+                sleep(0.5)
                 #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
