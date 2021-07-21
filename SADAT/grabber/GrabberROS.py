@@ -1,6 +1,7 @@
 import datetime as pydatetime
 from multiprocessing import Value
 from utils.importer import Importer
+from utils.sadatlogger import slog
 
 
 def get_now():
@@ -35,22 +36,22 @@ class GrabberROS():
 
             self._initMsgType()
         elif topic != None:
+            #print('make topic - ',topic)
             self._rosTopic[topic[0]] = topic[1]
             self._initMsgType()
         else:
             self._initpass = False
 
     def _initMsgType(self):
-        print('init msgtype')
         try:
             checkinit = True
             # Import LaserScan
             self.rospy = Importer.importerLibrary('rospy')
             self.message_filters = Importer.importerLibrary('message_filters')
 
-            if self._topic != None:
-                for tn in self._rosTopic.keys():
-                    self._rosTopic[tn] = self.__getMsgType_deprecated(tn)
+            # if self._topic != None:
+            #     for tn in self._rosTopic.keys():
+            #         self._rosTopic[tn] = self.__getMsgType_deprecated(tn)
 
             #print(self._rosTopic)
             if checkinit is True:
@@ -73,6 +74,8 @@ class GrabberROS():
             msgt = Importer.importerLibrary('sensor_msgs.msg', 'Image')
         elif topicname == '/velodyne_points':
             msgt = Importer.importerLibrary('sensor_msgs.msg', 'PointCloud2')
+        elif topicname == '/zed2/zed_node/right/image_rect_color/compressed':
+            msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
         else:
             msgt = None
 
@@ -82,7 +85,7 @@ class GrabberROS():
         pass
 
     def startGrab(self):
-        print('start grab')
+        slog.DEBUG('Start Grabber Processes')
         if self._initpass is True:
             self.connect()
             self.doGrab()
@@ -91,19 +94,22 @@ class GrabberROS():
             print('Grab Stopped due to init Failed -',self._node)
 
     def doGrab(self):
-        print('init ROS Node -',self._node)
+        dbg = 'init ROS Node -' + self._node
+        slog.DEBUG(dbg)
         self.rospy.init_node(self._node)
         sub = list()
         if len(self._senstype) == 1:
             for key, value in self._rosTopic.items():
-                print(key, value)
+                print('dograb - sentype 1',key, value)
                 sub.append(self.rospy.Subscriber(key, value, self.callback))
         else:
             for key, value in self._rosTopic.items():
+                print('dograb - sentype 2', key, value)
                 sub.append(self.message_filters.Subscriber(key, value))
 
             ts = self.message_filters.ApproximateTimeSynchronizer(sub, 10, 0.1, allow_headerless=True)
             ts.registerCallback(self.callback)
+        print('print sub - ',sub)
         self.rospy.spin()
 
     def callback(self, *msgs):
@@ -124,7 +130,7 @@ class GrabberROS():
         self.sendData(msgs[0])
 
     def disconnect(self):
-        print("ROS Grappber disconnect", self._node)
+        slog.DEBUG("ROS Grappber disconnect" + self._node)
         self.Signal.value = 1
         #self.rospy.signal_shutdown("reason")
         #self.rospy.on_shutdown(self.callback)

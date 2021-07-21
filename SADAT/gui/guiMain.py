@@ -204,6 +204,16 @@ class MyApp(QMainWindow):
         self.CheckGroup.setStyleSheet("color:black;"
                                    "background-color: white")
 
+        self.textbox = QLineEdit('0')
+        self.textbox.resize(100, 30)
+        self.textboxbtn = QPushButton('setRad')
+        self.textboxbtn.clicked.connect(self.setradButton)
+        cInnerLayout=QHBoxLayout()
+        cInnerLayout.addWidget(self.textbox)
+        cInnerLayout.addWidget(self.textboxbtn)
+        self.CheckGroup.setLayout(cInnerLayout)
+
+
         fInnerLayout.addWidget(self.buttonGroup,35)
         fInnerLayout.addWidget(self.CheckGroup,100)
         self.listWidget.setLayout(fInnerLayout)
@@ -329,6 +339,10 @@ class MyApp(QMainWindow):
             self.vheight = self.vwidth * 0.75
 
         return super().eventFilter(obj, event)
+
+    def setradButton(self):
+        self.simulator.psignal.lidardegree = float(self.textbox.text())
+        print(self.simulator.psignal.lidardegree)
 
     def DecreaseButton(self):
         self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)

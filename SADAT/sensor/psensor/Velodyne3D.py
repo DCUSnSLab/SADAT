@@ -5,14 +5,14 @@ from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
 import numpy as np
 from utils.importer import Importer
-import time
 
 class Velodyne3D(pSensor):
-    def __init__(self, name):
+    def __init__(self, name, msgs):
         super().__init__(SensorCategory.Lidar3D, name)
         self.prevTime = 0
         self.cmap = None
         self.__make_colormap()
+        self.sysSignal = msgs
 
     def num_to_rgb(self, val, max_val=141):
         i = (val * 255 / max_val);

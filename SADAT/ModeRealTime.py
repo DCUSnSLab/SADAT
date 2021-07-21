@@ -1,7 +1,10 @@
+from time import sleep
+
 from grabber.Grabber import Grabber
 from grabber.LogPlayDispatcher import LogPlayDispatcher
 from Logger import Logger
 from simMode import Mode
+from utils.sadatlogger import slog
 
 
 class ModeRealTime(Mode):
@@ -14,7 +17,7 @@ class ModeRealTime(Mode):
         self.rosmanager = rosmgr
 
     def makeProcess(self):
-        print("MakeProcess : Log Type :",self.currentMode)
+        slog.DEBUG("MakeProcess : Log Type :"+str(self.currentMode))
         if self.currentMode is self.LOGTYPE_DEVICE:
             self.grabber = Grabber(self.log, 1000)
             self.addProcess("Grabber", self.grabber.startGrab, None)
@@ -25,5 +28,6 @@ class ModeRealTime(Mode):
             for grab in topics:
                 self.addProcess(grab._node, grab.startGrab, None)
 
-        self.addProcess("Logger", self.logger.LogWorker, None)
+
+        #self.addProcess("Logger", self.logger.LogWorker, None)
         #self.addProcess("LogDispatcher", self.dispatcher.dispatch, None)

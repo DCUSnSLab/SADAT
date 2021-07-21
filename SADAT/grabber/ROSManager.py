@@ -38,13 +38,10 @@ class ROSManager:
             if et in self.topic_lists:
                 sectopic = self.topic_lists[et]
                 v2mmap = AttachedSensorName.__dict__['_value2member_map_']
-                print(v2mmap)
                 attchedsensor = v2mmap[et]
-                #print(sectopic, attchedsensor)
                 grabname = str(attchedsensor).split('.')[1] + 'grabber'
-                print(et, sectopic)
                 grablist.append(GrabberROS(disp=dispatcher, senstype=[attchedsensor], nodename=grabname, topic=[et, sectopic]))
-                sleep(1)
+                #sleep(1)
             else:
                 emsg = 'no topic in available topic list - ' + str(et)
                 slog.DEBUG(emsg)

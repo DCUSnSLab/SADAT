@@ -1,4 +1,7 @@
 import os
+
+from utils.sadatlogger import slog
+
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -40,7 +43,6 @@ class menuLogPlay(QAction):
     def trig(self):
         self.parent.simulator.setAction(Mode.MODE_LOG)
         self.parent.simulator.playMode()
-        print("PlayLogging")
 
 class menuLogPlayROS(QAction):
 
@@ -54,4 +56,3 @@ class menuLogPlayROS(QAction):
     def trig(self):
         self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
         self.parent.simulator.playMode()
-        print("PlayLogging")

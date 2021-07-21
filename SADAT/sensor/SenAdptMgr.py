@@ -14,9 +14,10 @@ class AttachedSensorName(Enum):
     VelodyneVLC16 = '/velodyne_points'
 
 class SenAdptMgr:
-    def __init__(self, srcmanager, manager):
+    def __init__(self, srcmanager, manager, sysmanager):
         self.srcmanager = srcmanager
         self.manager = manager
+        self.sysmanager = sysmanager
         self.__initDevices()
 
     def __initDevices(self):
@@ -24,7 +25,8 @@ class SenAdptMgr:
         #actual Device
         self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
         self.__addActualSensor(USBCAM(AttachedSensorName.USBCAM))
-        self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16))
+        self.__addActualSensor(USBCAM(AttachedSensorName.ZEDCAM))
+        self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16, self.sysmanager.psignal))
 
         #virtual Device
         self.__addVirtualSensor(Track(AttachedSensorName.Tracker1))
