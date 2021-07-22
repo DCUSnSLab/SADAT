@@ -3,7 +3,7 @@ import json
 import time
 from PyQt5.QtCore import pyqtSignal
 
-from Dispatcher import Dispatcher
+from grabber.Dispatcher import Dispatcher
 from sensor.SenAdptMgr import AttachedSensorName
 from utils.sadatlogger import slog
 
@@ -14,7 +14,7 @@ class LogPlayDispatcher(Dispatcher):
         super().__init__()
         self.sourcemanager = srcmgr
         slog.DEBUG("-----LogPlayDispatcher Init-----")
-        print(self.guiApp)
+        #print(self.guiApp)
 
     def dispatch(self):
         time.sleep(1)

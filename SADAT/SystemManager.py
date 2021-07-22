@@ -1,11 +1,15 @@
 import sys
 from multiprocessing import Manager, Process
+from time import sleep
+
 from LidarLog import LidarLog
 from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
 from externalmodules.ext_module_manager import extModuleManager
+from grabber.ROSManager import ROSManager
 from gui.guiMain import GUI_CONTROLLER
+from msgs.ProcSignal import ProcSignal
 from sensor.SenAdptMgr import SenAdptMgr
 from sensor.SourceManager import SourceManager
 from simMode import Mode
@@ -22,9 +26,13 @@ class SystemManager:
         self.guiApp = gapp
         self.manager = manager
 
+        # msg
+        self.psignal = ProcSignal()
+
         #sensor devices
         self.srcmanager = SourceManager(manager)
-        self.senadapter = SenAdptMgr(self.srcmanager, manager)
+        self.senadapter = SenAdptMgr(self.srcmanager, manager, self)
+        self.rosManager = ROSManager(self.srcmanager)
         self.rawlog = LidarLog(manager)
         self.simlog = SimLog(manager)
         self.procs = {}
@@ -42,6 +50,8 @@ class SystemManager:
         self.srcmanager.printSensorList()
         self.loadPlugin()
         self.defineProcess()
+
+
 
         self.currentPlayMode = None
 
@@ -80,6 +90,7 @@ class SystemManager:
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
+                sleep(0.5)
                 #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
@@ -111,12 +122,12 @@ class SystemManager:
             self.rawlog.DisconnectLogs()
             self.simlog.DisconnectLogs()
 
-            print("Wait process finishing for cleaning process list")
+            slog.DEBUG("Wait process finishing for cleaning process list")
             for p in self.processes:
                 p.join()
 
             self.processes.clear()
-            print("Clean, process length :", len(self.processes))
+            slog.DEBUG("Clean, process length :"+str(len(self.processes)))
 
     def defineProcess(self):
         # define system processes
@@ -135,7 +146,7 @@ class SystemManager:
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager)
+        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager, self.rosManager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         slog.DEBUG(self.procs)
 

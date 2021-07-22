@@ -6,24 +6,31 @@ from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 from sensor.vsensor.Track import Track
 
 class AttachedSensorName(Enum):
-    RPLidar2DA3 = 1
-    RPLidar2DVirtual = 2
-    Tracker1 = 3
-    USBCAM = 4
-    VelodyneVLC16 = 5
+    RPLidar2DA3 = 'rplidar:/scan:/scan'
+    RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
+    Tracker1 = 'track:/track:/track'
+    USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
+    ZEDCAM = 'zedcam:/zed2/zed_node/right/image_rect_color/compressed:sensor_msgs/CompressedImage'
+    VelodyneVLC16 = 'velodyne:/velodyne_points:pointcloud2'
+
+    def getTopicName(inst):
+        tname = inst.value.split(':')[1]
+        return tname
 
 class SenAdptMgr:
-    def __init__(self, srcmanager, manager):
+    def __init__(self, srcmanager, manager, sysmanager):
         self.srcmanager = srcmanager
         self.manager = manager
+        self.sysmanager = sysmanager
         self.__initDevices()
 
     def __initDevices(self):
         self.srcmanager.init()
         #actual Device
-        self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
         self.__addActualSensor(USBCAM(AttachedSensorName.USBCAM))
-        self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16))
+        self.__addActualSensor(USBCAM(AttachedSensorName.ZEDCAM))
+        self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
+        self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16, self.sysmanager.psignal))
 
         #virtual Device
         self.__addVirtualSensor(Track(AttachedSensorName.Tracker1))

@@ -33,7 +33,7 @@ class Mode(metaclass=ABCMeta):
             self.lSimDispatcher.setVelocity(vel)
 
     def setLogType(self, type):
-        print("set Log Mode",type)
+        #print("set Log Mode",type)
         self.currentMode = type
 
     @abstractmethod

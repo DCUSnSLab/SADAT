@@ -1,3 +1,6 @@
+from utils.sadatlogger import slog
+
+
 class SimProcess:
     name = ""
     target = None
@@ -15,7 +18,8 @@ class SimProcess:
         return self.pid
 
     def terminate(self):
-        print('proc-',self.name,'terminated')
+        dbg = 'proc-' + self.name + ' terminated'
+        slog.DEBUG(dbg)
         self.pid.terminate()
 
     def is_alive(self):

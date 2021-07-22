@@ -14,7 +14,7 @@ def get_now():
 def get_now_timestamp():
     return get_now().timestamp()
 
-class GrabberROSSync(GrabberROS):
+class deprecated_GrabberROSSync(GrabberROS):
     def __init__(self, disp):
         super().__init__(disp, [AttachedSensorName.RPLidar2DA3, AttachedSensorName.USBCAM], 'ROSSyncGrabber'
                          ,['scan', 'usb_cam/image_raw/compressed'])

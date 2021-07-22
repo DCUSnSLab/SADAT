@@ -142,7 +142,7 @@ class MyApp(QMainWindow):
         self.installEventFilter(self)
         self.initUI()
 
-
+    #카메라 독
     def DockingWidget2(self):
         self.items=QDockWidget('Dockable',self)
         self.items.installEventFilter(self)
@@ -158,8 +158,10 @@ class MyApp(QMainWindow):
 
         self.items.setWidget(self.listWidget)
 
+        display_monitor = 0
+        monitor = QDesktopWidget().screenGeometry(display_monitor)
         self.items.setFloating(True)
-        self.items.setGeometry(1200,300,800,450)
+        self.items.setGeometry(monitor.left() +1200, monitor.top() + 300,800,450)
         #self.items.setFixedSize(500,275)
         self.items.setFixedSize(800, 450)
         #self.label.setFixedSize(600, 600)
@@ -201,6 +203,16 @@ class MyApp(QMainWindow):
         self.CheckGroup=QGroupBox("Check Box")
         self.CheckGroup.setStyleSheet("color:black;"
                                    "background-color: white")
+
+        self.textbox = QLineEdit('0')
+        self.textbox.resize(100, 30)
+        self.textboxbtn = QPushButton('setRad')
+        self.textboxbtn.clicked.connect(self.setradButton)
+        cInnerLayout=QHBoxLayout()
+        cInnerLayout.addWidget(self.textbox)
+        cInnerLayout.addWidget(self.textboxbtn)
+        self.CheckGroup.setLayout(cInnerLayout)
+
 
         fInnerLayout.addWidget(self.buttonGroup,35)
         fInnerLayout.addWidget(self.CheckGroup,100)
@@ -327,6 +339,10 @@ class MyApp(QMainWindow):
             self.vheight = self.vwidth * 0.75
 
         return super().eventFilter(obj, event)
+
+    def setradButton(self):
+        self.simulator.psignal.lidardegree = float(self.textbox.text())
+        print(self.simulator.psignal.lidardegree)
 
     def DecreaseButton(self):
         self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)

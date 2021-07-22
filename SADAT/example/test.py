@@ -1,50 +1,60 @@
-import math
+import cv2
+import rospy
+from sensor_msgs.msg import PointCloud2, CompressedImage
+import sensor_msgs.point_cloud2 as pc2
+import ros_numpy
 import numpy as np
 import time
 
-def num_to_rgb( val, max_val=255):
-    i = (val[3] * 255 / max_val);
-    r = round(math.sin(0.024 * i + 0) * 127 + 128);
-    g = round(math.sin(0.024 * i + 2) * 127 + 128);
-    b = round(math.sin(0.024 * i + 4) * 127 + 128);
-    return [r, g, b, 1]
+from sensor.SenAdptMgr import AttachedSensorName
+from utils.importer import Importer
 
-def num_to_rgb2( val, max_val=255):
-    i = (val * 255 / max_val);
-    r = math.sin(0.024 * i + 0) * 127 + 128
-    g = math.sin(0.024 * i + 2) * 127 + 128
-    b = math.sin(0.024 * i + 4) * 127 + 128
-    return [r/255, g/255, b/255, 1]
+def callback(msg):
+    data = msg
+    topic = data._connection_header['topic']
+    type = data._connection_header['type']
+    data1 = 1
+    ros_numpy = Importer.importerLibrary('ros_numpy')
+    pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
+    pc = ros_numpy.numpify(msg)
+    points = np.zeros((pc.shape[0], 7))
+    points[:, 0] = pc['x']
+    points[:, 1] = pc['y']
+    points[:, 2] = pc['z']
+    points[:, 3] = pc['intensity']
+    inten = pc['intensity'].astype(np.int32)
+    #color = np.array([1 for i in range(len(inten))])
+    #points[:, 3:7] = color[:, 0:4]
+    tstamp = msg.header.stamp
+    #print('lidar is done')
 
-b = np.load('pdata.npy')
-res = 1
-maxval = 141
-cnt = maxval * res
-color = [i*(1/res) for i in range(cnt)]
-print(color)
-cmap = [num_to_rgb2(color[i]) for i in range(len(color))]
-cmap = np.array(cmap)
-print(cmap)
-# points = np.zeros((b.shape[0], 7))
-# color = [num_to_rgb2(b[i][3]) for i in range(len(b))]
-# color = np.array(color)
-# data = color[:, 0]
-# points[:,3:7] = color[:,0:4]
-# discolor = points[:, 3:7]
-# print(points)
-result = np.zeros((b.shape[0], 4))
-start = time.time()
-#for i in range(100):
-inten = b[:,3].astype(np.int32)
-result = np.array([cmap[inten[i]] for i in range(len(b))])
-print(time.time()-start)
+def callbackcam(msg):
+    cv_image = None
+    inputdata = msg
 
-start = time.time()
-#for i in range(100):
-result = np.apply_along_axis(num_to_rgb,1,b)
-print(time.time()-start)
-#
-start = time.time()
-#for i in range(100):
-color = [num_to_rgb2(b[i][3]) for i in range(len(b))]
-print(time.time()-start)
+    # np_arr = np.fromstring(msg.data, np.uint8)
+    # cv_image = cv2.imdecode(np_arr, cv2.COLOR_BGR2RGB)
+    # cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
+    #
+    # tstamp = float(inputdata.header.stamp.to_sec())
+    # h, w, ch = cv_image.shape
+
+
+print('-----published topic lists-----')
+topic_lists = dict()
+pdata = rospy.get_published_topics()
+for data in rospy.get_published_topics():
+    msgs = data[1].split('/')
+    from_str = msgs[0] + '.msg'
+    import_str = msgs[1]
+    msg = Importer.importerLibrary(from_str, import_str)
+    topic_lists[data[0]] = msg
+
+rospy.init_node('listener', anonymous=True)
+rospy.Subscriber("/velodyne_points", PointCloud2, callback)
+rospy.Subscriber("/usb_cam/image_raw/compressed", CompressedImage, callbackcam)
+rospy.spin()
+rospy.spin()
+
+
+#print(enum_list)  # prints [1, 2]
