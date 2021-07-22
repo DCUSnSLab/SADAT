@@ -27,9 +27,9 @@ class SenAdptMgr:
     def __initDevices(self):
         self.srcmanager.init()
         #actual Device
-        self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
         self.__addActualSensor(USBCAM(AttachedSensorName.USBCAM))
         self.__addActualSensor(USBCAM(AttachedSensorName.ZEDCAM))
+        self.__addActualSensor(RPLidar2DA3(AttachedSensorName.RPLidar2DA3))
         self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16, self.sysmanager.psignal))
 
         #virtual Device

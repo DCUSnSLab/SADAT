@@ -18,7 +18,7 @@ class SimProcess:
         return self.pid
 
     def terminate(self):
-        dbg = 'proc-' + self.name + 'terminated'
+        dbg = 'proc-' + self.name + ' terminated'
         slog.DEBUG(dbg)
         self.pid.terminate()
 
