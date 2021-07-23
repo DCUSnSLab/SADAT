@@ -90,7 +90,7 @@ class SystemManager:
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
-                sleep(0.5)
+                #sleep(0.5)
                 #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):

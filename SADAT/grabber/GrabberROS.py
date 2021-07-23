@@ -13,7 +13,7 @@ def get_now_timestamp():
     return get_now().timestamp()
 
 class GrabberROS():
-    def __init__(self, disp: 'LogPlayDispatcher', senstype=list(), nodename=None, topicname=None, topic=None):
+    def __init__(self, disp: 'LogPlayDispatcher', senstype=list(), nodename=None, topicname=None, topic=None, counter=0):
         self._node = nodename
         self._senstype = senstype
         self._rosTopic = dict()
@@ -21,7 +21,7 @@ class GrabberROS():
         self._topic = topic
         self._initpass = True
         self.Signal = Value('i', 0)
-
+        self.timeCounter = counter
         self._msgtype = list()
 
         #init ros library
@@ -66,22 +66,23 @@ class GrabberROS():
 
     #더이상 사용하지 않음
     def __getMsgType_deprecated(self, topicname):
-        msgt = None
-        if topicname == '/scan':
-            print('set msgtype')
-            msgt = Importer.importerLibrary('sensor_msgs.msg', 'LaserScan')
-        elif topicname == '/usb_cam/image_raw/compressed':
-            msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
-        elif topicname == '/usb_cam/image_raw':
-            msgt = Importer.importerLibrary('sensor_msgs.msg', 'Image')
-        elif topicname == '/velodyne_points':
-            msgt = Importer.importerLibrary('sensor_msgs.msg', 'PointCloud2')
-        elif topicname == '/zed2/zed_node/right/image_rect_color/compressed':
-            msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
-        else:
-            msgt = None
-
-        return msgt
+        pass
+        # msgt = None
+        # if topicname == '/scan':
+        #     print('set msgtype')
+        #     msgt = Importer.importerLibrary('sensor_msgs.msg', 'LaserScan')
+        # elif topicname == '/usb_cam/image_raw/compressed':
+        #     msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
+        # elif topicname == '/usb_cam/image_raw':
+        #     msgt = Importer.importerLibrary('sensor_msgs.msg', 'Image')
+        # elif topicname == '/velodyne_points':
+        #     msgt = Importer.importerLibrary('sensor_msgs.msg', 'PointCloud2')
+        # elif topicname == '/zed2/zed_node/right/image_rect_color/compressed':
+        #     msgt = Importer.importerLibrary('sensor_msgs.msg', 'CompressedImage')
+        # else:
+        #     msgt = None
+        #
+        # return msgt
 
     def connect(self):
         pass
@@ -96,6 +97,8 @@ class GrabberROS():
             print('Grab Stopped due to init Failed -',self._node)
 
     def doGrab(self):
+        slog.DEBUG('wait Time during at '+str(self.timeCounter))
+        sleep(self.timeCounter)
         dbg = 'init ROS Node -' + self._node
         slog.DEBUG(dbg)
         self.rospy.init_node(self._node)
