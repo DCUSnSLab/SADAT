@@ -14,7 +14,6 @@ class guiInfo():
 class planviewManager():
     def __init__(self):
         self.objects = dict()
-        self.guiinfo = None
 
     #update data to display on planview
     #All objects which are rawdata(DataTypeCategory) and externaldataset(ex. senarioBasicDataset) are updated and associated in 'objects' value in planviewmanager
@@ -23,16 +22,12 @@ class planviewManager():
             ispc, value = self.__checkPointCloud(rval)
             self.objects[rkey] = self.__addView(rval, ispc)
 
-    def updateposinfo(self, guiinfo):
-        self.guiinfo = guiinfo
-
-
     #이 부분 체크해서 이 함수 밑에 드로우 함수 만들기
-    def updateAllpos(self, guiinfo):
-        self.updateposinfo(guiinfo)
+    def updateAllpos(self):
+        #self.updateposinfo(guiinfo)
         for object in self.objects.values():
             for objitem in object:
-                objitem.updatePlanviewPos(guiinfo)
+                objitem.updatePlanviewPos()
 
     def draw(self,qp):
         pass
@@ -55,7 +50,6 @@ class planviewManager():
     def __addViewItem(self, vlist, item):
         tempitem = DataTypeCategory.getInstance(DataTypeCategory[item.dtypecate.name])
         tempitem.initView(item)
-        tempitem.updatePlanviewPos(self.guiinfo)
         vlist.append(tempitem)
 
     def __checkPointCloud(self, val):

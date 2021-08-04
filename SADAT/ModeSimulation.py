@@ -1,6 +1,5 @@
-from LogSimDispatcher import LogSimDispatcher
+from grabber.LogSimDispatcher import LogSimDispatcher
 from simMode import Mode
-import time
 
 
 class ModeSimulation(Mode):

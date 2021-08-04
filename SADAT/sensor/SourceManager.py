@@ -1,6 +1,7 @@
 from enum import Enum
 from multiprocessing import Manager
 
+from sensor.SenAdptMgr import AttachedSensorName
 from sensor.Sensor import Sensor
 from utils.sadatlogger import slog
 
@@ -29,8 +30,9 @@ class SourceManager:
             sensor.setupDataManager(man)
             sendict[sensor.sensorName] = sensor
             self.AllSensors[sensor.sensorName] = sensor
+            slog.DEBUG("SensorAdded SensorName: %s " % sensor.sensorName)
         else:
-            print("error SensorName: %s already in SensorList" % sensor.sensorName)
+            slog.WARNING("SensorName: %s already in SensorList" % sensor.sensorName)
 
     def getActualSensors(self):
         return self.ActualSensor

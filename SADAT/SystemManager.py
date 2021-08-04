@@ -1,11 +1,15 @@
 import sys
 from multiprocessing import Manager, Process
+from time import sleep
+
 from LidarLog import LidarLog
-from ModeLog import ModeLog
+from ModeRealTime import ModeRealTime
 from ModeSimulation import ModeSimulation
 from SimLog import SimLog
 from externalmodules.ext_module_manager import extModuleManager
+from grabber.ROSManager import ROSManager
 from gui.guiMain import GUI_CONTROLLER
+from msgs.ProcSignal import ProcSignal
 from sensor.SenAdptMgr import SenAdptMgr
 from sensor.SourceManager import SourceManager
 from simMode import Mode
@@ -22,9 +26,13 @@ class SystemManager:
         self.guiApp = gapp
         self.manager = manager
 
+        # msg
+        self.psignal = ProcSignal()
+
         #sensor devices
         self.srcmanager = SourceManager(manager)
-        self.senadapter = SenAdptMgr(self.srcmanager, manager)
+        self.senadapter = SenAdptMgr(self.srcmanager, manager, self)
+        self.rosManager = ROSManager(self.srcmanager)
         self.rawlog = LidarLog(manager)
         self.simlog = SimLog(manager)
         self.procs = {}
@@ -42,6 +50,8 @@ class SystemManager:
         self.srcmanager.printSensorList()
         self.loadPlugin()
         self.defineProcess()
+
+
 
         self.currentPlayMode = None
 
@@ -80,6 +90,7 @@ class SystemManager:
                 self.addProcess(pr)
             for p in self.processes:
                 p.start()
+                #sleep(0.5)
                 #slog.DEBUG("Start"+p.name())
 
             # for data in iter(self.simlog.getQueueData().get, 'interrupt'):
@@ -88,8 +99,14 @@ class SystemManager:
     def cleanGrabber(self, procs=None):
         if self.currentPlayMode is Mode.MODE_LOG:
             #self.procs[Mode.MODE_LOG].grabber.Signal.value = 1
-            self.procs[Mode.MODE_LOG].grabber.disconnect()
-            self.procs[Mode.MODE_LOG].camgrabber.disconnect()
+            for pr in self.procs[Mode.MODE_LOG].getHandledProcesses():
+                if pr.is_alive():
+                    pr.terminate()
+
+            # self.procs[Mode.MODE_LOG].grabber.disconnect()
+            # self.procs[Mode.MODE_LOG].camgrabber.disconnect()
+            # self.procs[Mode.MODE_LOG].velograbber.disconnect()
+
             #print("print gcnt = ",self.procs[Mode.MODE_LOG].grabber.var1.value)
 
     def cleanProcess(self):
@@ -105,36 +122,43 @@ class SystemManager:
             self.rawlog.DisconnectLogs()
             self.simlog.DisconnectLogs()
 
-            print("Wait process finishing for cleaning process list")
+            slog.DEBUG("Wait process finishing for cleaning process list")
             for p in self.processes:
                 p.join()
 
             self.processes.clear()
-            print("Clean, process length :", len(self.processes))
+            slog.DEBUG("Clean, process length :"+str(len(self.processes)))
 
     def defineProcess(self):
+        # define system processes
         # init taskPostPlan thread
-        self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
-        self.pvthread.signal.connect(self.guiApp.changePosition)
-        self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
-        self.pvthread.infosignal.connect(self.guiApp.playbackstatus)
-        self.pvthread.start()
+        # self.pvthread = taskPostPlan(self.guiApp, self.simlog, self.extModManager)
+        # self.pvthread.signal.connect(self.guiApp.changePosition)
+        # self.pvthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        # self.pvthread.infosignal.connect(self.guiApp.playbackstatus)
+        # self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
         self.lpthread.signal.connect(self.guiApp.playbackstatus)
+        self.lpthread.dataSignal.connect(self.guiApp.changePosition)
+        self.lpthread.imageSignal.connect(self.guiApp.updateCameraImage)
         self.lpthread.setVelocity(60)
         self.lpthread.start()
 
         # init log process
-        self.procs[Mode.MODE_LOG] = ModeLog(self.rawlog, self.simlog, self.srcmanager)
+        self.procs[Mode.MODE_LOG] = ModeRealTime(self.rawlog, self.simlog, self.srcmanager, self.rosManager)
         self.procs[Mode.MODE_SIM] = ModeSimulation(self.srcmanager)
         slog.DEBUG(self.procs)
 
     def addProcess(self, procdata):
+        pr = None
         if procdata.args is None:
-            self.processes.append(Process(name=procdata.name, target=procdata.target))
+            pr = Process(name=procdata.name, target=procdata.target)
         else:
-            self.processes.append(Process(name=procdata.name, target=procdata.target, args=procdata.args))
+            pr = Process(name=procdata.name, target=procdata.target, args=procdata.args)
+        procdata.setProcess(pr)
+        self.processes.append(pr)
+
 
     def getNumofProc(self):
         return len(self.processes)
