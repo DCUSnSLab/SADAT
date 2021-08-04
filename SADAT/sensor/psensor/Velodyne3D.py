@@ -7,12 +7,11 @@ import numpy as np
 from utils.importer import Importer
 
 class Velodyne3D(pSensor):
-    def __init__(self, name, msgs):
+    def __init__(self, name):
         super().__init__(SensorCategory.Lidar3D, name)
         self.prevTime = 0
         self.cmap = None
         self.__make_colormap()
-        self.sysSignal = msgs
 
     def num_to_rgb(self, val, max_val=141):
         i = (val * 255 / max_val);
@@ -26,7 +25,7 @@ class Velodyne3D(pSensor):
         maxval = 256
         cnt = maxval * res
         color = [i * (1 / res) for i in range(cnt)]
-        print(color)
+        #print(color)
         cmap = [self.num_to_rgb(color[i], maxval) for i in range(len(color))]
         self.cmap = np.array(cmap)
 

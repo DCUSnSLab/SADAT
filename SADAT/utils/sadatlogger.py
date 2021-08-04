@@ -17,7 +17,8 @@ class slog(object):
         if cls.mylogger is None:
             cls.init()
             print('init mylogger')
-        cls.mylogger.debug(message)
+        msg = cls.mylogger.debug(message)
+        return msg
 
     @classmethod
     def INFO(cls, message):
@@ -28,8 +29,20 @@ class slog(object):
         cls.mylogger.error(message)
 
     @classmethod
+    def WARNING(cls, message):
+        cls.mylogger.warning(message)
+
+    @classmethod
     def CRITICAL(cls, message):
         cls.mylogger.critical(message)
+
+    @classmethod
+    def addHandler(cls, handler):
+        cls.mylogger.addHandler(handler)
+    @classmethod
+    def removeHandler(cls, handler):
+        cls.mylogger.removeHandler(handler)
+
 
 if __name__ == '__main__':
     slog.init()

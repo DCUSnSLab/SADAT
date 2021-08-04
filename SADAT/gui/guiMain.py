@@ -8,6 +8,8 @@ from PyQt5.QtCore import *
 
 import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
+from gui.guiCameraDock import cameraDock
+from gui.guiMainDocks import SideDock
 from gui.planview import planView
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
@@ -80,21 +82,6 @@ class MyAppEventManager():          #아직 해당 클래의 기능은 없는거
     def __init__(self):
         pass
 
-'''MyWG클래스는 레이아웃을 나누기 위해 생성한 클래스'''
-class MyWG(QWidget):
-
-    def __init__(self, parent):
-        super(MyWG, self).__init__(parent)      #MyApp클래스를 상속 하면서 MyApp클래스의 함수에 접근 가능하게 됨
-        self.pr = parent
-        self.initUI()
-
-    '''initUI 함수에는 왼쪽 레이아웃의 코드가 작성되어 있음'''
-    def initUI(self):
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        self.pr.setPalette(p)
-        self.show()
-
 class MyApp(QMainWindow):
 
     def __init__(self, parent=None):
@@ -103,20 +90,6 @@ class MyApp(QMainWindow):
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
         slog.DEBUG(self.hasMouseTracking())
-
-        #for Planview Size and Position
-        self.panviewSize = 20       #화면에 출력되는 라이다 데이터
-        self.relx = 0               #라이다 데이터의 x축 좌표를 조정
-        self.rely = 0               #라이다 데이터의 y축 좌표를 조정
-        self.pressX=0
-        self.pressY=0
-        self.xp=0
-        self.yp=0
-
-        #for Camera image
-        self.vwidth = 0
-        self.vheight = 0
-        self.widgetResizeFlag = False
 
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
@@ -127,9 +100,6 @@ class MyApp(QMainWindow):
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
 
-        self.prevx = list()
-        self.prevy = list()
-
         # init Simulator Manager
         self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
@@ -137,93 +107,11 @@ class MyApp(QMainWindow):
 
         #init planview widget
         self.pvWidget = planView(self.planviewmanager)
-        self.DockingWidget()
-        self.DockingWidget2()
-        self.installEventFilter(self)
+
+        #camera Dock init
+        self.cameraDock = cameraDock()
+
         self.initUI()
-
-    #카메라 독
-    def DockingWidget2(self):
-        self.items=QDockWidget('Dockable',self)
-        self.items.installEventFilter(self)
-        self.listWidget=QGroupBox()
-        self.listWidget.setStyleSheet("color:black;"
-                                      "background-color:white;")
-        self.label = QLabel(self)
-        fInnerLayout = QHBoxLayout()
-        fInnerLayout.setContentsMargins(0,0,0,0)
-        fInnerLayout.setSpacing(0)
-        fInnerLayout.addWidget(self.label)
-        self.listWidget.setLayout(fInnerLayout)
-
-        self.items.setWidget(self.listWidget)
-
-        display_monitor = 0
-        monitor = QDesktopWidget().screenGeometry(display_monitor)
-        self.items.setFloating(True)
-        self.items.setGeometry(monitor.left() +1200, monitor.top() + 300,800,450)
-        #self.items.setFixedSize(500,275)
-        self.items.setFixedSize(800, 450)
-        #self.label.setFixedSize(600, 600)
-        self.vwidth = self.items.frameGeometry().width()
-        self.vheight = self.vwidth * 0.75
-        #self.setCentralWidget(MyWG(self))
-        self.addDockWidget(Qt.RightDockWidgetArea,self.items)
-
-    def DockingWidget(self):
-        self.items=QDockWidget('Dockable',self)
-        self.listWidget=QGroupBox()
-        self.listWidget.setStyleSheet("color:black;"
-                                      "background-color:white;")
-        fInnerLayout=QVBoxLayout()
-        self.buttonGroup=QGroupBox("Vehicle Button")
-        self.buttonGroup.setStyleSheet("color:black;"
-                                      "background-color:white;")
-
-        #제어버튼
-        self.pushButton1 = QPushButton("Advance")
-        self.pushButton1.setMaximumSize(100,70)
-        self.pushButton2 = QPushButton("Back up")
-        self.pushButton2.setMaximumSize(100, 70)
-        self.pushButton3 = QPushButton("Turn Left")
-        self.pushButton3.setMaximumSize(100, 70)
-        self.pushButton4 = QPushButton("Turn Right")
-        self.pushButton4.setMaximumSize(100,70)
-        self.pushButton5 = QPushButton("Stop")
-        self.pushButton5.setMaximumSize(100, 70)
-
-        sInnerLayout=QGridLayout()
-        sInnerLayout.addWidget(self.pushButton1,0,1)
-        sInnerLayout.addWidget(self.pushButton2,2,1)
-        sInnerLayout.addWidget(self.pushButton3,1,0)
-        sInnerLayout.addWidget(self.pushButton4,1,2)
-        sInnerLayout.addWidget(self.pushButton5,1,1)
-        self.buttonGroup.setLayout(sInnerLayout)
-
-        self.CheckGroup=QGroupBox("Check Box")
-        self.CheckGroup.setStyleSheet("color:black;"
-                                   "background-color: white")
-
-        self.textbox = QLineEdit('0')
-        self.textbox.resize(100, 30)
-        self.textboxbtn = QPushButton('setRad')
-        self.textboxbtn.clicked.connect(self.setradButton)
-        cInnerLayout=QHBoxLayout()
-        cInnerLayout.addWidget(self.textbox)
-        cInnerLayout.addWidget(self.textboxbtn)
-        self.CheckGroup.setLayout(cInnerLayout)
-
-
-        fInnerLayout.addWidget(self.buttonGroup,35)
-        fInnerLayout.addWidget(self.CheckGroup,100)
-        self.listWidget.setLayout(fInnerLayout)
-        layout=QVBoxLayout()
-        layout.addWidget(self.listWidget)
-
-        self.items.setWidget(self.listWidget)
-        self.items.setFloating(False)
-        #self.setCentralWidget(MyWG(self))
-        self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
 
     def initUI(self):
         self.setWindowTitle('Autonomous Driving Analysis Tool')
@@ -235,6 +123,9 @@ class MyApp(QMainWindow):
         self.initMenubar()
         self.initToolbar()
         self.ComboToolbar()
+        # init side Widget
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
+        self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
         self.setCentralWidget(self.pvWidget)
         self.setStyleSheet("""QMenuBar {        self.draw()
 
@@ -248,12 +139,12 @@ class MyApp(QMainWindow):
                      }""")
 
         p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
+        #p.setColor(self.backgroundRole(), Qt.lightGray)
         self.setPalette(p)
         self.modeChanger(GUI_GROUP.ALL, False)
         display_monitor = 0
         monitor = QDesktopWidget().screenGeometry(display_monitor)
-        self.setGeometry(300, 300, 1500, 1000)
+        self.setGeometry(0, 0, 1500, 1000)
         self.move(monitor.left()+300, monitor.top()+300)
         self.show()
 
@@ -325,25 +216,6 @@ class MyApp(QMainWindow):
         if e.key()==Qt.Key_Right:
             self.IncreaseButton()
 
-    def eventFilter(self, obj: 'QObject', event: 'QEvent') -> bool:
-        if event.type() == QEvent.MouseButtonPress:
-            self.widgetResizeFlag = True
-            #self.vwidth -= 30
-        elif event.type() == QEvent.MouseButtonRelease:
-            self.widgetResizeFlag = False
-            #self.vwidth += 30
-
-        if self.widgetResizeFlag is True and obj is self.items and event.type() == QEvent.Resize:
-            #self.vwidth = self.items.frameGeometry().width() - 30
-            self.vwidth = self.items.frameGeometry().width()
-            self.vheight = self.vwidth * 0.75
-
-        return super().eventFilter(obj, event)
-
-    def setradButton(self):
-        self.simulator.psignal.lidardegree = float(self.textbox.text())
-        print(self.simulator.psignal.lidardegree)
-
     def DecreaseButton(self):
         self.gcontrol.setSlider(self.gcontrol.getSlider().value() - 1)
         self.simulator.lpthread.setPlayPoint(self.gcontrol.getSlider().value())
@@ -368,70 +240,6 @@ class MyApp(QMainWindow):
         self.toolbar.addWidget(self.comboText)
         self.toolbar.addWidget(self.combo)
 
-    def paintEvent(self, e):        #라이다 데이터를 출력해주는 함수
-        pass
-        # qp = QPainter()
-        # qp.begin(self)
-        # self.draw(qp)
-        # qp.end()
-        #self.pvWidget.draw()
-
-    #event
-    def wheelEvent(self, e):            #whellEvent 함수, 마우스 휠을 조정해 panview 사이즈 조정 가능
-        wvalue = e.angleDelta().y()     #wvalue는 delta의 값을 이용해서 마우스 휠의 y축 즉, 위 아래 값을 알 수 있음
-        div = 0.025
-        max = 0.6
-        min = 0.05
-        dv = wvalue * div
-        if dv != 0:
-            sign = abs(dv) / dv
-        else:
-            sign = 0
-
-        if abs(dv) > max:
-            dv = max * sign
-        elif abs(dv) < min:
-            dv = min * sign
-
-        temp = self.panviewSize + dv
-
-        if 0.1 < temp <= 126:
-            self.panviewSize += dv
-
-        if self.gcontrol.getCurrentMode() is not GUI_CONTROLLER.PLAYMODE:
-            self.updatePosition()
-
-    def mouseMoveEvent(self, e):
-        if e.buttons()==Qt.LeftButton:
-            self.relx = e.globalX() - self.pressX
-            self.rely = e.globalY() - self.pressY
-            self.updatePosition()
-
-    def mousePressEvent(self, e):
-        self.updatePosition()
-        self.pressX = e.globalX()-self.relx
-        self.pressY = e.globalY()-self.rely
-        self.updatePosition()
-
-    def mouseReleaseEvent(self, e):
-        self.updatePosition()
-
-    #qp를 넘겨주어야 함
-    def draw(self,qp):
-        #draw paint
-        self.xp= self.relx
-        self.yp=self.rely
-        qp.setPen(QPen(Qt.white, 1))
-
-        for ikey, values in self.planviewmanager.getObjects():
-            for idata in values:
-                if self.combo.item_checked(index=0):
-                    if ikey is AttachedSensorName.RPLidar2DVirtual or ikey is AttachedSensorName.RPLidar2DA3:
-                        idata.setVisible(True)
-                if self.combo.item_checked(index=1):
-                    if ikey is senarioBasicDataset.TRACK:
-                        idata.setVisible(True)
-                idata.draw(ikey, gl=None, qp=qp)
 
     def modeChanger(self, mode, isTrue):
         for modedata in self.guiGroup:
@@ -448,15 +256,11 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
         self.planviewmanager.updateview(data)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
-        self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
-        #play with pyqt painter
-        #self.update()
-
+        self.planviewmanager.updateAllpos()
         #play with opengl
         self.pvWidget.draw()
 
@@ -477,16 +281,17 @@ class MyApp(QMainWindow):
             stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
             self.statusBar().showMessage(stxt)
         self.update()
+
+
     def updateCameraImage(self, data):
-        #print(data)
         for rkey, rval in data.items():
-            #print(rval.imagedata)
             cv_image = rval.imagedata
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
             convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_RGB888)
-            p = convertToQtFormat.scaledToWidth(self.vwidth)
-            self.label.setPixmap(QPixmap.fromImage(p))
+            #p = convertToQtFormat.scaledToWidth(self.vwidth)
+            #self.label.setPixmap(QPixmap.fromImage(p))
+            self.cameraDock.setPixmap(convertToQtFormat)
 
     def closeEvent(self, event):
         self.simulator.cleanProcess()

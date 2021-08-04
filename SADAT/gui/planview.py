@@ -23,8 +23,8 @@ class planView(QWidget):
         grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
         self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90.0, distance=100, translate_speed=50.0)
         hbox.addWidget(self.canvas.native)
+        hbox.setContentsMargins(0,0,0,0)
         self.setLayout(hbox)
-
         self.draw()
 
 

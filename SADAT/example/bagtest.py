@@ -1,5 +1,7 @@
 import rosbag
-bag = rosbag.Bag('test.bag')
-for topic, msg, t in bag.read_messages(topics=['chatter', 'numbers']):
-    print(msg)
+bag = rosbag.Bag('/home/soobin/development/dataset/2021_07_22_outdoor_centerpark.bag')
+rmsg = bag.read_messages()
+for topic, msg, t in rmsg:
+    print(topic, t, msg)
+    break
 bag.close()
