@@ -5,7 +5,6 @@ class DataView:
         self.isVisible = True
         self.viewType = None
 
-        self.guiinfo = None
         self.pos_xy = None
 
     def initView(self, rdata):
@@ -16,8 +15,8 @@ class DataView:
         self.rawdata = rdata
         self.rawid = self.rawdata.id
 
-    def updatePlanviewPos(self, guiinfo):
-        self.guiinfo = guiinfo
+    def updatePlanviewPos(self):
+        #self.guiinfo = guiinfo
         self.pos_xy = self._getPos(self.rawdata.getPoints())
         self._updatePlanviewSub()
 
@@ -45,10 +44,10 @@ class DataView:
     def _getPos(self, points):
         return points#  * [0.01, 0.01, 0.01]
 
-    def _getSize(self, w, h):
-        w = w / self.guiinfo.planviewsize
-        h = h / self.guiinfo.planviewsize
-        return w,h
+    # def _getSize(self, w, h):
+    #     w = w / self.guiinfo.planviewsize
+    #     h = h / self.guiinfo.planviewsize
+    #     return w,h
 
     def setVisible(self,tf):
         self.isVisible=tf

@@ -91,15 +91,6 @@ class MyApp(QMainWindow):
         self.setAcceptDrops(True)
         slog.DEBUG(self.hasMouseTracking())
 
-        #for Planview Size and Position
-        self.panviewSize = 20       #화면에 출력되는 라이다 데이터
-        self.relx = 0               #라이다 데이터의 x축 좌표를 조정
-        self.rely = 0               #라이다 데이터의 y축 좌표를 조정
-        self.pressX=0
-        self.pressY=0
-        self.xp=0
-        self.yp=0
-
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
 
@@ -108,9 +99,6 @@ class MyApp(QMainWindow):
 
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
-
-        self.prevx = list()
-        self.prevy = list()
 
         # init Simulator Manager
         self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
@@ -268,15 +256,11 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        self.planviewmanager.updateposinfo(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
         self.planviewmanager.updateview(data)
         self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
-        self.planviewmanager.updateAllpos(guiinfo=guiInfo(self.panviewSize, self.width(), self.height(), self.relx, self.rely))
-        #play with pyqt painter
-        #self.update()
-
+        self.planviewmanager.updateAllpos()
         #play with opengl
         self.pvWidget.draw()
 
@@ -300,9 +284,7 @@ class MyApp(QMainWindow):
 
 
     def updateCameraImage(self, data):
-        #print(data)
         for rkey, rval in data.items():
-            #print(rval.imagedata)
             cv_image = rval.imagedata
             h, w, ch = cv_image.shape
             bytesPerLine = ch * w
