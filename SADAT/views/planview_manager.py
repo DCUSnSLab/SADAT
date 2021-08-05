@@ -1,6 +1,7 @@
 from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from sensor.SenAdptMgr import AttachedSensorName
+from utils.sEventHandler import sEventHandler
 from views.viewpointcloud import viewPointCloud
 
 class guiInfo():
@@ -12,8 +13,11 @@ class guiInfo():
         self.rely = rely
 
 class planviewManager():
+    visibleChanged = sEventHandler()
     def __init__(self):
         self.objects = dict()
+        self.pObjkeycnt = 0
+        self.objectVisible = dict()
 
     #update data to display on planview
     #All objects which are rawdata(DataTypeCategory) and externaldataset(ex. senarioBasicDataset) are updated and associated in 'objects' value in planviewmanager
@@ -21,8 +25,9 @@ class planviewManager():
         for rkey, rval in inputs.items():
             ispc, value = self.__checkPointCloud(rval)
             self.objects[rkey] = self.__addView(rval, ispc)
+        self.objValidate()
 
-    #이 부분 체크해서 이 함수 밑에 드로우 함수 만들기
+
     def updateAllpos(self):
         #self.updateposinfo(guiinfo)
         for object in self.objects.values():
@@ -81,3 +86,19 @@ class planviewManager():
     def getObjects(self):
         return self.objects.items()
 
+    def getObjectVisibility(self, key):
+        if key in self.objectVisible:
+            return self.objectVisible[key]
+        else:
+            return False
+
+    def objValidate(self):
+        cobjcnt = len(self.objects)
+
+        if self.pObjkeycnt < cobjcnt:
+            #revalidate object visibility list
+            for objkey in self.getObjectList():
+                if (objkey in self.objectVisible) is False:
+                    self.objectVisible[objkey] = True
+            self.visibleChanged.trigger(self.objectVisible)
+            self.pObjkeycnt = cobjcnt

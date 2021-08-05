@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
+from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
 from gui.planview import planView
 from sensor.SenAdptMgr import AttachedSensorName
@@ -100,16 +101,18 @@ class MyApp(QMainWindow):
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
 
+        # camera Dock init
+        self.cameraDock = cameraDock()
+        self.bottomToolbar = toolbarPlanviewVisible(self)
+
         # init Simulator Manager
         self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
+        self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
         self.pvWidget = planView(self.planviewmanager)
-
-        #camera Dock init
-        self.cameraDock = cameraDock()
 
         self.initUI()
 
@@ -122,7 +125,8 @@ class MyApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color : white")
         self.initMenubar()
         self.initToolbar()
-        self.ComboToolbar()
+        #self.ComboToolbar()
+        self.addToolBar(Qt.BottomToolBarArea, self.bottomToolbar)
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
@@ -150,20 +154,22 @@ class MyApp(QMainWindow):
 
     def initMenubar(self):
         #create MenuBar
-        menubar = self.menuBar()
-        menubar.setNativeMenuBar(False)
+        self.menubar = self.menuBar()
+        self.menubar.setNativeMenuBar(False)
         self.statusBar()
 
         #File Menu
-        filemenu = menubar.addMenu('&File')
+        filemenu = self.menubar.addMenu('&File')
         filemenu.addAction(menuLoadSim('Load log files..', self))
+
         # Add LogPlay
         logplaymenu = filemenu.addMenu('&Log Play')
         logplaymenu.addAction(menuLogPlay('Log Play with Device',self))
         logplaymenu.addAction(menuLogPlayROS('Log Play with ROS', self))
         filemenu.addAction(menuExit('exit', self))
+
         #Simulation Menu
-        simmenu = menubar.addMenu('&Simulation')
+        simmenu = self.menubar.addMenu('&Simulation')
         simmenu.addAction(menuSim('Play',self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
@@ -191,10 +197,9 @@ class MyApp(QMainWindow):
 
         sbutton=QPushButton('Increase button')
         sbutton.setFixedWidth(50)
-        sbutton.setText("➡︎︎")
+        sbutton.setText("➡")
         sbutton.clicked.connect(self.IncreaseButton)
         self.toolbar.addWidget(sbutton)
-
 
         #slider
         slider = toolbarSlider(Qt.Horizontal, self)
@@ -227,7 +232,7 @@ class MyApp(QMainWindow):
     def ComboToolbar(self):
         self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
-        self.comboText=QLabel('Object')
+        self.comboText=QLabel('Object View')
 
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)

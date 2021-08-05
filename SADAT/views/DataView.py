@@ -33,6 +33,8 @@ class DataView:
                     xp=int(tdata[0])
                     yp=int(tdata[1])
                     self.drawIndividual(qp,xp,yp,ikey)
+        else:
+            return (None, None)
 
 
     def draw3DVisual(self, pos, ikey):
