@@ -9,6 +9,7 @@ from PyQt5.QtCore import *
 import SystemManager
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
+from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
 from gui.planview import planView
 from sensor.SenAdptMgr import AttachedSensorName
@@ -100,16 +101,18 @@ class MyApp(QMainWindow):
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
 
+        # camera Dock init
+        self.cameraDock = cameraDock()
+        self.bottomToolbar = toolbarPlanviewVisible(self)
+
         # init Simulator Manager
         self.simulator = SystemManager.SystemManager(Manager(), self)   #simulator변수는 SnSimylator 파일을 import
         self.simulator.setVelocity(self.velocity)
         self.planviewmanager = planviewManager()
+        self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
         self.pvWidget = planView(self.planviewmanager)
-
-        #camera Dock init
-        self.cameraDock = cameraDock()
 
         self.initUI()
 
@@ -122,7 +125,8 @@ class MyApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color : white")
         self.initMenubar()
         self.initToolbar()
-        self.ComboToolbar()
+        #self.ComboToolbar()
+        self.addToolBar(Qt.BottomToolBarArea, self.bottomToolbar)
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
@@ -169,21 +173,6 @@ class MyApp(QMainWindow):
         simmenu.addAction(menuSim('Play',self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
 
-        #Widget Menu
-        DockAction = QAction('DockWidget', self)
-        DockAction.setStatusTip('Show DockingWidget')
-        DockAction.setShortcut('Ctrl+D')
-        DockAction.triggered.connect(self.show_DockingWidget)
-
-        CameraAction=QAction('Camera',self)
-        CameraAction.setShortcut('Ctrl+C')
-        CameraAction.setStatusTip('Show Camera')
-        CameraAction.triggered.connect(self.show_CameraWidget)
-
-        self.widgetmenu = self.menubar.addMenu('&Tool Menu')
-        self.widgetmenu.addAction(DockAction)
-        self.widgetmenu.addAction(CameraAction)
-
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
         toolplay = toolbarPlay('Play', self, self.simulator.playMode, 'Ctrl+P')     #플레이
@@ -226,82 +215,6 @@ class MyApp(QMainWindow):
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
-    def DockingWidget(self):
-        self.items=QDockWidget('Dockable',self)
-        self.listWidget=QGroupBox()
-        self.listWidget.setStyleSheet("color:black;"
-                                      "background-color:white;")
-        fInnerLayout=QVBoxLayout()
-        self.buttonGroup=QGroupBox("Vehicle Button")
-        self.buttonGroup.setStyleSheet("color:black;"
-                                      "background-color:white;")
-
-        #제어버튼
-        self.pushButton1 = QPushButton("Advance")
-        self.pushButton1.setMaximumSize(100,70)
-        self.pushButton2 = QPushButton("Back up")
-        self.pushButton2.setMaximumSize(100, 70)
-        self.pushButton3 = QPushButton("Turn Left")
-        self.pushButton3.setMaximumSize(100, 70)
-        self.pushButton4 = QPushButton("Turn Right")
-        self.pushButton4.setMaximumSize(100,70)
-        self.pushButton5 = QPushButton("Stop")
-        self.pushButton5.setMaximumSize(100, 70)
-
-        sInnerLayout=QGridLayout()
-        sInnerLayout.addWidget(self.pushButton1,0,1)
-        sInnerLayout.addWidget(self.pushButton2,2,1)
-        sInnerLayout.addWidget(self.pushButton3,1,0)
-        sInnerLayout.addWidget(self.pushButton4,1,2)
-        sInnerLayout.addWidget(self.pushButton5,1,1)
-        self.buttonGroup.setLayout(sInnerLayout)
-
-        self.CheckGroup=QGroupBox("Check Box")
-        self.CheckGroup.setStyleSheet("color:black;"
-                                   "background-color: white")
-
-        fInnerLayout.addWidget(self.buttonGroup,35)
-        fInnerLayout.addWidget(self.CheckGroup,100)
-        self.listWidget.setLayout(fInnerLayout)
-        layout=QVBoxLayout()
-        layout.addWidget(self.listWidget)
-
-        self.items.setWidget(self.listWidget)
-        self.items.setFloating(False)
-        self.setCentralWidget(MyWG(self))
-        self.addDockWidget(Qt.LeftDockWidgetArea,self.items)
-
-    def show_DockingWidget(self):
-        self.items.show()
-
-    def CameraWidget(self):
-        self.camera=QDockWidget('Camera',self)
-        self.camera.installEventFilter(self)
-        self.listWidget=QGroupBox()
-        self.listWidget.setStyleSheet("color:black;"
-                                      "background-color:white;")
-        self.label = QLabel(self)
-        fInnerLayout = QHBoxLayout()
-        fInnerLayout.setContentsMargins(0,0,0,0)
-        fInnerLayout.setSpacing(0)
-        fInnerLayout.addWidget(self.label)
-        self.listWidget.setLayout(fInnerLayout)
-
-        self.camera.setWidget(self.listWidget)
-
-        self.camera.setFloating(False)
-        #self.items.setFixedSize(500,275)
-        self.camera.setFixedSize(800, 450)
-        #self.label.setFixedSize(600, 600)
-
-        self.vwidth = self.camera.frameGeometry().width()
-        self.vheight = self.vwidth * 0.75
-        self.setCentralWidget(MyWG(self))
-        self.addDockWidget(Qt.RightDockWidgetArea,self.camera)
-
-    def show_CameraWidget(self):
-        self.camera.show()
-
     def keyPressEvent(self, e):
         if e.key()==Qt.Key_Left:
             self.DecreaseButton()
@@ -319,7 +232,7 @@ class MyApp(QMainWindow):
     def ComboToolbar(self):
         self.toolbar=self.addToolBar('ComboToolbar')
         self.addToolBar(Qt.BottomToolBarArea,self.toolbar)
-        self.comboText=QLabel('Object')
+        self.comboText=QLabel('Object View')
 
         self.combo = CheckableComboBox()
         self.combo.setFixedHeight(25)

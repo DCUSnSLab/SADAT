@@ -217,6 +217,7 @@ class guiROSManager(QDialog):
 
 
     def rosTopicListCheked(self, index):
+        print(index)
         item = self.rosTopicModel.itemData(index)
         for key, value in item.items():
             gitem = self.getValuefromListViewItem(value)

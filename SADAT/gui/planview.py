@@ -31,9 +31,14 @@ class planView(QWidget):
     def draw(self):
         for ikey, values in self.pvmanager.getObjects():
             self.updateItems(ikey, values)
+
+            isvisible = self.pvmanager.getObjectVisibility(ikey)
             for i, idata in enumerate(values):
                 pos, color = idata.draw(ikey, True)
-                self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
+                if isvisible:
+                    self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
+                else:
+                    self.itemlist[ikey][idata.rawid].set_data(pos=np.array([[0,0,0]]),size=0)
 
     def updateItems(self, key, values):
         if (key in self.itemlist) is False:
@@ -46,8 +51,8 @@ class planView(QWidget):
 
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            return visuals.Markers(edge_color=None, size=3), dataview.rawid
+            return visuals.Markers(edge_color=None, size=2), dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK:
-            return visuals.Cube(color=(0.5, 0.5, 1, 0), edge_color='black'), dataview.rawid
+            return visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white'), dataview.rawid
         else: #need to add line
             return None

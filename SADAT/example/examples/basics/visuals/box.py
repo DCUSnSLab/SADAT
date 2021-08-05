@@ -30,6 +30,7 @@ class Canvas(app.Canvas):
 
         self.theta = 0
         self.phi = 0
+        self.wd = 0
 
         self.transform = MatrixTransform()
 
@@ -42,11 +43,12 @@ class Canvas(app.Canvas):
     def rotate(self, event):
         self.theta += .5
         self.phi += .5
+        self.wd += 0.5
         self.transform.reset()
         self.transform.rotate(self.theta, (0, 0, 1))
         self.transform.rotate(self.phi, (0, 1, 0))
         self.transform.scale((100, 100, 0.001))
-        self.transform.translate((200, 200))
+        self.transform.translate((100+self.wd, 200))
         self.update()
 
     def on_resize(self, event):
