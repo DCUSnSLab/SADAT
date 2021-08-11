@@ -23,8 +23,8 @@ class planviewManager():
     #All objects which are rawdata(DataTypeCategory) and externaldataset(ex. senarioBasicDataset) are updated and associated in 'objects' value in planviewmanager
     def updateview(self, inputs):
         for rkey, rval in inputs.items():
-            ispc, value = self.__checkPointCloud(rval)
-            self.objects[rkey] = self.__addView(rval, ispc)
+            isgobj, value = self.__checkGroupObject(rval)
+            self.objects[rkey] = self.__addView(rval, isgobj)
         self.objValidate()
 
 
@@ -38,14 +38,18 @@ class planviewManager():
         pass
 
     #match the view with data of dtype using dtypecategory
-    def __addView(self, values, isPointCloud):
+    def __addView(self, values, isGroupObject):
         templist = list()
-        if isPointCloud:
-            if isinstance(values, list):
-                for item in values:
-                    self.__addViewItem(templist, item)
-            else:
+        if isGroupObject:
+            if values.isPointCloud():
+            # if isinstance(values, list):
+            #     for item in values:
+            #         self.__addViewItem(templist, item)
+            # else:
                 self.__addViewItem(templist, values)
+            else:
+                for object in values.getObjects():
+                    self.__addViewItem(templist, object)
         else:
             for item in values:
                 self.__addViewItem(templist, item)
@@ -57,22 +61,24 @@ class planviewManager():
         tempitem.initView(item)
         vlist.append(tempitem)
 
-    def __checkPointCloud(self, val):
+    def __checkGroupObject(self, val):
         objval = None
-        ispc = False
+        isgroupobject = False
         if isinstance(val, list) and len(val) == 0:
             return False, val
         elif isinstance(val, list):
             objval = val[0]
+            isgroupobject = False
         else:
             objval = val
+            isgroupobject = True
 
-        if objval.dtypecate == DataTypeCategory.POINT_CLOUD:
-            ispc = True
-        else:
-            ispc = False
+        # if objval.dtypecate == DataTypeCategory.POINT_CLOUD:
+        #     ispc = True
+        # else:
+        #     ispc = False
 
-        return ispc, objval
+        return isgroupobject, objval
 
     def getObjectList(self):        #key값 가져옴
         return list(self.objects.keys())

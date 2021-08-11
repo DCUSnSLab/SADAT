@@ -213,7 +213,7 @@ class guiROSManager(QDialog):
 
         if self.submitSensor() is True:
             self.runROS()
-            #self.close()
+            self.close()
 
 
     def rosTopicListCheked(self, index):

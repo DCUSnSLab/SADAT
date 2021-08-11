@@ -7,21 +7,14 @@ class viewTrack(DataView):
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
 
-    #def draw3DVisual(self, pos, ikey):
-    #    return pos, None;
+    def _getPos(self):
+        return self.rawdata.getPoint()
+
+    def _getSize(self):
+        return self.rawdata.getSize()
+
+    def _getColor(self):
+        return None
 
     def drawIndividual(self,qp,xp,yp,ikey):
-        #color.setNamedColor(idata.rawdata.color)
-        #qp.setPen(color)
-
-        # 생성된 군집 id 출력
-        qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
-                    yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2), "Cluster_" + str(self.rawdata.id))
-        # 생성된 군집 중심좌표까지의 거리 출력
-        qp.drawText(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
-                    yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2) + 20, "distance : " + str(self.rawdata.distance))
-        qp.drawRect(xp - int((self.rawdata.width / self.guiinfo.planviewsize) / 2),
-                    yp - int((self.rawdata.height / self.guiinfo.planviewsize) / 2),
-                    int(self.rawdata.width / self.guiinfo.planviewsize), int(self.rawdata.height / self.guiinfo.planviewsize))
-
-        # qp.drawRect(xp,yp,10,10)
+        pass

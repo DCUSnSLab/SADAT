@@ -3,6 +3,8 @@ from vispy.scene import visuals, TurntableCamera
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5 import QtGui
 import numpy as np
+from vispy.visuals.transforms import MatrixTransform
+
 from dadatype.dtype_cate import DataTypeCategory
 
 
@@ -34,11 +36,35 @@ class planView(QWidget):
 
             isvisible = self.pvmanager.getObjectVisibility(ikey)
             for i, idata in enumerate(values):
-                pos, color = idata.draw(ikey, True)
+                pos, size, color = idata.draw(ikey, True)
                 if isvisible:
-                    self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
+                    self.__drawVisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
+                    #self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
                 else:
-                    self.itemlist[ikey][idata.rawid].set_data(pos=np.array([[0,0,0]]),size=0)
+                    self.__drawInvisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
+                    #self.itemlist[ikey][idata.rawid].set_data(pos=np.array([[0,0,0]]),size=0)
+
+    def __drawVisible(self, viewitem, dataview, pos, size, color):
+        if dataview.viewType == DataTypeCategory.POINT_CLOUD:
+            viewitem.set_data(pos=pos[:, :3], face_color=color, size=2, edge_color=color)
+        elif dataview.viewType == DataTypeCategory.TRACK:
+            viewitem.transform.reset()
+            viewitem.transform.scale(size)
+            viewitem.transform.translate(pos)
+        elif dataview.viewType == DataTypeCategory.LINE:
+            pass
+        elif dataview.viewType == DataTypeCategory.LANE:
+            pass
+
+    def __drawInvisible(self, viewitem, dataview, pos, size, color):
+        if dataview.viewType == DataTypeCategory.POINT_CLOUD:
+            viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
+        elif dataview.viewType == DataTypeCategory.TRACK:
+            viewitem.transform.reset()
+        elif dataview.viewType == DataTypeCategory.LINE:
+            pass
+        elif dataview.viewType == DataTypeCategory.LANE:
+            pass
 
     def updateItems(self, key, values):
         if (key in self.itemlist) is False:
@@ -53,6 +79,8 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             return visuals.Markers(edge_color=None, size=2), dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK:
-            return visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white'), dataview.rawid
+            box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
+            box.transform = MatrixTransform()
+            return box, dataview.rawid
         else: #need to add line
             return None

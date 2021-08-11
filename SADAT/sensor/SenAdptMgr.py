@@ -3,7 +3,7 @@ from sensor.psensor.RPLidar2D import RPLidar2DA3
 from sensor.psensor.USBCAM import USBCAM
 from sensor.psensor.Velodyne3D import Velodyne3D
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
-from sensor.vsensor.Track import Track
+from sensor.psensor.Track import Track
 
 #class ROSmsgType(Enum):
 from utils.sadatlogger import slog
@@ -12,7 +12,7 @@ from utils.sadatlogger import slog
 class AttachedSensorName(Enum):
     #Physical
     RPLidar2DA3 = 'rplidar:/scan:/scan'
-    Tracker = 'track:/track:/track'
+    Tracker = 'track:/lidar_tracker_geometry:geometry_msgs/PoseArray'
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
     ZEDCAM = 'zedcam:/zed2/zed_node/right/image_rect_color/compressed:sensor_msgs/CompressedImage'
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
@@ -22,7 +22,7 @@ class AttachedSensorName(Enum):
     def getInstance(inst):
         if inst.getMsgType() == 'scan':
             return RPLidar2DA3(inst)
-        elif inst.getMsgType() == 'track':
+        elif inst.getMsgType() == 'geometry_msgs/PoseArray':
             return Track(inst)
         elif inst.getMsgType() == 'sensor_msgs/CompressedImage':
             return USBCAM(inst)
@@ -68,7 +68,7 @@ class SenAdptMgr:
         # self.__addActualSensor(Velodyne3D(AttachedSensorName.VelodyneVLC16))
 
         #virtual Device
-        self.__addVirtualSensor(Track(AttachedSensorName.Tracker))
+        #self.__addVirtualSensor(Track(AttachedSensorName.Tracker))
         self.__addVirtualSensor(RPLidar2Dv(AttachedSensorName.RPLidar2DVirtual))
 
     def __makeSensorList(self):
@@ -79,6 +79,7 @@ class SenAdptMgr:
     def addActualSensor(self, topic):
         sensoritem = self.sensorList[topic]
         nsensor = AttachedSensorName.getInstance(sensoritem.sensor)
+        print(sensoritem.sensor, nsensor)
         self.__addActualSensor(nsensor)
 
     def __addActualSensor(self, sensor):

@@ -2,7 +2,7 @@ from sensor.SensorCategory import SensorCategory
 from sensor.vSensor import vSensor
 
 
-class Track(vSensor):
+class Trackv(vSensor):
     def __init__(self, name):
         super().__init__(SensorCategory.Track, name)
 

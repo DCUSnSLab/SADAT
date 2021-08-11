@@ -15,7 +15,11 @@ class viewPointCloud(DataView):
         qp.drawEllipse(xp,yp,6,6)
 
 
-    def draw3DVisual(self, pos, ikey):
-        color = pos[:,3:7]
+    def _getPos(self):
+        return self.rawdata.getPoints()
 
-        return pos, color
+    def _getSize(self):
+        return None
+
+    def _getColor(self):
+        return self.pos_xy[:, 3:7]

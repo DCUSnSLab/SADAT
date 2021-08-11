@@ -31,7 +31,7 @@ class Velodyne3D(pSensor):
 
     def _doWorkDataInput(self, inputdata):
         ros_numpy = Importer.importerLibrary('ros_numpy')
-        pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
+        #pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
         pc = ros_numpy.numpify(inputdata)
         points = np.zeros((pc.shape[0], 7))
         points[:, 0] = pc['x']
@@ -42,11 +42,11 @@ class Velodyne3D(pSensor):
         color = np.array([self.cmap[inten[i]] for i in range(len(inten))])
         points[:, 3:7] = color[:, 0:4]
         tstamp = inputdata.header.stamp
-        lgrp = grp_pointclouds(points, None, None, tstamp.to_sec(), True)
+        self.lgrp = grp_pointclouds(points, None, None, tstamp.to_sec(), True)
 
         #curTime = time.time()
         #sec = curTime - self.prevTime
         #self.prevTime = curTime
         #fps = 1 / (sec)
         #print(len(pc), 'fps - ', fps)
-        self.addRealtimeData(lgrp)
+        self.addRealtimeData(self.lgrp)

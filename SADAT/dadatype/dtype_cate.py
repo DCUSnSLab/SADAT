@@ -1,6 +1,8 @@
 from enum import Enum
 
 from views.DataView import DataView
+from views.viewLane import viewLane
+from views.viewLine import viewLine
 from views.viewpointcloud import viewPointCloud
 from views.viewtrack import viewTrack
 
@@ -24,6 +26,10 @@ class DataTypeCategory(Enum):
             return viewPointCloud()
         elif inst == DataTypeCategory.TRACK:
             return viewTrack()
+        elif inst == DataTypeCategory.LANE:
+            return viewLane()
+        elif inst == DataTypeCategory.LINE:
+            return viewLine()
         else:
             return DataView()
 
