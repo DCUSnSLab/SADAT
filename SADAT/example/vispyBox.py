@@ -5,10 +5,10 @@
 """
 Simple demonstration of Box visual.
 """
-
+import numpy as np
 from vispy import app, gloo, visuals
 from vispy.geometry import create_box
-from vispy.visuals.transforms import MatrixTransform
+from vispy.visuals.transforms import MatrixTransform, STTransform
 
 
 class Canvas(app.Canvas):
@@ -46,8 +46,7 @@ class Canvas(app.Canvas):
         self.transform.rotate(self.theta, (0, 0, 1))
         self.transform.rotate(self.phi, (0, 1, 0))
         self.transform.scale((100, 100, 0.001))
-        self.transform.translate((200, 200))
-        self.transform.set_mapping()
+        self.transform.translate((200, 200, 0))
         self.update()
 
     def on_resize(self, event):

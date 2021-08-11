@@ -14,24 +14,20 @@ class Track(pSensor):
         ros_numpy = Importer.importerLibrary('ros_numpy')
         header = inputdata.header
         poses = inputdata.poses
+
         #현재 pose array에서 2개의 pose가 1개의 트랙정보로 들어오는 중
         #pose 0 : 트랙 pos and orientation
         #pose 1 : 트랙 size
+
         tdatas = list()
-        self.tracks = grp_objects(dtypecate=DataTypeCategory.TRACK, timestamp=header.stamp)
+        tracks = grp_objects(dtypecate=DataTypeCategory.TRACK, timestamp=header.stamp)
         tid = 0 #temporary id
         for i, ps in enumerate(poses):
             pdata = ros_numpy.numpify(ps)
             tdatas.append(pdata)
             if (i+1) % 2 == 0:
                 track = dtype_track(tid, tdatas[0], tdatas[1])
-                self.tracks.addObject(track)
+                tracks.addObject(track)
                 tdatas.clear()
                 tid += 1
-        #print('addtracks - ',self.tracks, self.tracks.getTracks())
-        self.addRealtimeData(self.tracks)
-
-        #print(inputdata[1])
-        #pdata = ros_numpy.numpify(poses[0])
-        #print(pdata)
-        #self.addRealtimeData(data)
+        self.addRealtimeData(tracks)

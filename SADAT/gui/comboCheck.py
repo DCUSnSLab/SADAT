@@ -39,6 +39,7 @@ class CheckableComboBox(QComboBox):
     def refreshList(self, objs):
         #print('triggered', objs)
         model = self.model()
+        self.clear()
         for key, boolean in objs.items():
             self.addItem(key.getName(), [key,objs])
         self.initchecker()

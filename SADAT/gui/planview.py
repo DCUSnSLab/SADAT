@@ -11,6 +11,7 @@ from dadatype.dtype_cate import DataTypeCategory
 class planView(QWidget):
     def __init__(self, planviewmanager):
         super().__init__()
+        self.isOnceExeInvMode = dict()
         self.cnt = 0
         #set planview manager
         self.pvmanager = planviewmanager
@@ -41,8 +42,15 @@ class planView(QWidget):
                     self.__drawVisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
                     #self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
                 else:
-                    self.__drawInvisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
+                    if self.isOnceExeInvMode[ikey] is False:
+                        self.__drawInvisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
                     #self.itemlist[ikey][idata.rawid].set_data(pos=np.array([[0,0,0]]),size=0)
+
+            if isvisible is False and self.isOnceExeInvMode[ikey] is False:
+                self.isOnceExeInvMode[ikey] = True
+            elif isvisible is True:
+                self.isOnceExeInvMode[ikey] = False
+
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
@@ -61,6 +69,7 @@ class planView(QWidget):
             viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
         elif dataview.viewType == DataTypeCategory.TRACK:
             viewitem.transform.reset()
+            viewitem.transform.scale((0.1,0.1,0.1))
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -74,6 +83,9 @@ class planView(QWidget):
                 it, id = self.applyGLObject(item)
                 il[id] = it
                 self.view.add(it)
+
+            #set Visible Mode Changer
+            self.isOnceExeInvMode[key] = False
 
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
