@@ -25,12 +25,15 @@ class Mode(metaclass=ABCMeta):
             self.makeProcess()
         return self.procList
 
+    def getHandledProcesses(self):
+        return self.procList
+
     def setVelocity(self, vel):
         if self.lSimDispatcher is not None:
             self.lSimDispatcher.setVelocity(vel)
 
     def setLogType(self, type):
-        print("set Log Mode",type)
+        #print("set Log Mode",type)
         self.currentMode = type
 
     @abstractmethod

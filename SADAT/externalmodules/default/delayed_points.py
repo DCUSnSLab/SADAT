@@ -1,4 +1,4 @@
-from dadatype.grp_rplidar import grp_rplidar
+from dadatype.grp_pointclouds import grp_pointclouds
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from externalmodules.extModule import extModule
 import copy
@@ -16,7 +16,7 @@ class delayedPoints(extModule):
         dataObj = self._getRawDatabyKey(key)
 
         if self.prevdata is None:
-            self.prevdata = grp_rplidar()
+            self.prevdata = grp_pointclouds()
             self.prevdata.clone(dataObj)
             # self.prevdata = list()
             # for data in datas:
@@ -28,7 +28,7 @@ class delayedPoints(extModule):
             self._addData(datakey=senarioBasicDataset.DELAYEDPOINTS, data=self.prevdata)
 
             #self.prevdata.clear()
-            self.prevdata = grp_rplidar()
+            self.prevdata = grp_pointclouds()
             self.prevdata.clone(dataObj)
             # for data in datas:
             #     self.prevdata.append(data)

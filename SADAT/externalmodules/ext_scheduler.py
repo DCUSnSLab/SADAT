@@ -1,6 +1,5 @@
 from abc import *
 
-from dadatype.dtype_rplidar import dtype_rplidar
 from externalmodules.extModule import extModule
 
 '''
@@ -8,11 +7,12 @@ from externalmodules.extModule import extModule
 2. 이곳에서 정한 순서대로 외부모듈 동작됨
 '''
 class extScheduler(metaclass=ABCMeta):
-    def __init__(self):
+    def __init__(self, name):
         self.tempRawKey = 'rplidar'
         self._modules = list()
         self._rawdata = dict()
         self._dataset = dict()
+        self.name = name
 
     def initextScheduler(self):
         self.dataConstruction()

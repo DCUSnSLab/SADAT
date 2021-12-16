@@ -1,6 +1,7 @@
 from dadatype.dtype_cate import DataTypeCategory
 from externalmodules.default.dataset_enum import senarioBasicDataset
 from sensor.SenAdptMgr import AttachedSensorName
+from utils.sEventHandler import sEventHandler
 from views.viewpointcloud import viewPointCloud
 
 class guiInfo():
@@ -12,40 +13,43 @@ class guiInfo():
         self.rely = rely
 
 class planviewManager():
+    visibleChanged = sEventHandler()
     def __init__(self):
         self.objects = dict()
-        self.guiinfo = None
+        self.pObjkeycnt = 0
+        self.objectVisible = dict()
 
     #update data to display on planview
     #All objects which are rawdata(DataTypeCategory) and externaldataset(ex. senarioBasicDataset) are updated and associated in 'objects' value in planviewmanager
     def updateview(self, inputs):
         for rkey, rval in inputs.items():
-            ispc, value = self.__checkPointCloud(rval)
-            self.objects[rkey] = self.__addView(rval, ispc)
-
-    def updateposinfo(self, guiinfo):
-        self.guiinfo = guiinfo
+            isgobj, value = self.__checkGroupObject(rval)
+            self.objects[rkey] = self.__addView(rval, isgobj)
+        self.objValidate()
 
 
-    #이 부분 체크해서 이 함수 밑에 드로우 함수 만들기
-    def updateAllpos(self, guiinfo):
-        self.updateposinfo(guiinfo)
+    def updateAllpos(self):
+        #self.updateposinfo(guiinfo)
         for object in self.objects.values():
             for objitem in object:
-                objitem.updatePlanviewPos(guiinfo)
+                objitem.updatePlanviewPos()
 
     def draw(self,qp):
         pass
 
     #match the view with data of dtype using dtypecategory
-    def __addView(self, values, isPointCloud):
+    def __addView(self, values, isGroupObject):
         templist = list()
-        if isPointCloud:
-            if isinstance(values, list):
-                for item in values:
-                    self.__addViewItem(templist, item)
-            else:
+        if isGroupObject:
+            if values.isPointCloud():
+            # if isinstance(values, list):
+            #     for item in values:
+            #         self.__addViewItem(templist, item)
+            # else:
                 self.__addViewItem(templist, values)
+            else:
+                for object in values.getObjects():
+                    self.__addViewItem(templist, object)
         else:
             for item in values:
                 self.__addViewItem(templist, item)
@@ -55,25 +59,26 @@ class planviewManager():
     def __addViewItem(self, vlist, item):
         tempitem = DataTypeCategory.getInstance(DataTypeCategory[item.dtypecate.name])
         tempitem.initView(item)
-        tempitem.updatePlanviewPos(self.guiinfo)
         vlist.append(tempitem)
 
-    def __checkPointCloud(self, val):
+    def __checkGroupObject(self, val):
         objval = None
-        ispc = False
+        isgroupobject = False
         if isinstance(val, list) and len(val) == 0:
             return False, val
         elif isinstance(val, list):
             objval = val[0]
+            isgroupobject = False
         else:
             objval = val
+            isgroupobject = True
 
-        if objval.dtypecate == DataTypeCategory.POINT_CLOUD:
-            ispc = True
-        else:
-            ispc = False
+        # if objval.dtypecate == DataTypeCategory.POINT_CLOUD:
+        #     ispc = True
+        # else:
+        #     ispc = False
 
-        return ispc, objval
+        return isgroupobject, objval
 
     def getObjectList(self):        #key값 가져옴
         return list(self.objects.keys())
@@ -87,3 +92,19 @@ class planviewManager():
     def getObjects(self):
         return self.objects.items()
 
+    def getObjectVisibility(self, key):
+        if key in self.objectVisible:
+            return self.objectVisible[key]
+        else:
+            return False
+
+    def objValidate(self):
+        cobjcnt = len(self.objects)
+
+        if self.pObjkeycnt < cobjcnt:
+            #revalidate object visibility list
+            for objkey in self.getObjectList():
+                if (objkey in self.objectVisible) is False:
+                    self.objectVisible[objkey] = True
+            self.visibleChanged.trigger(self.objectVisible)
+            self.pObjkeycnt = cobjcnt

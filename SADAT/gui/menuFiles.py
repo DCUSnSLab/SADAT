@@ -1,10 +1,15 @@
 import os
+
+from gui.guiROSManager import guiROSManager
+from utils.sadatlogger import slog
+
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import qApp, QAction, QMainWindow, QFileDialog, QWidget
+from PyQt5.QtWidgets import qApp, QAction, QMainWindow, QFileDialog, QWidget, QDialog
 from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from gui.menuItem import MenuItem
 from simMode import Mode
 
@@ -40,7 +45,6 @@ class menuLogPlay(QAction):
     def trig(self):
         self.parent.simulator.setAction(Mode.MODE_LOG)
         self.parent.simulator.playMode()
-        print("PlayLogging")
 
 class menuLogPlayROS(QAction):
 
@@ -51,7 +55,11 @@ class menuLogPlayROS(QAction):
         self.setShortcut('Ctrl+R')
         self.setStatusTip('Logging with ROS')
 
+
     def trig(self):
-        self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
-        self.parent.simulator.playMode()
-        print("PlayLogging")
+        # self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
+        # self.parent.simulator.playMode()
+        self.rosmanager = guiROSManager(self.parent)
+
+
+

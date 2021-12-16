@@ -7,5 +7,14 @@ class viewLine(DataView):
     def PlanViewPos(self):
         self.pvpos=self.updatePlanviewPos()
 
+    def _getPos(self):
+        return None
+
+    def _getSize(self):
+        return None
+
+    def _getColor(self):
+        return None
+
     def drawIndividual(self,qp,xp,yp,ikey):
         qp.drawLine(xp,yp,10,10)
