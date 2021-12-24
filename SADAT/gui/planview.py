@@ -90,7 +90,7 @@ class planView(QWidget):
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             return visuals.Markers(edge_color=None, size=2), dataview.rawid
-        elif dataview.viewType == DataTypeCategory.TRACK:
+        elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
             box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
             box.transform = MatrixTransform()
             return box, dataview.rawid
