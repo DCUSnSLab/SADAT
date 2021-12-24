@@ -18,7 +18,6 @@ class Track(pSensor):
         #현재 pose array에서 2개의 pose가 1개의 트랙정보로 들어오는 중
         #pose 0 : 트랙 pos and orientation
         #pose 1 : 트랙 size
-
         tdatas = list()
         tracks = grp_objects(dtypecate=DataTypeCategory.TRACK, timestamp=header.stamp)
         tid = 0 #temporary id
