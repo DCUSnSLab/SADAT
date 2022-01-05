@@ -8,7 +8,7 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
-from gui.planview import planView
+from gui.planviewmatplot import planViewMatplot
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -109,7 +109,8 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        #self.pvWidget = planView(self.planviewmanager)
+        #self.pvWidget = planView(self.planviewmanager) #for vispy planview
+        self.pvWidget = planViewMatplot(self.planviewmanager)
 
         self.initUI()
 
@@ -127,7 +128,7 @@ class MyApp(QMainWindow):
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
-        #self.setCentralWidget(self.pvWidget)
+        self.setCentralWidget(self.pvWidget)
         self.setStyleSheet("""QMenuBar {        self.draw()
 
                          background-color: Gray;
@@ -264,7 +265,7 @@ class MyApp(QMainWindow):
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos()
         #play with opengl
-        #self.pvWidget.draw()
+        self.pvWidget.draw()
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
