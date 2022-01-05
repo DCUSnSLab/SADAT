@@ -11,7 +11,7 @@ class SideDock(QDockWidget):
         super().__init__('sideDock', parent)
         self.parent = parent
         self.width = 300
-        print('test')
+
         self.initUI()
 
     def initUI(self):

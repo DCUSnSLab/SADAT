@@ -1,7 +1,4 @@
 import sys
-
-import vispy.scene
-import cv2
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -112,7 +109,7 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        self.pvWidget = planView(self.planviewmanager)
+        #self.pvWidget = planView(self.planviewmanager)
 
         self.initUI()
 
@@ -130,7 +127,7 @@ class MyApp(QMainWindow):
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
-        self.setCentralWidget(self.pvWidget)
+        #self.setCentralWidget(self.pvWidget)
         self.setStyleSheet("""QMenuBar {        self.draw()
 
                          background-color: Gray;
@@ -267,7 +264,7 @@ class MyApp(QMainWindow):
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos()
         #play with opengl
-        self.pvWidget.draw()
+        #self.pvWidget.draw()
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션

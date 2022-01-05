@@ -1,9 +1,9 @@
-import vispy.scene
-from vispy.scene import visuals, TurntableCamera
+#import vispy.scene
+#from vispy.scene import visuals, TurntableCamera
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5 import QtGui
 import numpy as np
-from vispy.visuals.transforms import MatrixTransform
+#from vispy.visuals.transforms import MatrixTransform
 
 from dadatype.dtype_cate import DataTypeCategory
 
@@ -11,24 +11,24 @@ from dadatype.dtype_cate import DataTypeCategory
 class planView(QWidget):
     def __init__(self, planviewmanager):
         super().__init__()
-        self.isOnceExeInvMode = dict()
-        self.cnt = 0
-        #set planview manager
-        self.pvmanager = planviewmanager
-        #view item list
-        self.itemlist = dict()
-        hbox = QHBoxLayout()
-
-        #add vispy scene
-        self.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True, bgcolor='#000d1a')
-        self.view = self.canvas.central_widget.add_view()
-        axis = visuals.XYZAxis(parent=self.view.scene)
-        grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
-        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90.0, distance=100, translate_speed=50.0)
-        hbox.addWidget(self.canvas.native)
-        hbox.setContentsMargins(0,0,0,0)
-        self.setLayout(hbox)
-        self.draw()
+        # self.isOnceExeInvMode = dict()
+        # self.cnt = 0
+        # #set planview manager
+        # self.pvmanager = planviewmanager
+        # #view item list
+        # self.itemlist = dict()
+        # hbox = QHBoxLayout()
+        #
+        # #add vispy scene
+        # self.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True, bgcolor='#000d1a')
+        # self.view = self.canvas.central_widget.add_view()
+        # axis = visuals.XYZAxis(parent=self.view.scene)
+        # grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
+        # self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90.0, distance=100, translate_speed=50.0)
+        # hbox.addWidget(self.canvas.native)
+        # hbox.setContentsMargins(0,0,0,0)
+        # self.setLayout(hbox)
+        # self.draw()
 
 
     def draw(self):
