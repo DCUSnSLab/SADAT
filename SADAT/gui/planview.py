@@ -39,7 +39,8 @@ class planView(QWidget):
     def drawEgoVehicle(self):
         box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
         # box.transform = MatrixTransform()
-        box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(1., 1., 1.))
+        box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(0.7, 0.35, 0.2))
+        self.view.add(box)
 
 
     def draw(self):
@@ -65,7 +66,6 @@ class planView(QWidget):
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            #print('pcl - ',pos[:,:3])
             viewitem.set_data(pos=pos[:, :3], face_color=color, size=2, edge_color=color)
         elif dataview.viewType == DataTypeCategory.TRACK:
             viewitem.transform.translate = pos
@@ -105,7 +105,6 @@ class planView(QWidget):
             return visuals.Markers(edge_color=None, size=2), dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
             box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
-            #box.transform = MatrixTransform()
             box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(1., 1., 1.))
             return box, dataview.rawid
             #return visuals.Markers(edge_color=None, size=10, symbol='square'), dataview.rawid
