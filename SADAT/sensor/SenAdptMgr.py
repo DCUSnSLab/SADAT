@@ -12,7 +12,8 @@ from utils.sadatlogger import slog
 class AttachedSensorName(Enum):
     #Physical
     RPLidar2DA3 = 'rplidar:/scan:/scan'
-    Tracker = 'track:/lidar_tracker_geometry:geometry_msgs/PoseArray'
+    LidarTracker = 'lidartrack:/lidar_tracker_geometry:geometry_msgs/PoseArray'
+    CamTracker = 'camtrack:/cam_tracker_geometry:geometry_msgs/PoseArray'
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
     ZEDCAM = 'zedcam:/zed2/zed_node/right/image_rect_color/compressed:sensor_msgs/CompressedImage'
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
