@@ -8,6 +8,7 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
+from gui.planview import planView
 from gui.planviewmatplot import planViewMatplot
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
@@ -109,8 +110,8 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        #self.pvWidget = planView(self.planviewmanager) #for vispy planview
-        self.pvWidget = planViewMatplot(self.planviewmanager)
+        self.pvWidget = planView(self.planviewmanager) #for vispy planview
+        #self.pvWidget = planViewMatplot(self.planviewmanager)
 
         self.initUI()
 
