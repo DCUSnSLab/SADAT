@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5 import QtGui
 import numpy as np
 from vispy.visuals.transforms import MatrixTransform
+from vispy.visuals import transforms
 
 from dadatype.dtype_cate import DataTypeCategory
 
@@ -28,7 +29,18 @@ class planView(QWidget):
         hbox.addWidget(self.canvas.native)
         hbox.setContentsMargins(0,0,0,0)
         self.setLayout(hbox)
+
+        #add ego vehicle
+        self.drawEgoVehicle()
+
+        #draw objects
         self.draw()
+
+    def drawEgoVehicle(self):
+        box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
+        # box.transform = MatrixTransform()
+        box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(0.7, 0.35, 0.2))
+        self.view.add(box)
 
 
     def draw(self):
@@ -56,9 +68,10 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=pos[:, :3], face_color=color, size=2, edge_color=color)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.transform.reset()
-            viewitem.transform.scale(size)
-            viewitem.transform.translate(pos)
+            viewitem.transform.translate = pos
+            viewitem.transform.scale = size
+            if viewitem.border.color.alpha == 0:
+                viewitem.border.color = (1, 1, 1, 1)
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -68,8 +81,8 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.transform.reset()
-            viewitem.transform.scale((0.1,0.1,0.1))
+            viewitem.border.color = (1, 1, 1, 0)
+
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -92,7 +105,8 @@ class planView(QWidget):
             return visuals.Markers(edge_color=None, size=2), dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
             box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
-            box.transform = MatrixTransform()
+            box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(1., 1., 1.))
             return box, dataview.rawid
+            #return visuals.Markers(edge_color=None, size=10, symbol='square'), dataview.rawid
         else: #need to add line
             return None
