@@ -12,7 +12,9 @@ import sys
 
 import np as np
 from vispy import scene
+from vispy.visuals import transforms
 from vispy.visuals.transforms import STTransform
+from vispy.visuals.transforms import MatrixTransform
 import numpy as np
 
 canvas = scene.SceneCanvas(keys='interactive', bgcolor='white',
@@ -29,7 +31,20 @@ view.camera = 'arcball'
 
 #cube = scene.visuals.Cube(color=(0.5, 0.5, 1, 0), edge_color='black', parent=view.scene)
 
-box = scene.visuals.Box(width=1, height=2, depth=3, color=(0.5,0.5,1,0), edge_color='black', parent=view.scene)
+box = scene.visuals.Box(width=2, height=3, depth=1, color=(0.5,0.5,1,0), edge_color='black', parent=view.scene)
+matrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+mt = transforms.MatrixTransform(matrix)
+st = transforms.STTransform(translate=(-2., 0., 0.), scale=(1, 1, 0.5))
+box.transform = transforms.ChainTransform(st, mt)
+box.transform.transforms[1].rotate(45, (0,1,0))
+
+box2 = scene.visuals.Box(width=2, height=3, depth=1, color=(0.5,0.5,1,0), edge_color='black', parent=view.scene)
+matrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+mt = transforms.MatrixTransform(matrix)
+st = transforms.STTransform(translate=(2., 0., 0.), scale=(1, 1, 1))
+box2.transform = transforms.ChainTransform(st, mt)
+box2.transform.transforms[1].rotate(45, (0,1,0))
+
 # sphere3 = scene.visuals.Sphere(radius=1, rows=10, cols=10, depth=10,
 #                                method='cube', parent=view.scene,
 #                                edge_color='black')

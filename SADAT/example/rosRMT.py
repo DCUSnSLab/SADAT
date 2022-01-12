@@ -10,7 +10,7 @@ class rmTracker():
 
     def __init__(self, id):
         self.tid = id
-        self.movingstep = 0.05
+        self.movingstep = 0.15
         self.xmin = -20
         self.xmax = 20
         self.ymin = -5
@@ -75,7 +75,7 @@ class rmTracker():
 def talker():
     pub = rospy.Publisher('lidar_tracker_geometry', PoseArray, queue_size=10)
     rospy.init_node('LidarTracker', anonymous=True)
-    rate = rospy.Rate(15)  # 10hz
+    rate = rospy.Rate(10)  # 10hz
     trackers = list()
     for i in range(30):
         trackers.append(rmTracker(i))
