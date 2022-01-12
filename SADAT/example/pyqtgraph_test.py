@@ -22,18 +22,18 @@ class App(QtGui.QMainWindow):
 
         self.view = self.canvas.addViewBox()
         self.view.setAspectLocked(True)
-        self.view.setRange(QtCore.QRectF(0,0, 100, 100))
+        #self.view.setRange(QtCore.QRectF(0,0, 100, 100))
 
         #  image plot
         self.img = pg.ImageItem(border='w')
-        self.view.addItem(self.img)
+        #self.view.addItem(self.img)
 
         self.canvas.nextRow()
         #  line plot
-        self.otherplot = self.canvas.addPlot()
-        self.h2 = self.otherplot.plot(pen='y')
-
-
+        #self.otherplot = self.canvas.addPlot()
+        #self.h2 = self.otherplot.plot(pen='y')
+        self.h2 = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
+        self.view.addItem(self.h2)
         #### Set Data  #####################
 
         self.x = np.linspace(0,50., num=100)
@@ -52,7 +52,15 @@ class App(QtGui.QMainWindow):
         self.ydata = np.sin(self.x/3.+ self.counter/9.)
 
         self.img.setImage(self.data)
-        self.h2.setData(self.ydata)
+
+        #Generate random points
+        n = 60000
+        #print('Number of points: ' + str(n))
+        data = np.random.normal(size=(2, n))
+        pos = [{'pos': data[:, i]} for i in range(n)]
+
+        self.h2.setData(pos)
+        #self.h2.setData(self.ydata)
 
         now = time.time()
         dt = (now-self.lastupdate)

@@ -79,7 +79,10 @@ class planView2D(QWidget):
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            viewitem.setData(pos=pos[:, :2])
+            pos = pos[:, :2]
+            idx = np.random.randint(len(pos), size=10000)
+            pos = pos[idx, :]
+            viewitem.setData(pos=pos)
         elif dataview.viewType == DataTypeCategory.TRACK:
             pass
         elif dataview.viewType == DataTypeCategory.LINE:
@@ -112,10 +115,10 @@ class planView2D(QWidget):
 
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=5, color='r'), symbol='o', size=1)
+            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
             return sp, dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
-            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=5, color='r'), symbol='o', size=1)
+            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
             return sp, dataview.rawid
             #return visuals.Markers(edge_color=None, size=10, symbol='square'), dataview.rawid
         else: #need to add line
