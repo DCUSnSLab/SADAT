@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout
 from PyQt5 import QtGui
 import numpy as np
+from pyqtgraph import ColorMap
 from pyqtgraph.Qt import QtCore, QtGui
 import numpy as np
 import pyqtgraph as pg
@@ -33,6 +34,7 @@ class planView2D(QWidget):
 
         self.view = self.canvas.addViewBox()
         self.view.setAspectLocked(True)
+        self.view.disableAutoRange()
         #self.view.setRange(QtCore.QRectF(0, 0, 100, 100))
 
         # Generate random points
@@ -51,6 +53,10 @@ class planView2D(QWidget):
 
     def drawEgoVehicle(self):
         pass
+        #r1 = pg.QtGui.QGraphicsRectItem(0, 0, 0.4, 1)
+        #r1.setPen(pg.mkPen(None))
+        #r1.setBrush(pg.mkBrush('r'))
+        #self.view.addItem(r1)
         # box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
         # # box.transform = MatrixTransform()
         # box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(0.7, 0.35, 0.2))
@@ -79,10 +85,13 @@ class planView2D(QWidget):
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            pos = pos[:, :2]
-            idx = np.random.randint(len(pos), size=10000)
-            pos = pos[idx, :]
+            #print(color[:,:3])
+            #print(pos[:,3])
+            #cm = pg.colormap.get('jet', source='matplotlib')
+            #cm.map(pos[:,3], mode=ColorMap.FLOAT)
+            #brush = cm.getPen()
             viewitem.setData(pos=pos)
+            #viewitem.setBrush(color)
         elif dataview.viewType == DataTypeCategory.TRACK:
             pass
         elif dataview.viewType == DataTypeCategory.LINE:
@@ -115,7 +124,7 @@ class planView2D(QWidget):
 
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
+            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=2)
             return sp, dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
             sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)

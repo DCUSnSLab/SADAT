@@ -32,7 +32,8 @@ class App(QtGui.QMainWindow):
         #  line plot
         #self.otherplot = self.canvas.addPlot()
         #self.h2 = self.otherplot.plot(pen='y')
-        self.h2 = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
+        #self.h2 = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
+        self.h2 = pg.ScatterPlotItem(symbol='o', size=1)
         self.view.addItem(self.h2)
         #### Set Data  #####################
 
@@ -54,12 +55,19 @@ class App(QtGui.QMainWindow):
         self.img.setImage(self.data)
 
         #Generate random points
-        n = 60000
+        n = 10000
         #print('Number of points: ' + str(n))
         data = np.random.normal(size=(2, n))
         pos = [{'pos': data[:, i]} for i in range(n)]
+        x = np.random.normal(size=n)
+        y = np.random.normal(size=n)
+        z = np.random.normal(size=n)
 
-        self.h2.setData(pos)
+        cm = pg.colormap.get('jet', source='matplotlib')
+        pen = cm.getPen(span=(np.min(z), np.max(z)))
+        self.h2.setData(x=x,y=y)
+        self.h2.setPen(pen)
+
         #self.h2.setData(self.ydata)
 
         now = time.time()
@@ -71,7 +79,7 @@ class App(QtGui.QMainWindow):
         self.fps = self.fps * 0.9 + fps2 * 0.1
         tx = 'Mean Frame Rate:  {fps:.3f} FPS'.format(fps=self.fps )
         self.label.setText(tx)
-        QtCore.QTimer.singleShot(1, self._update)
+        QtCore.QTimer.singleShot(20, self._update)
         self.counter += 1
 
 
