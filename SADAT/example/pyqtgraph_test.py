@@ -21,6 +21,7 @@ class App(QtGui.QMainWindow):
         self.mainbox.layout().addWidget(self.label)
 
         self.view = self.canvas.addViewBox()
+        #self.view.setLimits(xMin=-100., xMax=100., yMin=-100., yMax=100.)
         self.view.setAspectLocked(True)
         #self.view.setRange(QtCore.QRectF(0,0, 100, 100))
 
@@ -35,6 +36,11 @@ class App(QtGui.QMainWindow):
         #self.h2 = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
         self.h2 = pg.ScatterPlotItem(symbol='o', size=1)
         self.view.addItem(self.h2)
+
+        self.tr1 = pg.QtGui.QGraphicsRectItem(-0.175, -0.35, 0.35, 0.7)
+        self.tr1.setPen(pg.mkPen('w'))
+        self.view.addItem(self.tr1)
+
         #### Set Data  #####################
 
         self.x = np.linspace(0,50., num=100)
@@ -59,17 +65,21 @@ class App(QtGui.QMainWindow):
         #print('Number of points: ' + str(n))
         data = np.random.normal(size=(2, n))
         pos = [{'pos': data[:, i]} for i in range(n)]
-        x = np.random.normal(size=n)
-        y = np.random.normal(size=n)
-        z = np.random.normal(size=n)
+        x = np.arange(1,100)
+        y = np.arange(1,100)
+        #z = np.random.normal(size=n)
 
-        cm = pg.colormap.get('jet', source='matplotlib')
-        pen = cm.getPen(span=(np.min(z), np.max(z)))
+        #cm = pg.colormap.get('jet', source='matplotlib')
+        #pen = cm.getPen(span=(np.min(z), np.max(z)))
         self.h2.setData(x=x,y=y)
-        self.h2.setPen(pen)
+        #self.h2.setPen(pen)
 
         #self.h2.setData(self.ydata)
 
+        x = np.random.normal(size=10, scale=10)
+        y = np.random.normal(size=10, scale=10)
+        #print(x[0], y[0])
+        self.tr1.setRect(x[0], y[0], 1, 1)
         now = time.time()
         dt = (now-self.lastupdate)
         if dt <= 0:

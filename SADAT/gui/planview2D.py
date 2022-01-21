@@ -19,13 +19,6 @@ class planView2D(QWidget):
         self.itemlist = dict()
         hbox = QHBoxLayout()
 
-        #add vispy scene
-        # self.canvas = vispy.scene.SceneCanvas(keys='interactive', show=True, bgcolor='#000d1a')
-        # self.view = self.canvas.central_widget.add_view()
-        # axis = visuals.XYZAxis(parent=self.view.scene)
-        # grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
-        # self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90.0, distance=100, translate_speed=50.0)
-
         #add pyqtgraph
         self.canvas = pg.GraphicsLayoutWidget()
         hbox.addWidget(self.canvas)
@@ -37,14 +30,8 @@ class planView2D(QWidget):
         self.view.disableAutoRange()
         #self.view.setRange(QtCore.QRectF(0, 0, 100, 100))
 
-        # Generate random points
-        # n = 1000
-        # print('Number of points: ' + str(n))
-        # data = np.random.normal(size=(2, n))
-        # pos = [{'pos': data[:, i]} for i in range(n)]
-        #
-        # self.sp.setData(pos)
-
+        grid = pg.GridItem()
+        self.view.addItem(grid)
         #add ego vehicle
         self.drawEgoVehicle()
 
@@ -53,14 +40,10 @@ class planView2D(QWidget):
 
     def drawEgoVehicle(self):
         pass
-        #r1 = pg.QtGui.QGraphicsRectItem(0, 0, 0.4, 1)
-        #r1.setPen(pg.mkPen(None))
-        #r1.setBrush(pg.mkBrush('r'))
-        #self.view.addItem(r1)
-        # box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
-        # # box.transform = MatrixTransform()
-        # box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(0.7, 0.35, 0.2))
-        # self.view.add(box)
+        ev = pg.QtGui.QGraphicsRectItem(-0.175, -0.35, 0.35, 0.7)
+        ev.setPen(pg.mkPen(None))
+        ev.setBrush(pg.mkBrush('r'))
+        self.view.addItem(ev)
 
     def draw(self):
         for ikey, values in self.pvmanager.getObjects():
@@ -69,7 +52,9 @@ class planView2D(QWidget):
             isvisible = self.pvmanager.getObjectVisibility(ikey)
             for i, idata in enumerate(values):
                 pos, size, color = idata.draw(ikey, True)
-                if isvisible:
+                if self.itemlist[ikey].get(idata.rawid) is None:
+                    continue
+                elif isvisible:
                     self.__drawVisible(self.itemlist[ikey][idata.rawid], idata, pos, size, color)
                     #self.itemlist[ikey][idata.rawid].set_data(pos=pos[:,:3], face_color=color, size=2, edge_color=color)
                 else:
@@ -85,15 +70,9 @@ class planView2D(QWidget):
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            #print(color[:,:3])
-            #print(pos[:,3])
-            #cm = pg.colormap.get('jet', source='matplotlib')
-            #cm.map(pos[:,3], mode=ColorMap.FLOAT)
-            #brush = cm.getPen()
             viewitem.setData(pos=pos)
-            #viewitem.setBrush(color)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            pass
+            viewitem.setRect((pos[1]*-1)-0.5, pos[0]-0.5, size[1], size[0])
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -116,8 +95,9 @@ class planView2D(QWidget):
             il = self.itemlist[key]
             for i, item in enumerate(values):
                 it, id = self.applyGLObject(item)
-                il[id] = it
-                self.view.addItem(it)
+                if it is not None:
+                    il[id] = it
+                    self.view.addItem(it)
 
             #set Visible Mode Changer
             self.isOnceExeInvMode[key] = False
@@ -127,8 +107,9 @@ class planView2D(QWidget):
             sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=2)
             return sp, dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
-            sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=1)
-            return sp, dataview.rawid
-            #return visuals.Markers(edge_color=None, size=10, symbol='square'), dataview.rawid
+            #tr = pg.QtGui.QGraphicsRectItem(-0.175, -0.35, 0.35, 0.7)
+            tr = pg.QtGui.QGraphicsRectItem(-0.5, -0.5, 0.5, 0.5)
+            tr.setPen(pg.mkPen('w'))
+            return tr, dataview.rawid
         else: #need to add line
             return None

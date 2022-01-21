@@ -35,8 +35,10 @@ class Velodyne3D(pSensor):
         #pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
         pc = ros_numpy.numpify(inputdata)
         points = np.zeros((pc.shape[0], 7))
-        points[:, 0] = pc['x']
-        points[:, 1] = pc['y']
+
+        #for ROS and vehicle, x axis is long direction, y axis is lat direction
+        points[:, 0] = pc['y'] * -1
+        points[:, 1] = pc['x']
         points[:, 2] = pc['z']
         points[:, 3] = pc['intensity']
         inten = pc['intensity'].astype(np.int32)
