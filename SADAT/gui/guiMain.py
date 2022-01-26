@@ -12,6 +12,7 @@ from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
 from gui.planview import planView
+from gui.planview2D import planView2D
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -112,7 +113,7 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        self.pvWidget = planView(self.planviewmanager)
+        self.pvWidget = planView2D(self.planviewmanager)
 
         self.initUI()
 
