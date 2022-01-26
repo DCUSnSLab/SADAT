@@ -28,7 +28,7 @@ class planView(QWidget):
         self.view.camera = 'arcball'
         axis = visuals.XYZAxis(parent=self.view.scene)
         #grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
-        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90.0, distance=100, translate_speed=50.0)
+        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=0., distance=100, translate_speed=50.0)
         hbox.addWidget(self.canvas.native)
         hbox.setContentsMargins(0,0,0,0)
         self.setLayout(hbox)
@@ -56,7 +56,7 @@ class planView(QWidget):
         self.egobox.transform.transforms[1].reset()
         #self.egobox.transform.transforms[1].scale((2,3,1))
         self.egobox.transform.transforms[1].rotate(90, (1,0,0))
-        self.egobox.transform.transforms[1].rotate(90, (0, 0, 1))
+        #self.egobox.transform.transforms[1].rotate(90, (0, 0, 1))
         #self.egobox.transform.transforms[1].rotate(45, (0, 0, 1))
         self.view.add(self.egobox)
 
@@ -86,11 +86,10 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=pos[:, :3], face_color=color, size=2, edge_color=color)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.transform.transforms[0].translate = pos
-            #viewitem.transform.transforms[0].scale = size
-            #viewitem.transform.transforms[1].rotate(1, (0, 0, 1))
-            if viewitem.border.color.alpha == 0:
-                viewitem.border.color = (1, 1, 1, 1)
+            if pos[1] == 0 and pos[0] == 0:
+                viewitem.set_data([0., 0., 0.], width=0)
+            else:
+                viewitem.set_data(pos)
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -100,7 +99,7 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.border.color = (1, 1, 1, 0)
+            pass
 
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
@@ -112,28 +111,73 @@ class planView(QWidget):
             self.itemlist[key] = dict()
             il = self.itemlist[key]
             for i, item in enumerate(values):
-                it, id = self.applyGLObject(item)
+                it, id, isCustom = self.applyGLObject(item)
                 il[id] = it
-                self.view.add(it)
+                if isCustom is False:
+                    self.view.add(it)
+                else:
+                    self.view.add(it.getVisual())
 
             #set Visible Mode Changer
             self.isOnceExeInvMode[key] = False
 
+    # Return Type
+    # Visual Object, raw id, Is custom Object
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            return visuals.Markers(edge_color=None, size=2), dataview.rawid
+            return visuals.Markers(edge_color=None, size=2), dataview.rawid, False
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
-            box = visuals.Box(width=1, height=1, depth=1, color=(0.5, 0.5, 1, 0), edge_color='white')
-            #box.transform = transforms.STTransform(translate=(0., 0., 0.), scale=(1., 1., 1.))
-            matrix = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
-            mt = transforms.MatrixTransform(matrix)
-            #st = transforms.STTransform(translate=(0., 0., 0.), scale=(3., 1.5, 1.))
-            st = transforms.STTransform(translate=(0., 0., 0.), scale=(1., 1., 1.))
-            box.transform = transforms.ChainTransform(st, mt)
-            box.transform.transforms[1].scale((1.5, 1, 3))
-            box.transform.transforms[1].rotate(90, (1, 0, 0))
-            box.transform.transforms[1].rotate(90, (0, 0, 1))
-            return box, dataview.rawid
-            #return visuals.Markers(edge_color=None, size=10, symbol='square'), dataview.rawid
+            box = sCube()
+            return box, dataview.rawid, True
         else: #need to add line
             return None
+
+class sCube():
+    def __init__(self, parent=None, pos=None):
+        if pos is None:
+            pos = [0., 0., 0.]
+        else:
+            pos
+
+        x = 0.5
+        y = 0.5
+        z = 0.5
+        v = np.array([[x, y, z], [-x, y, z], [-x, -y, z], [x, -y, z],
+                      [x, -y, -z], [x, y, -z], [-x, y, -z], [-x, -y, -z]])
+
+        self.Vertice = np.array([v[0], v[1],
+                              v[2], v[3],
+                              v[0], v[3],
+                              v[4], v[5],
+                              v[0], v[5],
+                              v[6], v[1],
+                              v[1], v[6],
+                              v[7], v[2],
+                              v[7], v[4]], dtype=np.float64)
+
+        print(self.Vertice)
+        self.accAxis = [0., 0., 0.]
+
+        V = self.calcPos(pos)
+
+        self.lplot = visuals.LinePlot(V, width=2.0, color='red',
+                                   edge_color='w', face_color=(0.2, 0.2, 1, 0.8),
+                                   parent=parent)
+
+    def calcPos(self, pos):
+        self.Vertice[:, :] -= self.accAxis
+        self.Vertice[:, :] += pos
+        self.accAxis = pos
+        return self.Vertice
+
+
+    def set_data(self, pos, width=2):
+        if type(pos).__module__ == np.__name__:
+            ldata = pos.tolist()
+        else:
+            ldata = pos
+        V = self.calcPos(ldata)
+        self.lplot.set_data(V, width=width)
+
+    def getVisual(self):
+        return self.lplot

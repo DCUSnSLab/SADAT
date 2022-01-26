@@ -113,7 +113,7 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        self.pvWidget = planView2D(self.planviewmanager)
+        self.pvWidget = planView(self.planviewmanager)
 
         self.initUI()
 
