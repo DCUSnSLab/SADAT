@@ -1,9 +1,15 @@
 import rospy
-from std_msgs.msg import String
 from geometry_msgs.msg import Pose, PoseArray
+from zed_interfaces.msg import ObjectsStamped
 
 def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data)
+    for obj in data.objects:
+        label = obj.label
+        lid = obj.label_id
+        print(label, lid, ':', obj.position[0], obj.position[1], obj.position[2], obj.tracking_state
+              , obj.confidence, obj.action_state)
+
+    print('-------------------')
 
 
 def listener():
@@ -14,7 +20,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber("lidar_tracker_geometry", PoseArray, callback)
+    rospy.Subscriber("/zed2/zed_node/obj_det/objects", ObjectsStamped, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

@@ -2,6 +2,7 @@ from enum import Enum
 from sensor.psensor.RPLidar2D import RPLidar2DA3
 from sensor.psensor.USBCAM import USBCAM
 from sensor.psensor.Velodyne3D import Velodyne3D
+from sensor.psensor.ZedTrack import ZedTrack
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
 from sensor.psensor.Track import Track
 
@@ -14,8 +15,9 @@ class AttachedSensorName(Enum):
     RPLidar2DA3 = 'rplidar:/scan:/scan'
     LidarTracker = 'lidartrack:/lidar_tracker_geometry:geometry_msgs/PoseArray'
     CamTracker = 'camtrack:/cam_tracker_geometry:geometry_msgs/PoseArray'
+    ZED_ObjectDet = 'zedobjdet:/zed2/zed_node/obj_det/objects:zed_interfaces/ObjectsStamped'
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
-    ZEDCAM = 'zedcam:/zed2/zed_node/right/image_rect_color/compressed:sensor_msgs/CompressedImage'
+    ZEDCAM = 'zedcam:/zed2/zed_node/left/image_rect_color/compressed:sensor_msgs/CompressedImage'
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
     #Virtual
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
@@ -25,6 +27,8 @@ class AttachedSensorName(Enum):
             return RPLidar2DA3(inst)
         elif inst.getMsgType() == 'geometry_msgs/PoseArray':
             return Track(inst)
+        elif inst.getMsgType() == 'zed_interfaces/ObjectsStamped':
+            return ZedTrack(inst)
         elif inst.getMsgType() == 'sensor_msgs/CompressedImage':
             return USBCAM(inst)
         elif inst.getMsgType() == 'pointcloud2':

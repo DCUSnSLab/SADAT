@@ -14,11 +14,12 @@ class Velodyne3D(pSensor):
         self.__make_colormap()
 
     def num_to_rgb(self, val, max_val=141):
+        rgb = 255
         i = (val * 255 / max_val);
         r = math.sin(0.024 * i + 0) * 127 + 128
         g = math.sin(0.024 * i + 2) * 127 + 128
         b = math.sin(0.024 * i + 4) * 127 + 128
-        return [r / 255, g / 255, b / 255, 1]
+        return [r / rgb, g / rgb, b / rgb, 1]
 
     def __make_colormap(self):
         res = 1
@@ -34,13 +35,19 @@ class Velodyne3D(pSensor):
         #pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
         pc = ros_numpy.numpify(inputdata)
         points = np.zeros((pc.shape[0], 7))
-        points[:, 0] = pc['x']
-        points[:, 1] = pc['y']
+
+        #for ROS and vehicle, x axis is long direction, y axis is lat direction
+        points[:, 0] = pc['y'] * -1
+        points[:, 1] = pc['x']
         points[:, 2] = pc['z']
         points[:, 3] = pc['intensity']
         inten = pc['intensity'].astype(np.int32)
         color = np.array([self.cmap[inten[i]] for i in range(len(inten))])
         points[:, 3:7] = color[:, 0:4]
+
+        #re sampling pointcloud for performance
+        points = self.__resamplePoints(points, 10000)
+
         tstamp = inputdata.header.stamp
         self.lgrp = grp_pointclouds(points, None, None, tstamp.to_sec(), True)
 
@@ -50,3 +57,11 @@ class Velodyne3D(pSensor):
         #fps = 1 / (sec)
         #print(len(pc), 'fps - ', fps)
         self.addRealtimeData(self.lgrp)
+
+    def __resamplePoints(self, points, size=None):
+        # re sampling pointcloud for performance
+        # default value = None
+        if size is not None:
+            idx = np.random.randint(len(points), size=10000)
+            points = points[idx, :]
+        return points
