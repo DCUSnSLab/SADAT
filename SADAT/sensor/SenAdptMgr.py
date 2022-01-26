@@ -17,7 +17,7 @@ class AttachedSensorName(Enum):
     CamTracker = 'camtrack:/cam_tracker_geometry:geometry_msgs/PoseArray'
     ZED_ObjectDet = 'zedobjdet:/zed2/zed_node/obj_det/objects:zed_interfaces/ObjectsStamped'
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
-    ZEDCAM = 'zedcam:/zed2/zed_node/right/image_rect_color/compressed:sensor_msgs/CompressedImage'
+    ZEDCAM = 'zedcam:/zed2/zed_node/left/image_rect_color/compressed:sensor_msgs/CompressedImage'
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
     #Virtual
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
