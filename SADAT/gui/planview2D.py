@@ -72,7 +72,12 @@ class planView2D(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.setData(pos=pos)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.setRect((pos[1]*-1)-0.5, pos[0]-0.5, size[1], size[0])
+            if pos[1] == 0 and pos[0] == 0:
+                viewitem.setVisible(False)
+            else:
+                #print(pos[0], pos[1])
+                viewitem.setVisible(True)
+                viewitem.setRect((pos[0])-(size[1]/2), pos[1]-(size[0]/2), size[1], size[0])
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
