@@ -56,8 +56,8 @@ class dtype_track(DataWrapper):
         tpos = numpy.array(list(obj.position))
         #print(self.pos.dtype)
         #self.pos[:,[1, 0]] = self.pos[:,[0, 1]]
-        self.pos[0] = tpos[1] * -1
-        self.pos[1] = tpos[0]
+        self.pos[0] = tpos[0]
+        self.pos[1] = tpos[1]
         #print(self.pos, self.pos.dtype)
         #self.size = obj.
         self.velocity = obj.velocity

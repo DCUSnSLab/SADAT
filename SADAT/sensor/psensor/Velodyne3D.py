@@ -37,8 +37,8 @@ class Velodyne3D(pSensor):
         points = np.zeros((pc.shape[0], 7))
 
         #for ROS and vehicle, x axis is long direction, y axis is lat direction
-        points[:, 0] = pc['y'] * -1
-        points[:, 1] = pc['x']
+        points[:, 0] = pc['x']
+        points[:, 1] = pc['y']
         points[:, 2] = pc['z']
         points[:, 3] = pc['intensity']
         inten = pc['intensity'].astype(np.int32)

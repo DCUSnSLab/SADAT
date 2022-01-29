@@ -11,7 +11,7 @@ from vispy.visuals import transforms
 from dadatype.dtype_cate import DataTypeCategory
 
 
-class planView(QWidget):
+class planView3D(QWidget):
     def __init__(self, planviewmanager):
         super().__init__()
         self.isOnceExeInvMode = dict()
@@ -28,7 +28,7 @@ class planView(QWidget):
         self.view.camera = 'arcball'
         axis = visuals.XYZAxis(parent=self.view.scene)
         #grid1 = visuals.GridLines(parent=self.view.scene, scale=(5,5))
-        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=0., distance=100, translate_speed=50.0)
+        self.view.camera = TurntableCamera(fov=30.0, elevation=90.0, azimuth=-90., distance=100, translate_speed=50.0)
         hbox.addWidget(self.canvas.native)
         hbox.setContentsMargins(0,0,0,0)
         self.setLayout(hbox)
@@ -56,7 +56,7 @@ class planView(QWidget):
         self.egobox.transform.transforms[1].reset()
         #self.egobox.transform.transforms[1].scale((2,3,1))
         self.egobox.transform.transforms[1].rotate(90, (1,0,0))
-        #self.egobox.transform.transforms[1].rotate(90, (0, 0, 1))
+        self.egobox.transform.transforms[1].rotate(90, (0, 0, 1))
         #self.egobox.transform.transforms[1].rotate(45, (0, 0, 1))
         self.view.add(self.egobox)
 
@@ -99,7 +99,7 @@ class planView(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            pass
+            viewitem.set_data(pos=pos, width=0)
 
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
@@ -134,6 +134,7 @@ class planView(QWidget):
 
 class sCube():
     def __init__(self, parent=None, pos=None):
+        self.isWidthZero = False
         if pos is None:
             pos = [0., 0., 0.]
         else:
@@ -155,7 +156,7 @@ class sCube():
                               v[7], v[2],
                               v[7], v[4]], dtype=np.float64)
 
-        print(self.Vertice)
+        #print(self.Vertice)
         self.accAxis = [0., 0., 0.]
 
         V = self.calcPos(pos)
@@ -177,7 +178,13 @@ class sCube():
         else:
             ldata = pos
         V = self.calcPos(ldata)
-        self.lplot.set_data(V, width=width)
+
+        if width == 0 and self.isWidthZero is False:
+            self.isWidthZero = True
+            self.lplot.set_data(V, width=0)
+        elif width != 0:
+            self.isWidthZero = False
+            self.lplot.set_data(V, width=width)
 
     def getVisual(self):
         return self.lplot
