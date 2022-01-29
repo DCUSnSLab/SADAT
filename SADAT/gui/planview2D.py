@@ -28,6 +28,8 @@ class planView2D(QWidget):
         self.view = self.canvas.addViewBox()
         self.view.setAspectLocked(True)
         self.view.disableAutoRange()
+        self.view.scaleBy(s=(20,20))
+        #self.view.invertX(True)
         #self.view.setRange(QtCore.QRectF(0, 0, 100, 100))
 
         grid = pg.GridItem()
@@ -70,14 +72,14 @@ class planView2D(QWidget):
 
     def __drawVisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            viewitem.setData(pos=pos)
+            viewitem.setData(pos=pos, size=2)
         elif dataview.viewType == DataTypeCategory.TRACK:
             if pos[1] == 0 and pos[0] == 0:
                 viewitem.setVisible(False)
             else:
                 #print(pos[0], pos[1])
                 viewitem.setVisible(True)
-                viewitem.setRect((pos[0])-(size[1]/2), pos[1]-(size[0]/2), size[1], size[0])
+                viewitem.setRect((pos[0])-(size[1]/2), pos[1]-(size[0]/2), size[0], size[1])
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -85,10 +87,9 @@ class planView2D(QWidget):
 
     def __drawInvisible(self, viewitem, dataview, pos, size, color):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
-            viewitem.set_data(pos=np.array([[0,0,0]]),size=0)
+            viewitem.setData(pos=np.array([[0,0,0]]),size=0)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            viewitem.border.color = (1, 1, 1, 0)
-
+            viewitem.setVisible(False)
         elif dataview.viewType == DataTypeCategory.LINE:
             pass
         elif dataview.viewType == DataTypeCategory.LANE:
@@ -110,11 +111,13 @@ class planView2D(QWidget):
     def applyGLObject(self, dataview):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             sp = pg.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=2)
+            sp.setRotation(90)
             return sp, dataview.rawid
         elif dataview.viewType == DataTypeCategory.TRACK: #Track Visual 부분을 Box 말고 다른 view로 바꿔봐야할 것 같음...
             #tr = pg.QtGui.QGraphicsRectItem(-0.175, -0.35, 0.35, 0.7)
             tr = pg.QtGui.QGraphicsRectItem(-0.5, -0.5, 0.5, 0.5)
             tr.setPen(pg.mkPen('w'))
+            tr.setRotation(90)
             return tr, dataview.rawid
         else: #need to add line
             return None

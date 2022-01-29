@@ -11,8 +11,8 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
-from gui.planview import planView
 from gui.planview2D import planView2D
+from gui.planview3D import planView3D
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -24,6 +24,7 @@ from multiprocessing import Manager
 
 from gui.toolbarOption import toolbarPlay, toolbarEditor
 from gui.toolbarSlider import toolbarSlider
+from utils.importer import Importer
 from utils.sadatlogger import slog
 from views.planview_manager import planviewManager, guiInfo
 from dadatype.dtype_cate import DataTypeCategory
@@ -113,7 +114,8 @@ class MyApp(QMainWindow):
         self.planviewmanager.visibleChanged.hfunc = self.bottomToolbar.refreshList
 
         #init planview widget
-        self.pvWidget = planView2D(self.planviewmanager)
+        self.stkWidget = QStackedWidget(self)
+        self.planviewUI()
 
         self.initUI()
 
@@ -131,7 +133,9 @@ class MyApp(QMainWindow):
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
-        self.setCentralWidget(self.pvWidget)
+        #set planview in main
+        self.setCentralWidget(self.stkWidget)
+        #self.setCentralWidget(self.pvWidget)
         self.setStyleSheet("""QMenuBar {        self.draw()
 
                          background-color: Gray;
@@ -215,6 +219,20 @@ class MyApp(QMainWindow):
         self.gcontrol.addSlider(slider)
         self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
+
+
+    def planviewUI(self):
+        if Importer.checkVispy() is True:
+            self.stkWidget.addWidget(planView3D(self.planviewmanager))
+
+        self.stkWidget.addWidget(planView2D(self.planviewmanager))
+        self.setPlanviewWidget(0)
+
+
+    def setPlanviewWidget(self, idx):
+        self.stkWidget.setCurrentIndex(idx)
+        self.pvWidget = self.stkWidget.currentWidget()
+
 
     def keyPressEvent(self, e):
         if e.key()==Qt.Key_Left:

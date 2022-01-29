@@ -13,7 +13,20 @@ class Importer:
             libp = _library
             if _library is None:
                 libp = ""
-            print('-> %s : %s'%(_from, libp))
-            raise Exception('-> %s : %s'%(_from, libp))
+            #print('There is no library -> %s : %s'%(_from, libp))
+            raise Exception('There is no library -> %s : %s'%(_from, libp))
 
         return lib
+
+
+    @classmethod
+    def checkVispy(cls):
+        try:
+            import vispy
+            from vispy.gloo import gl
+            vispy.sys_info()
+            version = gl.glGetParameter(gl.GL_VERSION)
+            #print('GL version:  %r\n' % (gl.glGetParameter(gl.GL_VERSION),))
+            return True
+        except:
+            return False
