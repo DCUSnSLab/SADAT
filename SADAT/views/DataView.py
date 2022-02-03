@@ -48,6 +48,7 @@ class DataView(metaclass=ABCMeta):
             return (None, None, None)
 
     def draw3DVisual(self):
+        print("show")
         return self.pos_xy, self.size, self.color
 
     @abstractmethod

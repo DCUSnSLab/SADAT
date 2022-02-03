@@ -58,17 +58,20 @@ class guiROSManager(QDialog):
 
 
     def initUI(self):
-
+        self.text0 = QPlainTextEdit('Bagfile Topics')
+        self.text0.setMaximumHeight((30))
         self.text1 = QPlainTextEdit('Published Topics')
         self.text1.setMaximumHeight(30)
         self.text2 = QPlainTextEdit('Topics for Grab')
         self.text2.setMaximumHeight(30)
         self.titlebox = QHBoxLayout()
+        self.titlebox.addWidget(self.text0)
         self.titlebox.addWidget(self.text1)
         self.titlebox.addWidget(self.text2)
 
 
         #ListBox
+        self.listview0 = QListView(self)
         self.listview1 = QListView(self)
         self.rosTopicModel = QStandardItemModel()
         self.listview1.setModel(self.rosTopicModel)
@@ -78,6 +81,7 @@ class guiROSManager(QDialog):
         self.listview2.setModel(self.actuateModel)
 
         self.listbox = QHBoxLayout()
+        self.listbox.addWidget(self.listview0)
         self.listbox.addWidget(self.listview1)
         self.listbox.addWidget(self.listview2)
 
@@ -217,7 +221,7 @@ class guiROSManager(QDialog):
 
 
     def rosTopicListCheked(self, index):
-        print(index)
+        print('index:',index)
         item = self.rosTopicModel.itemData(index)
         for key, value in item.items():
             gitem = self.getValuefromListViewItem(value)

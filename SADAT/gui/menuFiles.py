@@ -1,6 +1,8 @@
 import os
 
-from gui.guiROSManager import guiROSManager
+import rosbag
+
+from gui.guiROSManager import guiROSManager, LogStringHandler
 from utils.sadatlogger import slog
 
 os.environ["MKL_NUM_THREADS"] = "1"
@@ -18,6 +20,8 @@ class menuLoadSim(QAction):
         super().__init__(name, parent)
         self.parent = parent
         # self.triggered.connect(self.trig)
+
+        self.logsteram = LogStringHandler
         self.triggered.connect(self.OepnFile)
         self.setShortcut('Ctrl+S')
         self.setStatusTip('Exit application')
@@ -28,8 +32,24 @@ class menuLoadSim(QAction):
 
     def OepnFile(self):
         print('connect')
-        fileselect = QFileDialog.getOpenFileName(directory='../../')
+        self.fileselect = QFileDialog.getOpenFileName(directory='../')
+        self.file_info = self.fileselect[0]
+        print(self.file_info)
+        self.Topic_info()
 
+    def Topic_info(self):
+        self.rosmanager = guiROSManager(self.parent)
+        self.test_bagfile = rosbag.Bag(self.file_info)
+        self.topic_info = self.test_bagfile.get_type_and_topic_info()
+        # for k in self.topic_info.topics.keys():
+        #     print(k)
+        print("test topic list")
+
+
+        print("testtest",slog.addHandler(self.file_info))
+
+        # for topic, msg, t in self.test_bagfile:
+        #     print(topic)
         # if fileselect[0]:
         #     f = open(fileselect[0],)
         #     line = f.read()
