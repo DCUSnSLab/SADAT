@@ -19,6 +19,8 @@ class AttachedSensorName(Enum):
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
     ZEDCAM = 'zedcam:/zed2/zed_node/left/image_rect_color/compressed:sensor_msgs/CompressedImage'
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
+    CarlaLidar = 'carlaLidar:/carla/ego_vehicle/lidar:pointcloud2'
+    KittiLidar = 'kittiLidar:/kitti/velo/pointcloud:pointcloud2'
     #Virtual
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
 
