@@ -21,6 +21,7 @@ class taskLoopPlay(QThread):
     signal = pyqtSignal([playbackInfo])
     dataSignal = pyqtSignal([dict])
     imageSignal = pyqtSignal([dict])
+    etcSignal = pyqtSignal([dict])
     PLAYMODE_LOGPLAY = 0
     PLAYMODE_LOAD = 1
     PLAYMODE_PLAY = 2
@@ -95,13 +96,18 @@ class taskLoopPlay(QThread):
                     ldata.clear()
                     dset = dict()
                     imageset = dict()
+                    etcset = dict()
                     try:
                         for key, data in lq.items():
                             if data.getRealtimeDataQueue().qsize() > 0:
                                 data = data.getRealtimeDataQueue().get()
-                                if data.dataGroup != DataGroup.GRP_DISPLAY:
+                                if data.dataGroup != DataGroup.GRP_DISPLAY\
+                                         and data.dataGroup == DataGroup.GRP_SINGLE_OBJECT:#오류 있음(pointCloud재생 안됨)
                                     dset[key] = data
                                     self.dataSignal.emit(dset)
+                                elif data.dataGroup == DataGroup.GRP_ETC:  # 그룹설정 된 값 출력
+                                    etcset[key] = data
+                                    self.etcSignal.emit(etcset)
                                 else:
                                     imageset[key] = data
                                     self.imageSignal.emit(imageset)

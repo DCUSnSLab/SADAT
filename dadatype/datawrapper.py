@@ -10,7 +10,6 @@ class DataWrapper(metaclass=ABCMeta):
         self.dtypecate = dtypecate
         self.dataGroup = DataTypeCategory.checkGroupType(self.dtypecate)
         self._timestamp = timestamp
-
         self.__isGrpObject = isgroupobject
 
     def __metertoPixel(self):

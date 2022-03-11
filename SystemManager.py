@@ -140,6 +140,7 @@ class SystemManager:
         self.lpthread.signal.connect(self.guiApp.playbackstatus)
         self.lpthread.dataSignal.connect(self.guiApp.changePosition)
         self.lpthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        self.lpthread.etcSignal.connect(self.guiApp.updateEtcData)  # 쓰레드 호출
         self.lpthread.setVelocity(60)
         self.lpthread.start()
 

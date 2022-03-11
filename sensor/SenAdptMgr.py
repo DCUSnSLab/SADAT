@@ -1,5 +1,6 @@
 from enum import Enum
 from sensor.psensor.RPLidar2D import RPLidar2DA3
+from sensor.psensor.SPFloat import SPFloat
 from sensor.psensor.USBCAM import USBCAM
 from sensor.psensor.Velodyne3D import Velodyne3D
 from sensor.psensor.ZedTrack import ZedTrack
@@ -21,6 +22,7 @@ class AttachedSensorName(Enum):
     VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
     CarlaLidar = 'carlaLidar:/carla/ego_vehicle/lidar:pointcloud2'
     KittiLidar = 'kittiLidar:/kitti/velo/pointcloud:pointcloud2'
+    SPFloat = 'speedfloat:/vesc/commands/motor/speed:std_msg/Float64'
     #Virtual
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
 
@@ -35,6 +37,8 @@ class AttachedSensorName(Enum):
             return USBCAM(inst)
         elif inst.getMsgType() == 'pointcloud2':
             return Velodyne3D(inst)
+        elif inst.getMsgType() == 'std_msg/Float64':
+            return SPFloat(inst)
 
     def getTopicName(inst):
         tname = inst.value.split(':')[1]

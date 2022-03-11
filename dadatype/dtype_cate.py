@@ -11,6 +11,7 @@ class DataGroup(Enum):
     GRP_POINTCLOUD = 1
     GRP_SINGLE_OBJECT = 2
     GRP_DISPLAY = 3
+    GRP_ETC = 4
 
 
 class DataTypeCategory(Enum):
@@ -20,6 +21,7 @@ class DataTypeCategory(Enum):
     LINE = 4
     TRAFFIC_SIGN = 5
     CAMERA = 11
+    Float = 20
 
     def getInstance(inst):
         if inst == DataTypeCategory.POINT_CLOUD:
@@ -34,9 +36,11 @@ class DataTypeCategory(Enum):
             return DataView()
 
     def checkGroupType(inst):
-        if inst.value == 1:
+        if inst.value == 1:  # 가운데 검은박스 역영
             return DataGroup.GRP_POINTCLOUD
-        elif inst.value <= 10:
+        elif inst.value <= 10:  #
             return DataGroup.GRP_SINGLE_OBJECT
-        else:
+        elif inst.value <= 19:  # display 영역
             return DataGroup.GRP_DISPLAY
+        elif inst.value <= 29:  # 20~29번은 text 영역
+            return DataGroup.GRP_ETC

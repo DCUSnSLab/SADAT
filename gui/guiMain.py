@@ -45,6 +45,7 @@ class GUI_CONTROLLER:
         self.toolbar = {}
         self.menubar = {}
         self.slider = None
+        self.sidedock = None
         self.cmode = self.STOPMODE
 
     def addToolbar(self, item, name):
@@ -288,6 +289,26 @@ class MyApp(QMainWindow):
         #play with opengl
         self.pvWidget.draw()
 
+    def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
+        a = str(data[AttachedSensorName.SPFloat].speedfloat)
+        if data.etcSignal == self.simulator.lpthread.etcset:
+            self.gcontrol.sidedock().vinfoTree(data)
+            self.vinfoTree.itemChild1.setText(1, a)
+        self.update()
+
+        #print(data[AttachedSensorName.SPFloat].speedfloat)
+        # a = str(data[AttachedSensorName.SPFloat].speedfloat)
+        # print(type(a))
+        # print(a)
+
+            # print(data[AttachedSensorName.].ackdata)
+            # print(data.ackdata)
+        #speeddata = data[AttachedSensorName.SPFloat].speedfloat
+            # qwe =SideDock.initUI(self)
+            # asd = qwe.ehicleInfoTree
+            # dfg = asd.initUI(self)
+            # dfg.tableWidget.setItem(0, 1, QTableWidgetItem(str(speeddata)))
+
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
             self.gcontrol.getSlider().setSliderRange(pbinfo.maxLength)
@@ -295,6 +316,7 @@ class MyApp(QMainWindow):
             self.simulator.setVelocity(self.velocity)
             self.toolvel.setText(str(self.simulator.getVelocity()))
             self.modeChanger(GUI_GROUP.LOGPLAY_MODE, True)
+            pass
 
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_PLAY:
             self.gcontrol.getSlider().setValue(pbinfo.currentIdx)
@@ -305,7 +327,6 @@ class MyApp(QMainWindow):
             stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
             self.statusBar().showMessage(stxt)
         self.update()
-
 
     def updateCameraImage(self, data):
         for rkey, rval in data.items():
