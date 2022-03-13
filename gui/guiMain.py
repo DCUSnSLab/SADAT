@@ -11,6 +11,7 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
+from gui.guiVehicleInfoTree import vehicleInfoTree
 from gui.planview2D import planView2D
 from gui.planview3D import planView3D
 from sensor.SenAdptMgr import AttachedSensorName
@@ -63,6 +64,9 @@ class GUI_CONTROLLER:
     def getSlider(self):
         return self.slider
 
+    def gettree(self):
+        return self.sidedock
+
     def getCurrentMode(self):
         return self.cmode
 
@@ -103,6 +107,7 @@ class MyApp(QMainWindow):
 
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
+        # self.sideDock =SideDock(self)
 
         # camera Dock init
         self.cameraDock = cameraDock()
@@ -133,7 +138,7 @@ class MyApp(QMainWindow):
         self.addToolBar(Qt.BottomToolBarArea, self.bottomToolbar)
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
-        self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.sideDock)
         #set planview in main
         self.setCentralWidget(self.stkWidget)
         #self.setCentralWidget(self.pvWidget)
@@ -291,18 +296,18 @@ class MyApp(QMainWindow):
 
     def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
         a = str(data[AttachedSensorName.SPFloat].speedfloat)
-        if data.etcSignal == self.simulator.lpthread.etcset:
-            self.gcontrol.sidedock().vinfoTree(data)
-            self.vinfoTree.itemChild1.setText(1, a)
-        self.update()
+        self.treec =self.sideDock.vinfoTree.atree(self)
+        self.gcontrol.gettree().r
 
+        # self.statusBar().showMessage(a)
+        # if data.etcSignal == self.simulator.lpthread.etcset:
+        #     self.gcontrol.sidedock().vinfoTree(data)
+        #     self.vinfoTree.itemChild1.setText(1, a)
+        self.update()
         #print(data[AttachedSensorName.SPFloat].speedfloat)
         # a = str(data[AttachedSensorName.SPFloat].speedfloat)
         # print(type(a))
         # print(a)
-
-            # print(data[AttachedSensorName.].ackdata)
-            # print(data.ackdata)
         #speeddata = data[AttachedSensorName.SPFloat].speedfloat
             # qwe =SideDock.initUI(self)
             # asd = qwe.ehicleInfoTree
@@ -319,7 +324,7 @@ class MyApp(QMainWindow):
             pass
 
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_PLAY:
-            self.gcontrol.getSlider().setValue(pbinfo.currentIdx)
+            self.gcontrol.getSlider().setValue(pbinfo.currentIdx)#보기
         elif pbinfo.mode == self.simulator.lpthread.PLAYMODE_SETVALUE:
             pass
 

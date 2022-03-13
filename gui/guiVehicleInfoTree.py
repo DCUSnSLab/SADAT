@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import QTreeWidget, QTreeWidgetItem
 class vehicleInfoTree(QTreeWidget):
     def __init__(self, parent):
         super().__init__(parent)
-        self.initUI()
+        self.atree()
 
-    def initUI(self):
+    def atree(self):
         self.setAlternatingRowColors(True)
         self.header().setVisible(False)
         self.tw = QTreeWidget(self)
@@ -18,7 +18,7 @@ class vehicleInfoTree(QTreeWidget):
         item.setText(0, "IMU")
         itemChild1 = QTreeWidgetItem(item)
         itemChild1.setText(0, "Fruit")
-        # itemChild1.setText(1, "ad")
+        itemChild1.setText(1, "a")
         self.root.addChild(item)
 
         # item = QTreeWidgetItem()
