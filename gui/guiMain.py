@@ -46,7 +46,6 @@ class GUI_CONTROLLER:
         self.toolbar = {}
         self.menubar = {}
         self.slider = None
-        self.sidedock = None
         self.cmode = self.STOPMODE
 
     def addToolbar(self, item, name):
@@ -63,9 +62,6 @@ class GUI_CONTROLLER:
 
     def getSlider(self):
         return self.slider
-
-    def gettree(self):
-        return self.sidedock
 
     def getCurrentMode(self):
         return self.cmode
@@ -107,7 +103,7 @@ class MyApp(QMainWindow):
 
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
-        # self.sideDock =SideDock(self)
+        self.sideDock =SideDock(self)
 
         # camera Dock init
         self.cameraDock = cameraDock()
@@ -295,24 +291,9 @@ class MyApp(QMainWindow):
         self.pvWidget.draw()
 
     def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
-        a = str(data[AttachedSensorName.SPFloat].speedfloat)
-        self.treec =self.sideDock.vinfoTree.atree(self)
-        self.gcontrol.gettree().r
-
-        # self.statusBar().showMessage(a)
-        # if data.etcSignal == self.simulator.lpthread.etcset:
-        #     self.gcontrol.sidedock().vinfoTree(data)
-        #     self.vinfoTree.itemChild1.setText(1, a)
+        a = str(data[AttachedSensorName.SPFloat].speedfloat).split()[1]
+        self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(0).setText(1,a)
         self.update()
-        #print(data[AttachedSensorName.SPFloat].speedfloat)
-        # a = str(data[AttachedSensorName.SPFloat].speedfloat)
-        # print(type(a))
-        # print(a)
-        #speeddata = data[AttachedSensorName.SPFloat].speedfloat
-            # qwe =SideDock.initUI(self)
-            # asd = qwe.ehicleInfoTree
-            # dfg = asd.initUI(self)
-            # dfg.tableWidget.setItem(0, 1, QTableWidgetItem(str(speeddata)))
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션

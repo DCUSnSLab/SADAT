@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QDockWidget
 class cameraDock(QDockWidget):
     def __init__(self):
         super().__init__('Camera Window')
-        self.cwidth = 300
+        self.cwidth = 400
         self.pixmap = None
         #self.setStyleSheet("color:black;background-color:white;")
         self.label = QLabel(self)
