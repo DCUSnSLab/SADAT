@@ -107,7 +107,6 @@ class taskLoopPlay(QThread):
                                     self.dataSignal.emit(dset)
                                 elif data.dataGroup == DataGroup.GRP_ETC:  # 그룹설정 된 값 출력
                                     etcset[key] = data
-
                                     self.etcSignal.emit(etcset)
                                 else:
                                     imageset[key] = data

@@ -1,4 +1,8 @@
 from enum import Enum
+
+from sensor.psensor.Odom import Odom
+from sensor.psensor.Imudata import Imudata
+from sensor.psensor.Position import Position
 from sensor.psensor.RPLidar2D import RPLidar2DA3
 from sensor.psensor.SPFloat import SPFloat
 from sensor.psensor.USBCAM import USBCAM
@@ -23,6 +27,9 @@ class AttachedSensorName(Enum):
     CarlaLidar = 'carlaLidar:/carla/ego_vehicle/lidar:pointcloud2'
     KittiLidar = 'kittiLidar:/kitti/velo/pointcloud:pointcloud2'
     SPFloat = 'speedfloat:/vesc/commands/motor/speed:std_msg/Float64'
+    Position = 'positionfloat:/vesc/commands/servo/position:std_msg/Float64'
+    Imudata = 'imusensor:/imu:sensor_msg/Imu'
+    Odom = 'odometrydata:/vesc/odom:nav_msg/Odometry'
     #Virtual
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
 
@@ -39,6 +46,12 @@ class AttachedSensorName(Enum):
             return Velodyne3D(inst)
         elif inst.getMsgType() == 'std_msg/Float64':
             return SPFloat(inst)
+        elif inst.getMsgType() == 'std_msg/Float64':
+            return Position(inst)
+        elif inst.getMsgType() == 'sensor_msg/Imu':
+            return Imudata(inst)
+        elif inst.getMsgType() == 'nav_msg/Odometry':
+            return Odom(inst)
 
     def getTopicName(inst):
         tname = inst.value.split(':')[1]

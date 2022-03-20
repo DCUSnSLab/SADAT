@@ -291,9 +291,53 @@ class MyApp(QMainWindow):
         self.pvWidget.draw()
 
     def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
-        a = str(data[AttachedSensorName.SPFloat].speedfloat).split()[1]
-        self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(0).setText(1,a)
-        self.update()
+        try:
+            speed = str(data[AttachedSensorName.SPFloat].speedfloat).split()[1]
+            position = str(data[AttachedSensorName.Position].positionfloat).split()[1]
+            imu = str(data[AttachedSensorName.Imudata].imusensor)
+            imuangularx = imu.split()[31]
+            imuangulary = imu.split()[33]
+            imuangularz = imu.split()[35]
+            imulinearx = imu.split()[48]
+            imulineary = imu.split()[50]
+            imulinearz = imu.split()[52]
+            odomdata = str(data[AttachedSensorName.Odom].odometrydata)
+            odomPositonx = odomdata.split()[16]
+            odomPositony = odomdata.split()[18]
+            odomPositonz = odomdata.split()[20]
+            odomOrientationx = odomdata.split()[23]
+            odomOrientationy = odomdata.split()[25]
+            odomOrientationz = odomdata.split()[27]
+            odomOrientationw = odomdata.split()[29]
+            odomLinearx = odomdata.split()[71]
+            odomLineary = odomdata.split()[73]
+            odomLinearz = odomdata.split()[75]
+            odomAngularx = odomdata.split()[78]
+            odomAngulary = odomdata.split()[80]
+            odomAngularz = odomdata.split()[82]
+            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(0).setText(1, imuangularx)
+            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(1).setText(1, imuangulary)
+            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(2).setText(1, imuangularz)
+            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(0).setText(1, imulinearx)
+            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(1).setText(1, imulineary)
+            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(2).setText(1, imulinearz)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(0).setText(1, speed)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(1).setText(1, position)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(0).setText(1, odomPositonx)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(1).setText(1, odomPositony)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(2).setText(1, odomPositonz)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(0).setText(1, odomOrientationx)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(1).setText(1,odomOrientationy)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(2).setText(1,odomOrientationz)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(3).setText(1,odomOrientationw)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(0).setText(1, odomLinearx)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(1).setText(1, odomLineary)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(2).setText(1, odomLinearz)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(0).setText(1, odomAngularx)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(1).setText(1, odomAngulary)
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(2).setText(1, odomAngularz)
+        except:
+            pass
 
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션

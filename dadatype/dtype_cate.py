@@ -22,6 +22,8 @@ class DataTypeCategory(Enum):
     TRAFFIC_SIGN = 5
     CAMERA = 11
     Float = 20
+    Sensor = 21
+    Odometry = 22
 
     def getInstance(inst):
         if inst == DataTypeCategory.POINT_CLOUD:
