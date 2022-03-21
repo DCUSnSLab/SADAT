@@ -1,4 +1,4 @@
-from dadatype.dtype_imformation import dtype_float
+from dadatype.dtype_information import dtype_float
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
 import numpy as np

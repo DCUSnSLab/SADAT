@@ -1,5 +1,5 @@
 #센서 데이터 생성
-from dadatype.dtype_imformation import dtype_Odometry
+from dadatype.dtype_information import dtype_Odometry
 from sensor.SensorCategory import SensorCategory
 from sensor.pSensor import pSensor
 import numpy as np

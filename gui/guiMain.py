@@ -291,51 +291,50 @@ class MyApp(QMainWindow):
         self.pvWidget.draw()
 
     def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
+        #imu
+        try:
+            imu = str(data[AttachedSensorName.Imudata].imusensor)
+            imuinfo = self.sideDock.vinfoTree.root.child(0).child(0)
+            imuinfo.child(0).child(0).setText(1, imu.split()[31]) #imuangularx
+            imuinfo.child(0).child(1).setText(1, imu.split()[33]) #imuangulary
+            imuinfo.child(0).child(2).setText(1, imu.split()[35]) #imuangularz
+            imuinfo.child(1).child(0).setText(1, imu.split()[48]) #imulinearx
+            imuinfo.child(1).child(1).setText(1, imu.split()[50]) #imulineary
+            imuinfo.child(1).child(2).setText(1, imu.split()[52]) #imulinearz
+        except:
+            pass
+
+        #moter/speed
         try:
             speed = str(data[AttachedSensorName.SPFloat].speedfloat).split()[1]
-            position = str(data[AttachedSensorName.Position].positionfloat).split()[1]
-            imu = str(data[AttachedSensorName.Imudata].imusensor)
-            imuangularx = imu.split()[31]
-            imuangulary = imu.split()[33]
-            imuangularz = imu.split()[35]
-            imulinearx = imu.split()[48]
-            imulineary = imu.split()[50]
-            imulinearz = imu.split()[52]
-            odomdata = str(data[AttachedSensorName.Odom].odometrydata)
-            odomPositonx = odomdata.split()[16]
-            odomPositony = odomdata.split()[18]
-            odomPositonz = odomdata.split()[20]
-            odomOrientationx = odomdata.split()[23]
-            odomOrientationy = odomdata.split()[25]
-            odomOrientationz = odomdata.split()[27]
-            odomOrientationw = odomdata.split()[29]
-            odomLinearx = odomdata.split()[71]
-            odomLineary = odomdata.split()[73]
-            odomLinearz = odomdata.split()[75]
-            odomAngularx = odomdata.split()[78]
-            odomAngulary = odomdata.split()[80]
-            odomAngularz = odomdata.split()[82]
-            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(0).setText(1, imuangularx)
-            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(1).setText(1, imuangulary)
-            self.sideDock.vinfoTree.root.child(0).child(0).child(0).child(2).setText(1, imuangularz)
-            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(0).setText(1, imulinearx)
-            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(1).setText(1, imulineary)
-            self.sideDock.vinfoTree.root.child(0).child(0).child(1).child(2).setText(1, imulinearz)
             self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(0).setText(1, speed)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(1).setText(1, position)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(0).setText(1, odomPositonx)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(1).setText(1, odomPositony)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(0).child(2).setText(1, odomPositonz)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(0).setText(1, odomOrientationx)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(1).setText(1,odomOrientationy)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(2).setText(1,odomOrientationz)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(0).child(1).child(3).setText(1,odomOrientationw)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(0).setText(1, odomLinearx)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(1).setText(1, odomLineary)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(0).child(2).setText(1, odomLinearz)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(0).setText(1, odomAngularx)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(1).setText(1, odomAngulary)
-            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2).child(1).child(1).child(2).setText(1, odomAngularz)
+        except:
+            pass
+
+        #servo/position
+        try:
+            servo_position = str(data[AttachedSensorName.Position].positionfloat).split()[1]
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(1).setText(1, servo_position)
+        except:
+            pass
+
+        #odom
+        try:
+            odomdata = str(data[AttachedSensorName.Odom].odometrydata)
+            odominfo = self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2)
+            odominfo.child(0).child(0).child(0).setText(1, odomdata.split()[16]) #odomPositonx
+            odominfo.child(0).child(0).child(1).setText(1, odomdata.split()[18]) #odomPositony
+            odominfo.child(0).child(0).child(2).setText(1, odomdata.split()[20]) #odomPositonz
+            odominfo.child(0).child(1).child(0).setText(1, odomdata.split()[23]) #odomOrientationx
+            odominfo.child(0).child(1).child(1).setText(1, odomdata.split()[25]) #odomOrientationy
+            odominfo.child(0).child(1).child(2).setText(1, odomdata.split()[27]) #odomOrientationz
+            odominfo.child(0).child(1).child(3).setText(1, odomdata.split()[29]) #odomOrientationw
+            odominfo.child(1).child(0).child(0).setText(1, odomdata.split()[71]) #odomLinearx
+            odominfo.child(1).child(0).child(1).setText(1, odomdata.split()[73]) #odomLineary
+            odominfo.child(1).child(0).child(2).setText(1, odomdata.split()[75]) #odomLinearz
+            odominfo.child(1).child(1).child(0).setText(1, odomdata.split()[78]) #odomAngularx
+            odominfo.child(1).child(1).child(1).setText(1, odomdata.split()[80]) #odomAngulary
+            odominfo.child(1).child(1).child(2).setText(1, odomdata.split()[82]) #odomAngularz
         except:
             pass
 
