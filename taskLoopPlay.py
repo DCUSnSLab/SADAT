@@ -102,7 +102,7 @@ class taskLoopPlay(QThread):
                             if data.getRealtimeDataQueue().qsize() > 0:
                                 data = data.getRealtimeDataQueue().get()
                                 if data.dataGroup != DataGroup.GRP_DISPLAY\
-                                         and data.dataGroup == DataGroup.GRP_SINGLE_OBJEwlqwCT:#오류 있음(pointCloud재생 안됨)
+                                          and data.dataGroup == DataGroup.GRP_SINGLE_OBJECT:#오류 있음(pointCloud재생 안됨)
                                     dset[key] = data
                                     self.dataSignal.emit(dset)
                                 elif data.dataGroup == DataGroup.GRP_ETC:  # 그룹설정 된 값 출력

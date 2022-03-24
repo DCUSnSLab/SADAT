@@ -291,7 +291,7 @@ class MyApp(QMainWindow):
         self.pvWidget.draw()
 
     def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
-        #imu
+        #IMU
         try:
             imu = str(data[AttachedSensorName.Imudata].imusensor)
             imuinfo = self.sideDock.vinfoTree.root.child(0).child(0)
@@ -337,7 +337,6 @@ class MyApp(QMainWindow):
             odominfo.child(1).child(1).child(2).setText(1, odomdata.split()[82]) #odomAngularz
         except:
             pass
-
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
             self.gcontrol.getSlider().setSliderRange(pbinfo.maxLength)
@@ -358,14 +357,18 @@ class MyApp(QMainWindow):
         self.update()
 
     def updateCameraImage(self, data):
-        for rkey, rval in data.items():
-            cv_image = rval.imagedata
-            h, w, ch = cv_image.shape
-            bytesPerLine = ch * w
-            convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_RGB888)
-            #p = convertToQtFormat.scaledToWidth(self.vwidth)
-            #self.label.setPixmap(QPixmap.fromImage(p))
-            self.cameraDock.setPixmap(convertToQtFormat)
+        try:
+            for rkey, rval in data.items():
+                cv_image = rval.imagedata
+                h, w, ch = cv_image.shape
+                bytesPerLine = ch * w
+                convertToQtFormat = QImage(cv_image.data, w, h, cv_image.strides[0], QImage.Format_RGB888)
+                #p = convertToQtFormat.scaledToWidth(self.vwidth)
+                #self.label.setPixmap(QPixmap.fromImage(p))
+                self.cameraDock.setPixmap(convertToQtFormat)
+
+        except:
+            pass
 
     def closeEvent(self, event):
         self.simulator.cleanProcess()

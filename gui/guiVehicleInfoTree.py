@@ -60,7 +60,7 @@ class vehicleInfoTree(QTreeWidget):
 
         #servo/position
         itemChild5 = QTreeWidgetItem(itemChild3)
-        itemChild5.setText(0, "servo/positiom")
+        itemChild5.setText(0, "servo/position")
         itemChild5.setText(1, "0")
 
         #odometry

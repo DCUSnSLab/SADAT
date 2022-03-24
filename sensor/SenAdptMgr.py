@@ -23,7 +23,7 @@ class AttachedSensorName(Enum):
     ZED_ObjectDet = 'zedobjdet:/zed2/zed_node/obj_det/objects:zed_interfaces/ObjectsStamped'
     USBCAM = 'usbcam:/usb_cam/image_raw/compressed:sensor_msgs/CompressedImage'
     ZEDCAM = 'zedcam:/zed2/zed_node/left/image_rect_color/compressed:sensor_msgs/CompressedImage'
-    VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:pointcloud2'
+    VelodyneVLC16 = 'velodyne pointcloud:/velodyne_points:sensor_msgs/pointcloud2'
     CarlaLidar = 'carlaLidar:/carla/ego_vehicle/lidar:pointcloud2'
     KittiLidar = 'kittiLidar:/kitti/velo/pointcloud:pointcloud2'
     SPFloat = 'speedfloat:/vesc/commands/motor/speed:std_msg/Float64'
@@ -42,7 +42,7 @@ class AttachedSensorName(Enum):
             return ZedTrack(inst)
         elif inst.getMsgType() == 'sensor_msgs/CompressedImage':
             return USBCAM(inst)
-        elif inst.getMsgType() == 'pointcloud2':
+        elif inst.getMsgType() == 'sensor_msgs/pointcloud2':
             return Velodyne3D(inst)
         elif inst.getMsgType() == 'std_msg/Float64':
             return SPFloat(inst)
