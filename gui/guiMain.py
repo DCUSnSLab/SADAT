@@ -282,8 +282,11 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        self.planviewmanager.updateview(data)
-        self.updatePosition()
+        try:
+            self.planviewmanager.updateview(data)
+            self.updatePosition()
+        except:
+            pass
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos()
