@@ -104,24 +104,12 @@ class taskLoopPlay(QThread):
                                 if data.dataGroup == DataGroup.GRP_ETC:
                                     etcset[key] = data
                                     self.etcSignal.emit(etcset)
+                                elif data.dataGroup != DataGroup.GRP_DISPLAY:
+                                    dset[key] = data
+                                    self.dataSignal.emit(dset)
                                 else:
                                     imageset[key] = data
                                     self.imageSignal.emit(imageset)
-                                if data.dataGroup != DataGroup.GRP_DISPLAY:
-                                    dset[key] = data
-                                    self.dataSignal.emit(dset)
-                                # else:
-                                #     imageset[key] = data
-                                #     self.imageSignal.emit(imageset)
-                                # if data.dataGroup == DataGroup.GRP_ETC:
-                                #     etcset[key] = data
-                                #     self.etcSignal.emit(etcset)
-
-                                # if data.dataGroup != DataGroup.GRP_DISPLAY:#\
-                                          #and data.dataGroup == DataGroup.GRP_SINGLE_OBJECT:#오류 있음(pointCloud재생 안됨)
-                                    # if data.dataGroup == DataGroup.GRP_ETC:  # 그룹설정 된 값 출력
-                                    #     etcset[key] = data
-                                    #     self.etcSignal.emit(etcset)
 
                     except:
                         slog.DEBUG('LoopPlay - RuntimeError due to lq dictionary size has been changed')

@@ -282,18 +282,16 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        try:
             self.planviewmanager.updateview(data)
             self.updatePosition()
-        except:
-            pass
+
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos()
         #play with opengl
         self.pvWidget.draw()
 
-    def updateEtcData(self, data):  # 교수님 추가 부분 gui에서 출력
+    def updateEtcData(self, data):  # gui에서 출력
         #IMU
         try:
             imu = str(data[AttachedSensorName.Imudata].imusensor)
