@@ -137,9 +137,10 @@ class SystemManager:
         # self.pvthread.start()
 
         self.lpthread = taskLoopPlay(self.guiApp, self.simlog, self.manager, self.srcmanager)
-        self.lpthread.signal.connect(self.guiApp.playbackstatus)
+        self.lpthread.signal.connect(self.guiApp.playbackstatus) #파일 호출 실행
         self.lpthread.dataSignal.connect(self.guiApp.changePosition)
-        self.lpthread.imageSignal.connect(self.guiApp.updateCameraImage)
+        self.lpthread.imageSignal.connect(self.guiApp.updateCameraImage) # 카메라
+        self.lpthread.etcSignal.connect(self.guiApp.updateEtcData)  # rosbag 정보
         self.lpthread.setVelocity(60)
         self.lpthread.start()
 

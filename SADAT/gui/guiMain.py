@@ -11,6 +11,7 @@ from externalmodules.default.dataset_enum import senarioBasicDataset
 from gui.guiCameraDock import cameraDock
 from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
+from gui.guiVehicleInfoTree import vehicleInfoTree
 from gui.planview2D import planView2D
 from gui.planview3D import planView3D
 from sensor.SenAdptMgr import AttachedSensorName
@@ -102,6 +103,7 @@ class MyApp(QMainWindow):
 
         self.gcontrol = GUI_CONTROLLER()
         self.mouseEventHndl = MouseEventHandler()
+        self.sideDock =SideDock(self)
 
         # camera Dock init
         self.cameraDock = cameraDock()
@@ -132,7 +134,7 @@ class MyApp(QMainWindow):
         self.addToolBar(Qt.BottomToolBarArea, self.bottomToolbar)
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
-        self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
+        self.addDockWidget(Qt.LeftDockWidgetArea, self.sideDock)
         #set planview in main
         self.setCentralWidget(self.stkWidget)
         #self.setCentralWidget(self.pvWidget)
@@ -280,14 +282,61 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        self.planviewmanager.updateview(data)
-        self.updatePosition()
+            self.planviewmanager.updateview(data)
+            self.updatePosition()
 
     def updatePosition(self):       #포지션 업데이트 (점 좌표 값)
         self.planviewmanager.updateAllpos()
         #play with opengl
         self.pvWidget.draw()
 
+    def updateEtcData(self, data):  # gui에서 출력
+        #IMU
+        try:
+            imu = str(data[AttachedSensorName.Imudata].imusensor)
+            imuinfo = self.sideDock.vinfoTree.root.child(0).child(0)
+            imuinfo.child(0).child(0).setText(1, imu.split()[31]) #imuangularx
+            imuinfo.child(0).child(1).setText(1, imu.split()[33]) #imuangulary
+            imuinfo.child(0).child(2).setText(1, imu.split()[35]) #imuangularz
+            imuinfo.child(1).child(0).setText(1, imu.split()[48]) #imulinearx
+            imuinfo.child(1).child(1).setText(1, imu.split()[50]) #imulineary
+            imuinfo.child(1).child(2).setText(1, imu.split()[52]) #imulinearz
+        except:
+            pass
+
+        #moter/speed
+        try:
+            speed = str(data[AttachedSensorName.SPFloat].speedfloat).split()[1]
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(0).setText(1, speed)
+        except:
+            pass
+
+        #servo/position
+        try:
+            servo_position = str(data[AttachedSensorName.Position].positionfloat).split()[1]
+            self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(1).setText(1, servo_position)
+        except:
+            pass
+
+        #odom
+        try:
+            odomdata = str(data[AttachedSensorName.Odom].odometrydata)
+            odominfo = self.sideDock.vinfoTree.root.child(0).child(1).child(0).child(2)
+            odominfo.child(0).child(0).child(0).setText(1, odomdata.split()[16]) #odomPositonx
+            odominfo.child(0).child(0).child(1).setText(1, odomdata.split()[18]) #odomPositony
+            odominfo.child(0).child(0).child(2).setText(1, odomdata.split()[20]) #odomPositonz
+            odominfo.child(0).child(1).child(0).setText(1, odomdata.split()[23]) #odomOrientationx
+            odominfo.child(0).child(1).child(1).setText(1, odomdata.split()[25]) #odomOrientationy
+            odominfo.child(0).child(1).child(2).setText(1, odomdata.split()[27]) #odomOrientationz
+            odominfo.child(0).child(1).child(3).setText(1, odomdata.split()[29]) #odomOrientationw
+            odominfo.child(1).child(0).child(0).setText(1, odomdata.split()[71]) #odomLinearx
+            odominfo.child(1).child(0).child(1).setText(1, odomdata.split()[73]) #odomLineary
+            odominfo.child(1).child(0).child(2).setText(1, odomdata.split()[75]) #odomLinearz
+            odominfo.child(1).child(1).child(0).setText(1, odomdata.split()[78]) #odomAngularx
+            odominfo.child(1).child(1).child(1).setText(1, odomdata.split()[80]) #odomAngulary
+            odominfo.child(1).child(1).child(2).setText(1, odomdata.split()[82]) #odomAngularz
+        except:
+            pass
     def playbackstatus(self, pbinfo):       #플레이 상태를 다시 되돌리는 함수?, 여기서 pbinfo에 대해서 잘 모르겠음..
         if pbinfo.mode == self.simulator.lpthread.PLAYMODE_LOAD:        #lpthread가 Qt 라이브러리를 성공적으로 호출하기 위해서 필요한 스레드옵션
             self.gcontrol.getSlider().setSliderRange(pbinfo.maxLength)
@@ -305,7 +354,6 @@ class MyApp(QMainWindow):
             stxt = 'current idx - %d'%pbinfo.currentIdx     #stxt는 tool 하단부에 나타나는 현재 index
             self.statusBar().showMessage(stxt)
         self.update()
-
 
     def updateCameraImage(self, data):
         for rkey, rval in data.items():
