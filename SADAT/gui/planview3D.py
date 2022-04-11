@@ -167,8 +167,8 @@ class sCube():
 
     def calcPos(self, pos):
         self.Vertice[:, :] -= self.accAxis
-        self.Vertice[:, :] += pos
-        self.accAxis = pos
+        self.Vertice[:, :] += pos[:3]
+        self.accAxis = pos[:3]
         return self.Vertice
 
 
