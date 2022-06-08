@@ -17,8 +17,8 @@ class menuLoadSim(QAction,QWidget):
     def __init__(self, name, parent):
         super().__init__(name, parent)
         self.parent = parent
-        self.triggered.connect(self.trig)
-        #self.triggered.connect(self.OnOpenDocument)
+        #self.triggered.connect(self.trig)
+        self.triggered.connect(self.OnOpenDocument)
         self.setShortcut('Ctrl+S')
         self.setStatusTip('Exit application')
 
@@ -32,6 +32,23 @@ class menuLoadSim(QAction,QWidget):
 
         #self.trig
         print(fname)
+
+class menuLoadSim_pcd(QAction, QWidget):
+    def __init__(self, name, parent):
+        print("name")
+        print(name)
+        print("parent")
+        print(parent)
+        super().__init__(name, parent)
+        self.parent = parent
+        self.triggered.connect(self.trig)
+        #self.triggered.connect(self.OnOpenDocument)
+        #self.setStatusTip('Exit application')
+
+    def trig(self):
+        print("Clicked Test")
+        #fname = QFileDialog.getOpenFileName(self)
+        #print(fname[0])
 
 class menuLogPlay(QAction):
 

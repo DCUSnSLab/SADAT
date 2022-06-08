@@ -17,7 +17,7 @@ from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
 from gui.menuExit import menuExit
-from gui.menuFiles import menuLoadSim, menuLogPlay, menuLogPlayROS
+from gui.menuFiles import menuLoadSim, menuLoadSim_pcd, menuLogPlay, menuLogPlayROS
 from gui.menuSim import menuSim
 
 from multiprocessing import Manager
@@ -92,7 +92,6 @@ class MyApp(QMainWindow):
         self.statusbar=self.statusBar()
         self.setMouseTracking(True)
         self.setAcceptDrops(True)
-        slog.DEBUG(self.hasMouseTracking())
 
         #frame rate
         self.velocity = 15          #초기 라이다 데이터 값(비율)
@@ -166,6 +165,7 @@ class MyApp(QMainWindow):
         #File Menu
         filemenu = self.menubar.addMenu('&File')
         filemenu.addAction(menuLoadSim('Load log files..', self))
+        filemenu.addAction(menuLoadSim_pcd('Load pcd files..', self))
 
         # Add LogPlay
         logplaymenu = filemenu.addMenu('&Log Play')
