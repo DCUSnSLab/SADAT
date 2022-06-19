@@ -17,8 +17,8 @@ class menuLoadSim(QAction,QWidget):
     def __init__(self, name, parent):
         super().__init__(name, parent)
         self.parent = parent
-        #self.triggered.connect(self.trig)
-        self.triggered.connect(self.OnOpenDocument)
+        self.triggered.connect(self.trig)
+        #self.triggered.connect(self.OnOpenDocument)
         self.setShortcut('Ctrl+S')
         self.setStatusTip('Exit application')
 

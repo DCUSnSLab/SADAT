@@ -4,6 +4,7 @@ from sensor.SenAdptMgr import AttachedSensorName
 from sensor.SourceManager import SourceManager
 from utils.sadatlogger import slog
 
+import os
 
 class LogSimDispatcher(Dispatcher):
 
@@ -20,12 +21,13 @@ class LogSimDispatcher(Dispatcher):
 
     def loadData(self):
         slog.DEBUG("-----lodata method called-----")
+        print(os.getcwd())
         if self.opensrc == "":
-            self.opensrc = "/root/download/data_1.dat"
+            self.opensrc = "../../data/data_1.dat"
 
         #파일을 저장할 때 head 부분에 디바이스 네임을 작성해줘야함
         #헤더파일의 디바이스 네임에 따라 rawdata에 저장될 수 있도록 변경해야함
-        lidarlog = makeRPLidarLog(self.opensrc);
+        lidarlog = makeRPLidarLog(self.opensrc)
         self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
 
     def logDispatch(self):
