@@ -47,6 +47,7 @@ class menuLoadSim_pcd(QAction, QWidget):
 
     def trig(self):
         print("Clicked Test")
+        self.parent.simulator.setAction(Mode.MODE_SIM)
         #fname = QFileDialog.getOpenFileName(self)
         #print(fname[0])
 
