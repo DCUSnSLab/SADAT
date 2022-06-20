@@ -23,22 +23,23 @@ class LogSimDispatcher(Dispatcher):
         slog.DEBUG("-----lodata method called-----")
         print(os.getcwd())
         if self.opensrc == "":
-            self.opensrc = "../data/data_1.dat"
-            #self.opensrc = "../data/bunny.pcd"
+            self.opensrc = "../Data/data_1.dat"
+            #self.opensrc = "../data/bunny.pcd"장
 
         #파일을 저장할 때 head 부분에 디바이스 네임을 작성해줘야함
         #헤더파일의 디바이스 네임에 따라 rawdata에 저장될 수 있도록 변경해야함
-        #lidarlog = makeRPLidarLog(self.opensrc)
-        #self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
-
         lidarlog = makeRPLidarLog(self.opensrc)
+        self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
+
+
         '''
         임의로 구현한 makeRPLidarLog와 같은 클래스를 통해 .pcd 확장자 파일에서 데이터를 불러오고,
         읽어들인 데이터를 self._rawdata[연결된 센서 이름] 에 저장해야 한다.
         
-        불러오는 과정은 
+        불러오는 과정의 경우 
         '''
-        self._rawdata[AttachedSensorName.VelodyneVLC16] = None
+        # lidarlog = makeRPLidarLog(self.opensrc)
+        #self._rawdata[AttachedSensorName.VelodyneVLC16] = None
 
     def logDispatch(self):
         for scate in self._rawdata.keys():
