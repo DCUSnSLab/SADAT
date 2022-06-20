@@ -5,6 +5,8 @@ import pcl.pcl_visualization
 import sys
 from PyQt5.QtWidgets import *
 
+from sensor_msgs.msg import PointCloud, PointCloud2
+
 class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -44,7 +46,10 @@ class MyWindow(QWidget):
             v = not (visual.WasStopped())
 
 def main():
-    cloud = pcl.load("/home/ros/pcd_data/20211028_map.pcd")
+    cloud = pcl.load("../../../20211028_map.pcd")
+    # cloud = pcl.load("../../../bunny.pcd")
+    pc = PointCloud()
+    pc2 = PointCloud2()
 
     # Centred the data
     centred = cloud - np.mean(cloud, 0)
@@ -60,8 +65,8 @@ def main():
         v = not(visual.WasStopped())
 
 if __name__ == "__main__":
-    # main()
-    app = QApplication(sys.argv)
-    window = MyWindow()
-    window.show()
-    app.exec_()
+    main()
+    #app = QApplication(sys.argv)
+    #window = MyWindow()
+    #window.show()
+    #app.exec_()
