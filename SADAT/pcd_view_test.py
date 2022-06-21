@@ -69,8 +69,6 @@ def main():
     cloud = pcl.load_XYZI("Data/20211104_map.pcd")
     # cloud = pcl.load("../../../bunny.pcd")
 
-    np_cloud = np.empty([cloud.width, 4], dtype=np.float32)
-    np_cloud = np.asarray(cloud)
     np_cloud = cloud.to_array()
 
     cmap = __make_colormap()
@@ -83,10 +81,9 @@ def main():
     points[:, 2] = np_cloud[:, 2]
     points[:, 3] = np_cloud[:, 3]
 
-    # inten = cloud.sensor_origin[3].astype(np.int32) # 입력받은 데이터의 Intensity를 정수형 값으로 변환하여 가져온 뒤,
-    # color = np.array([cmap[inten[i]] for i in range(len(inten))]) # 해당 값을 바탕으로 색상을 설정한다.
-    # points[:, 3:7] = color[:, 0:4] # 획득한 색상 값 저장
-    points[:, 3:7] = 0
+    inten = np_cloud[:, 3].astype(np.int32) # 입력받은 데이터의 Intensity를 정수형 값으로 변환하여 가져온 뒤,
+    color = np.array([cmap[inten[i]] for i in range(len(inten))]) # 해당 값을 바탕으로 색상을 설정한다.
+    points[:, 3:7] = color[:, 0:4] # 획득한 색상 값 저장
 
 if __name__ == "__main__":
     main()

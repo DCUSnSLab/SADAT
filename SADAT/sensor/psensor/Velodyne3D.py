@@ -1,4 +1,5 @@
 import math
+import pcl
 
 from dadatype.grp_pointclouds import grp_pointclouds
 from sensor.SensorCategory import SensorCategory
@@ -12,6 +13,10 @@ class Velodyne3D(pSensor):
         self.prevTime = 0
         self.cmap = None
         self.__make_colormap()
+
+        self.cloud = pcl.load_XYZI("../Data/20211104_map.pcd")
+
+        self.np_cloud = self.cloud.to_array()
 
     def num_to_rgb(self, val, max_val=141):
         rgb = 255
@@ -45,8 +50,18 @@ class Velodyne3D(pSensor):
         color = np.array([self.cmap[inten[i]] for i in range(len(inten))])
         points[:, 3:7] = color[:, 0:4]
 
+        # points = np.zeros((pc.shape[0], 7)) # 원본 코드의 pc.shape[0]은 PointCloud의 Width를 의미한다.
+        points = np.zeros((self.cloud.width, 7))
+
+        points[:, 0] = self.np_cloud[:, 0]
+        points[:, 1] = self.np_cloud[:, 1]
+        points[:, 2] = self.np_cloud[:, 2]
+        points[:, 3] = self.np_cloud[:, 3]
+
+        points[:, 3:7] = 0.9
+
         #re sampling pointcloud for performance
-        points = self.__resamplePoints(points, 10000)
+        # points = self.__resamplePoints(points, 10000)
 
         tstamp = inputdata.header.stamp
         self.lgrp = grp_pointclouds(points, None, None, tstamp.to_sec(), True)
