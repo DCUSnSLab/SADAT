@@ -1,5 +1,6 @@
 from grabber.Dispatcher import Dispatcher
 from log.makeRPLidarLog import makeRPLidarLog
+from log.makeVLP16Log import makeVLPLog
 from sensor.SenAdptMgr import AttachedSensorName
 from sensor.SourceManager import SourceManager
 from utils.sadatlogger import slog
@@ -17,6 +18,9 @@ class LogSimDispatcher(Dispatcher):
         slog.DEBUG("LogSimDispatcher Init")
 
     def dispatch(self):
+        # 해당 함수에서 누른 버튼에 따라 다른 데이터를 로드하도록 수정 필요??
+        # 우선은 QWidget을 통해 파일 경로를 명시할 수 없는 버그를 수정하는게 우선임
+
         self.loadData()
         self.logDispatch()
         self.sendEvent()
@@ -48,23 +52,10 @@ class LogSimDispatcher(Dispatcher):
 
         #파일을 저장할 때 head 부분에 디바이스 네임을 작성해줘야함
         #헤더파일의 디바이스 네임에 따라 rawdata에 저장될 수 있도록 변경해야함
-        lidarlog = makeRPLidarLog(self.opensrc)
-        self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
-
-        cloud = pcl.load_XYZI("../Data/20211104_map.pcd")
-        # cloud = pcl.load("../../../bunny.pcd")
-
-        np_cloud = cloud.to_array()
-
-        cmap = self.__make_colormap()
-        '''
-        임의로 구현한 makeRPLidarLog와 같은 클래스를 통해 .pcd 확장자 파일에서 데이터를 불러오고,
-        읽어들인 데이터를 self._rawdata[연결된 센서 이름] 에 저장해야 한다.
-        
-        불러오는 과정의 경우 
-        '''
-        # lidarlog = makeRPLidarLog(self.opensrc)
-        #self._rawdata[AttachedSensorName.VelodyneVLC16] = self.lgrp
+        #lidarlog = makeRPLidarLog(self.opensrc)
+        VLPlidarlog = makeVLPLog("../Data/20211104_map.pcd")
+        #self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
+        self._rawdata[AttachedSensorName.StaticPointCloudVirtual] = VLPlidarlog.fromlogFile()
 
     def logDispatch(self):
         for scate in self._rawdata.keys():

@@ -5,6 +5,12 @@ class makeLog(metaclass=ABCMeta):
         self.filename=None
         self.lf = None
         self.fullLogData = [] #Lidar Log data
+
+        # For VLP LiDAR Log Data
+        self.points = None
+        self.cloud = None
+        self.np_cloud = None
+
         if filename != None:
             self.filename = filename
 

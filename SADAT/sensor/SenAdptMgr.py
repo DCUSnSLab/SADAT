@@ -4,6 +4,7 @@ from sensor.psensor.USBCAM import USBCAM
 from sensor.psensor.Velodyne3D import Velodyne3D
 from sensor.psensor.ZedTrack import ZedTrack
 from sensor.vsensor.RPLidar2Dv import RPLidar2Dv
+from sensor.vsensor.Velodyne3Dv import Velodyne3Dv
 from sensor.psensor.Track import Track
 
 #class ROSmsgType(Enum):
@@ -23,7 +24,12 @@ class AttachedSensorName(Enum):
     CarlaLidar = 'carlaLidar:/carla/ego_vehicle/lidar:pointcloud2'
     KittiLidar = 'kittiLidar:/kitti/velo/pointcloud:pointcloud2'
     #Virtual
+    """
+    
+    """
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
+    PointCloud2Virtual = 'pointcloud2:/velodyne_points:pointcloud2'
+    StaticPointCloudVirtual = 'pcd:/pcdv:pcdv'
 
     def getInstance(inst):
         if inst.getMsgType() == 'scan':
@@ -78,6 +84,8 @@ class SenAdptMgr:
         #virtual Device
         #self.__addVirtualSensor(Track(AttachedSensorName.Tracker))
         self.__addVirtualSensor(RPLidar2Dv(AttachedSensorName.RPLidar2DVirtual))
+        self.__addVirtualSensor(Velodyne3Dv(AttachedSensorName.PointCloud2Virtual))
+        self.__addVirtualSensor(Velodyne3Dv(AttachedSensorName.StaticPointCloudVirtual))
 
     def __makeSensorList(self):
         for key, value in AttachedSensorName.__dict__['_value2member_map_'].items():

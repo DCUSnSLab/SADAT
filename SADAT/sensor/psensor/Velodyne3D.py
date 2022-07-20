@@ -36,6 +36,13 @@ class Velodyne3D(pSensor):
         self.cmap = np.array(cmap)
 
     def _doWorkDataInput(self, inputdata):
+        """
+        Args:
+            inputdata: ROS PointCloud2 메시지형의 데이터
+
+        Returns:
+            None
+        """
         ros_numpy = Importer.importerLibrary('ros_numpy')
         #pc2 = Importer.importerLibrary('sensor_msgs.point_cloud2')
         pc = ros_numpy.numpify(inputdata)

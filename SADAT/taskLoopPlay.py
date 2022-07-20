@@ -112,6 +112,10 @@ class taskLoopPlay(QThread):
 
             #Sim Mode
             if td == self.PLAYMODE_LOAD: #Load Data
+                """
+                .pcd와 같이 timestamp가 없는 데이터를 로드하는 경우, 기존의 다른 로그 파일들과 다르게 시각화 과정에서 별도의 fps, fpscnt 값을 부여하는것이
+                적절할 것 같아서 우선은 아래와 같이 진행했습니다.
+                """
                 print("Start Sim Event")
                 loadedsimsens = self.sourcemanager.waitSimDataLoad()
                 #set data storage
@@ -150,9 +154,20 @@ class taskLoopPlay(QThread):
                     #store data
                     self.originData[lss] = lq
 
+                for lss in loadedsimsens:
+                    if lss.name == 'StaticPointCloudVirtual':
+                        slog.DEBUG("Static Value Exists!!!")
+                        fps = 20
+                        fpscnt = 120
+                        tcnt = 19
+
                 self.pbInfo.mode = self.PLAYMODE_LOAD
                 self.pbInfo.maxLength = len(self.originData[lss])
                 self.pbInfo.setfps = fps if self.pbInfo.setfps < fps else self.pbInfo.setfps
+
+                self.pbInfo.maxLength = 2
+                self.pbInfo.setfps = 1
+
                 self.signal.emit(self.pbInfo)
                 self.guiApp.setStatus("Log data Load Completed")
                 #self.simlog.enQueuePlayData(self.originData[lss][self.playidx])
