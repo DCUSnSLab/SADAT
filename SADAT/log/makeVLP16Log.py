@@ -27,6 +27,7 @@ class makeVLPLog(makeLog):
             return self.np_cloud
         else:
             self.cloud = pcl.load_XYZI(self.filename)
+            # load_XYZI() 함수를 사용하여 데이터를 불러오는 경우 intensity 필드를 못 찾는 상황에 대하여 예외처리가 필요하다.
             self.np_cloud = self.cloud.to_array()
 
         return self.np_cloud

@@ -14,7 +14,11 @@ class LogSimDispatcher(Dispatcher):
     def __init__(self, srcmgr:SourceManager, opensrc=""):
         super().__init__()
         self.sourcemanager = srcmgr
-        self.opensrc = opensrc
+        #self.opensrc = "../Data/20211104_map.pcd"
+        #self.opensrc = "/home/ros/pcd_data/20211110_res_0.09.pcd"
+        self.opensrc = "/home/ros/pcd_data/20211110_res_0.95.pcd"
+        #self.opensrc = "../Data/bunny.pcd"
+        # self.opensrc = opensrc
         slog.DEBUG("LogSimDispatcher Init")
 
     def dispatch(self):
@@ -25,35 +29,18 @@ class LogSimDispatcher(Dispatcher):
         self.logDispatch()
         self.sendEvent()
 
-    def num_to_rgb(self, val, max_val=141):
-        rgb = 255
-        i = (val * 255 / max_val);
-        r = math.sin(0.024 * i + 0) * 127 + 128
-        g = math.sin(0.024 * i + 2) * 127 + 128
-        b = math.sin(0.024 * i + 4) * 127 + 128
-        return [r / rgb, g / rgb, b / rgb, 1]
-
-    def __make_colormap(self):
-        res = 1
-        maxval = 256
-        cnt = maxval * res
-        color = [i * (1 / res) for i in range(cnt)]
-        # print(color)
-        cmap = [self.num_to_rgb(color[i], maxval) for i in range(len(color))]
-        return np.array(cmap)
-
     def loadData(self):
-        slog.DEBUG("-----lodata method called-----")
+        slog.DEBUG("-----loadData method called-----")
         print(os.getcwd())
 
-        if self.opensrc == "":
-            self.opensrc = "../Data/data_1.dat"
+        #if self.opensrc == "":
+            #self.opensrc = "../Data/data_1.dat"
             #self.opensrc = "../data/bunny.pcd"장
 
         #파일을 저장할 때 head 부분에 디바이스 네임을 작성해줘야함
         #헤더파일의 디바이스 네임에 따라 rawdata에 저장될 수 있도록 변경해야함
         #lidarlog = makeRPLidarLog(self.opensrc)
-        VLPlidarlog = makeVLPLog("../Data/20211104_map.pcd")
+        VLPlidarlog = makeVLPLog(self.opensrc)
         #self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
         self._rawdata[AttachedSensorName.StaticPointCloudVirtual] = VLPlidarlog.fromlogFile()
 
@@ -72,3 +59,8 @@ class LogSimDispatcher(Dispatcher):
         for data in self._rawdata.keys():
             loadedsens.append(data)
         self.sourcemanager.simEvent(loadedsens)
+
+    def setFilesrc(self, opensrc):
+        slog.DEBUG("setFilesrc called.")
+        self.opensrc = opensrc
+        self.dispatch()

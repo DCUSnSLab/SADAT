@@ -13,7 +13,7 @@ from PyQt5.QtCore import *
 from gui.menuItem import MenuItem
 from simMode import Mode
 
-class menuLoadSim(QAction,QWidget):
+class menuLoadSim(QAction):
     def __init__(self, name, parent):
         super().__init__(name, parent)
         self.parent = parent
@@ -24,7 +24,13 @@ class menuLoadSim(QAction,QWidget):
 
     def trig(self):
         self.parent.simulator.setAction(Mode.MODE_SIM)
-        print("PlaySim")
+
+        fl = fileLoader()
+        filename = fl.open()
+
+        print("File path :", filename[0])
+
+        self.parent.simulator.procs[Mode.MODE_SIM].lSimDispatcher.setFilesrc(filename[0])
 
     def OnOpenDocument(self):
         print('connect')
@@ -78,6 +84,18 @@ class menuLogPlayROS(QAction):
         # self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
         # self.parent.simulator.playMode()
         self.rosmanager = guiROSManager(self.parent)
+
+class fileLoader(QWidget):
+    def __init__(self):
+        super().__init__()
+
+    def open(self):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', '/Users/yuri/SADAT/Data')
+
+        # self.trig
+        print(fname)
+        print("PlaySim")
+        return fname
 
 
 
