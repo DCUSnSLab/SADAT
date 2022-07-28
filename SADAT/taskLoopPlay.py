@@ -121,6 +121,9 @@ class taskLoopPlay(QThread):
                 #set data storage
                 for lss in loadedsimsens:
                     print("Start Sim Load", lss)
+                    if lss in self.originData:
+                        print("have a key !!!")
+                        print(self.originData[lss])
                     self.originData[lss] = list()
 
                     sen = self.sourcemanager.getSensorbyName(lss)
@@ -157,9 +160,9 @@ class taskLoopPlay(QThread):
                 for lss in loadedsimsens:
                     if lss.name == 'StaticPointCloudVirtual':
                         slog.DEBUG("Static Value Exists!!!")
-                        fps = 20
-                        fpscnt = 120
-                        tcnt = 19
+                        #fps = 20
+                        #fpscnt = 120
+                        #tcnt = 19
 
                 self.pbInfo.mode = self.PLAYMODE_LOAD
                 self.pbInfo.maxLength = len(self.originData[lss])
@@ -172,7 +175,18 @@ class taskLoopPlay(QThread):
                 self.guiApp.setStatus("Log data Load Completed")
                 #self.simlog.enQueuePlayData(self.originData[lss][self.playidx])
                 #self.simlog.enQueuePlayData([(key, val[self.playidx]) for key, val in self.originData.items()])
+                print()
+                print("self.originData.items()")
+                print(self.originData.keys())
+                print(self.originData.values())
+                tmp = list(self.originData.values())[0]
+                print(list(self.originData.values())[0])
+                #print(list(self.originData.values())[0][0])
+                print(self.originData.items())
+                print()
                 [self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items()]
+                print("[self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items()]")
+                print(self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items())
 
             elif td == self.PLAYMODE_PLAY:
                 self.pbInfo.mode = self.PLAYMODE_PLAY

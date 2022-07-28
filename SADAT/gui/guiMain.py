@@ -165,7 +165,7 @@ class MyApp(QMainWindow):
         #File Menu
         filemenu = self.menubar.addMenu('&File')
         filemenu.addAction(menuLoadSim('Load log files..', self))
-        filemenu.addAction(menuLoadSim_pcd('Load pcd files..', self))
+        filemenu.addAction(menuLoadSim_pcd('Load pcd files.', self))
 
         # Add LogPlay
         logplaymenu = filemenu.addMenu('&Log Play')
@@ -280,6 +280,9 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
+        print()
+        print("changePosition called.")
+        print()
         self.planviewmanager.updateview(data)
         self.updatePosition()
 

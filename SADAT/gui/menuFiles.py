@@ -13,6 +13,8 @@ from PyQt5.QtCore import *
 from gui.menuItem import MenuItem
 from simMode import Mode
 
+import time
+
 class menuLoadSim(QAction):
     def __init__(self, name, parent):
         super().__init__(name, parent)
@@ -23,14 +25,17 @@ class menuLoadSim(QAction):
         self.setStatusTip('Exit application')
 
     def trig(self):
-        self.parent.simulator.setAction(Mode.MODE_SIM)
-
         fl = fileLoader()
         filename = fl.open()
 
+        self.parent.simulator.procs[Mode.MODE_SIM].lSimDispatcher.setFilesrc(filename[0])
         print("File path :", filename[0])
 
-        self.parent.simulator.procs[Mode.MODE_SIM].lSimDispatcher.setFilesrc(filename[0])
+        self.parent.simulator.setAction(Mode.MODE_SIM)
+
+        # 아래 함수의 경우 현재 상속받은 parent의 속성에 직접적으로 접근하여 파일명을 지정합니다.
+        # lSimDispatcher의 setFilesrc 함수를 단계별로 호출할 수 있도록 simulator 객체 클래스(SystemManager 클래스)에 별도의 함수 정의가 필요합니다.
+
 
     def OnOpenDocument(self):
         print('connect')
@@ -41,10 +46,6 @@ class menuLoadSim(QAction):
 
 class menuLoadSim_pcd(QAction, QWidget):
     def __init__(self, name, parent):
-        print("name")
-        print(name)
-        print("parent")
-        print(parent)
         super().__init__(name, parent)
         self.parent = parent
         self.triggered.connect(self.trig)
@@ -90,7 +91,7 @@ class fileLoader(QWidget):
         super().__init__()
 
     def open(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file', '/Users/yuri/SADAT/Data')
+        fname = QFileDialog.getOpenFileName(self, 'Open file', '/home/ros/pcd_data')
 
         # self.trig
         print(fname)

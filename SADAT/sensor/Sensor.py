@@ -43,6 +43,7 @@ class Sensor(metaclass=ABCMeta):
         return self.realtimeData
 
     def _addStoredData(self, inputdata):
+        self.__cleanstoredData()
         self.storedData.append(inputdata)
 
     def getStoredDataset(self):

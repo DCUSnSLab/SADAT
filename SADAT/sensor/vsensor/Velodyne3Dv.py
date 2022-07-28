@@ -55,7 +55,13 @@ class Velodyne3Dv(vSensor):
         # self.prevTime = curTime
         # fps = 1 / (sec)
         # print(len(pc), 'fps - ', fps)
+
         self._addSimData(self.lgrp)
+        print()
+        print("storedData")
+        print()
+        print(self.storedData)
+        print(type(self.storedData))
 
     def __resamplePoints(self, points, size=None):
         # re sampling pointcloud for performance
