@@ -4,6 +4,8 @@ from log.makeLog import makeLog
 from utils.sadatlogger import slog
 from numpy import fromfile
 
+import time
+
 # PointCloud 데이터 출력을 위한 로그 생성 파일
 # 해당 파일에서는 pcl 라이브러리를 통한 데이터 로드 후
 # ros_numpy
@@ -12,7 +14,6 @@ from numpy import fromfile
 
 class makeVLPLog(makeLog):
     def __init__(self, filename):
-        slog.DEBUG("-----makeVLP16Log __init__ method called-----")
         self.cloud = None
         self.np_cloud = None
         super().__init__(filename)
@@ -21,7 +22,6 @@ class makeVLPLog(makeLog):
         pass
 
     def setFilesrc(self, opensrc):
-        slog.DEBUG("setFilesrc called.")
         self.filename = opensrc
 
     def fromlogFile(self):
@@ -33,7 +33,14 @@ class makeVLPLog(makeLog):
         slog.DEBUG("-----makeVLP16Log fromlogFile method called-----")
 
         self.cloud = pcl.load_XYZI(self.filename)
+
         # load_XYZI() 함수를 사용하여 데이터를 불러오는 경우 intensity 필드를 못 찾는 상황에 대하여 예외처리가 필요하다.
         self.np_cloud = self.cloud.to_array()
+
+        # 현재 데이터가 안 불러와지는 문제의 경우 아래 코드와 같이
+        # 임의의 지연을 주는 경우 정상적으로 로드됨을 확인했습니다..
+        # 우선은 아래와 같은 방식으로 임의의 지연을 주는 방식 사용하겠습니다
+        print("Sleep 1 sec")
+        time.sleep(1) # 데이터 로드를 위한 임의 지연 수행
 
         return self.np_cloud

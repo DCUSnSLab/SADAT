@@ -116,11 +116,9 @@ class taskLoopPlay(QThread):
                 .pcd와 같이 timestamp가 없는 데이터를 로드하는 경우, 기존의 다른 로그 파일들과 다르게 시각화 과정에서 별도의 fps, fpscnt 값을 부여하는것이
                 적절할 것 같아서 우선은 아래와 같이 진행했습니다.
                 """
-                print("Start Sim Event")
                 loadedsimsens = self.sourcemanager.waitSimDataLoad()
                 #set data storage
                 for lss in loadedsimsens:
-                    print("Start Sim Load", lss)
                     if lss in self.originData:
                         print("have a key !!!")
                         print(self.originData[lss])
@@ -173,20 +171,7 @@ class taskLoopPlay(QThread):
 
                 self.signal.emit(self.pbInfo)
                 self.guiApp.setStatus("Log data Load Completed")
-                #self.simlog.enQueuePlayData(self.originData[lss][self.playidx])
-                #self.simlog.enQueuePlayData([(key, val[self.playidx]) for key, val in self.originData.items()])
-                print()
-                print("self.originData.items()")
-                print(self.originData.keys())
-                print(self.originData.values())
-                tmp = list(self.originData.values())[0]
-                print(list(self.originData.values())[0])
-                #print(list(self.originData.values())[0][0])
-                print(self.originData.items())
-                print()
                 [self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items()]
-                print("[self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items()]")
-                print(self.dataSignal.emit({key: val[self.playidx]}) for key, val in self.originData.items())
 
             elif td == self.PLAYMODE_PLAY:
                 self.pbInfo.mode = self.PLAYMODE_PLAY

@@ -64,16 +64,10 @@ class LogSimDispatcher(Dispatcher):
 
             #self._rawdata[AttachedSensorName.RPLidar2DVirtual] = lidarlog.fromlogFile()
             self._rawdata[AttachedSensorName.StaticPointCloudVirtual] = self.VLPlidarlog.fromlogFile()
-            print()
-            print(len(self._rawdata[AttachedSensorName.StaticPointCloudVirtual]))
-            print()
 
     def logDispatch(self):
-        print("self.sourcemanager.AllSensors.keys()")
         print(self.sourcemanager.AllSensors.keys())
         for scate in self._rawdata.keys():
-            print("scate")
-            print(scate)
             if scate in self.sourcemanager.AllSensors.keys():
                 val = self._rawdata[scate]
                 sensor = self.sourcemanager.AllSensors[scate]
@@ -86,8 +80,6 @@ class LogSimDispatcher(Dispatcher):
         # send event to taskLoopPlay to wake up sim receive module
         for data in self._rawdata.keys():
             loadedsens.append(data)
-        print("sendEvent loadedsens print output")
-        print(loadedsens)
         self.sourcemanager.simEvent(loadedsens)
 
     def setFilesrc(self, opensrc):

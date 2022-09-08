@@ -280,9 +280,6 @@ class MyApp(QMainWindow):
         self.simulator.PauseMode()
 
     def changePosition(self, data):
-        print()
-        print("changePosition called.")
-        print()
         self.planviewmanager.updateview(data)
         self.updatePosition()
 
