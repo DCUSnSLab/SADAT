@@ -29,7 +29,8 @@ class AttachedSensorName(Enum):
     """
     RPLidar2DVirtual = 'rplidarVR:/scanv:/scanv'
     PointCloud2Virtual = 'pointcloud2:/velodyne_points:pointcloud2'
-    StaticPointCloudVirtual = 'pcd:/pcdv:pcdv'
+    #Static
+    StaticPointCloudVirtual = 'pcd:/pcd:pcd'
 
     def getInstance(inst):
         if inst.getMsgType() == 'scan':

@@ -85,8 +85,16 @@ class taskLoopPlay(QThread):
 
     def run(self):
         for td in iter(self.task.get, 'stop'):
+
+            """
+            현재 PCD 데이터를 불러오는 기능의 경우 일종의 Sim Mode와 비슷하게 구현했었습니다.
+            불러온 지도 데이터와 LiDAR 데이터를 동시에 출력해야 하므로, 해당 데이터를 출력하기 위한 별도의 Mode 또는
+            PCD 데이터는 상시 출력되도록 변경할 필요가 있습니다.
+            """
+
             #Realtime Play Mode
             if td == self.PLAYMODE_LOGPLAY:
+                print("self.PLAYMODE_LOGPLAY")
                 ldata = list()
 
                 #Through all rawdata to post plan and planviewmanager
@@ -112,10 +120,7 @@ class taskLoopPlay(QThread):
 
             #Sim Mode
             if td == self.PLAYMODE_LOAD: #Load Data
-                """
-                .pcd와 같이 timestamp가 없는 데이터를 로드하는 경우, 기존의 다른 로그 파일들과 다르게 시각화 과정에서 별도의 fps, fpscnt 값을 부여하는것이
-                적절할 것 같아서 우선은 아래와 같이 진행했습니다.
-                """
+                print("self.PLAYMODE_LOAD")
                 loadedsimsens = self.sourcemanager.waitSimDataLoad()
                 #set data storage
                 for lss in loadedsimsens:
