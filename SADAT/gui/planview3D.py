@@ -86,7 +86,7 @@ class planView3D(QWidget):
         if dataview.viewType == DataTypeCategory.POINT_CLOUD:
             viewitem.set_data(pos=pos[:, :3], face_color=color, size=2, edge_color=color)
         elif dataview.viewType == DataTypeCategory.TRACK:
-            if (pos[1] == 0 and pos[0] == 0) or math.isnan(pos[0]) or math.isnan[pos[1]]:
+            if (pos[1] == 0 and pos[0] == 0) or math.isnan(pos[0]) or math.isnan(pos[1]):
                 viewitem.set_data([0., 0., 0.], width=0)
             else:
                 viewitem.set_data(pos)
