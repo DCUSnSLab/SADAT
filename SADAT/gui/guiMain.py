@@ -128,13 +128,14 @@ class MyApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color : white")
         self.initMenubar()
         self.initToolbar()
+        self.initTabWidget()
         #self.ComboToolbar()
         self.addToolBar(Qt.BottomToolBarArea, self.bottomToolbar)
         # init side Widget
         self.addDockWidget(Qt.LeftDockWidgetArea, self.cameraDock)
         self.addDockWidget(Qt.LeftDockWidgetArea, SideDock(self))
         #set planview in main
-        self.setCentralWidget(self.stkWidget)
+        self.setCentralWidget(self.tabs)
         #self.setCentralWidget(self.pvWidget)
         self.setStyleSheet("""QMenuBar {        self.draw()
 
@@ -217,9 +218,18 @@ class MyApp(QMainWindow):
         self.gcontrol.addToolbar(toolresume, toolresume.text())
         self.gcontrol.addToolbar(slider, 'logslider')
         self.gcontrol.addSlider(slider)
-        self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)
+        self.gcontrol.setPlayMode(GUI_CONTROLLER.STOPMODE)행
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(self.toolbar)
 
+    def initTabWidget(self):
+        self.tabs = QTabWidget()
+
+        self.sample = QWidget()
+
+        self.tabs.addTab(self.stkWidget, "Planview")
+
+        # 해당 탭에 구현된 기능 머지 진
+        self.tabs.addTab(self.sample, "Object_Det")
 
     def planviewUI(self):
         if Importer.checkVispy() is True:
