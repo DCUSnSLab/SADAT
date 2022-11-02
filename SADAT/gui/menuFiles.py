@@ -1,6 +1,7 @@
 import os
 
 from gui.guiROSManager import guiROSManager
+from gui.resimulation import reSimulation
 from utils.sadatlogger import slog
 
 os.environ["MKL_NUM_THREADS"] = "1"
@@ -61,5 +62,16 @@ class menuLogPlayROS(QAction):
         # self.parent.simulator.playMode()
         self.rosmanager = guiROSManager(self.parent)
 
+class menureSim(QAction):
+    def __init__(self, name, parent):
+        super().__init__(name, parent)
+        self.parent = parent
+        self.triggered.connect(self.trig)
+        self.setShortcut('Shift+S')
+        self.setStatusTip('Re Sim')
 
 
+    def trig(self):
+        # self.parent.simulator.setAction(Mode.MODE_LOG, Mode.LOGTYPE_ROS)
+        # self.parent.simulator.playMode()
+        self.resimulator = reSimulation(self.parent)

@@ -13,6 +13,7 @@ from gui.guiMainBottomToolbar import toolbarPlanviewVisible
 from gui.guiMainDocks import SideDock
 from gui.planview2D import planView2D
 from gui.planview3D import planView3D
+from gui.menuFiles import menureSim
 from sensor.SenAdptMgr import AttachedSensorName
 from gui.comboCheck import CheckableComboBox
 from gui.EventHandler import MouseEventHandler
@@ -34,6 +35,7 @@ class GUI_GROUP:
     ALL = 0
     LOGGING_MODE = 1
     LOGPLAY_MODE = 2
+    RESIM_MODE = 3
 
 '''GUI 컨트롤을 위한 클래스'''
 class GUI_CONTROLLER:
@@ -175,8 +177,12 @@ class MyApp(QMainWindow):
 
         #Simulation Menu
         simmenu = self.menubar.addMenu('&Simulation')
-        simmenu.addAction(menuSim('Play',self))
+        simmenu.addAction(menuSim('Play', self))
         self.guiGroup[GUI_GROUP.LOGPLAY_MODE].append(simmenu)
+
+        resimmenu = self.menubar.addMenu('&ReSimulation')
+        resimmenu.addAction(menureSim('ReSim', self))
+        # self.guiGroup[GUI_GROUP.RESIM_MODE].append(resimmenu)
 
     def initToolbar(self):
         self.toolbar = self.addToolBar('Navigator')
