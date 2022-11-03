@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QAction, QDialog, QPlainTextEdit, QGridLayout, QLabel, QPushButton, QFileDialog, QComboBox
 from PyQt5.QtGui import *
 import rosbag
+import pyqtgraph
 
 class reSimulation(QDialog):
     def __init__(self, parent):
@@ -60,6 +61,10 @@ class reSimulation(QDialog):
         self.gridlayout.addWidget(self.resimulate, 3, 0)
 
         # Resim Visualization UI
+
+        # point cloud 출력용
+        self.spt = pyqtgraph.ScatterPlotItem(pen=pg.mkPen(width=1, color='r'), symbol='o', size=2)
+        self.view.addItem(self.spt)
 
     def loadbagfile(self):
         # print("loadbagfile")
