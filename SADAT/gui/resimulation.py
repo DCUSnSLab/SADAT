@@ -155,11 +155,13 @@ class reSimulation(QDialog):
 
         # self.algorithmOutput[str(output_idx)]['data'] = dict(enumerate(points.flatten(), 1))
 
-        # self.algorithmOutput[str(output_idx)]['data'] = {
-        #     'min': points.min,
-        #     'max': points.max,
-        #     'size': points.size
-        # }
+
+        self.algorithmOutput[output_idx]['data'] = {
+            'min': np.min(points),
+            'max': np.max(points),
+            'size': np.size(points),
+            'points': points.tolist()
+        }
 
         # Bounding Box
         for i in range(1, max(self.clusterLabel) + 1):
@@ -264,7 +266,7 @@ class reSimulation(QDialog):
 
         print("Algorithm test end.")
 
-        jsonoutput = json.dumps(self.algorithmOutput)
+        jsonoutput = json.dumps(self.algorithmOutput, sort_keys=True, indent=4)
 
         with open("output.json", "w") as outfile:
             outfile.write(jsonoutput)
