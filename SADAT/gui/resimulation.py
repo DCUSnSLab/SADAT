@@ -320,6 +320,14 @@ class reSimulation(QDialog):
     def replay(self):
         # TODO: Replay data through Thread and update planview
 
+        self.logthread = Thread(target=self.getoutputdata)
+        self.logthread.start()
+
+        self.mytimer = QTimer()
+        self.mytimer.start(10)  # 차트 갱신 주기
+        self.mytimer.timeout.connect(self.get_data)
+
+    def getoutputdata(self):
         print("Replay called.")
 
         box_cnt = list()
@@ -333,14 +341,9 @@ class reSimulation(QDialog):
 
             self.resetObjPos()
 
-            # print("idx")
-            # print(idx)
-            print("val[det]")
-            print(val['det'])
+            self.pos = val['data']['points']
 
             for key, value in val['det'].items():
-                print("det")
-                print(value)
                 tempobjPos = self.objsPos[idx + 1]
                 tempobjSize = self.objsSize[idx + 1]
 
