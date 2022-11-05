@@ -343,9 +343,10 @@ class reSimulation(QDialog):
 
             self.pos = val['data']['points']
 
-            for key, value in val['det'].items():
-                tempobjPos = self.objsPos[idx + 1]
-                tempobjSize = self.objsSize[idx + 1]
+            for det_idx, (key, value) in enumerate(val['det'].items()):
+                # 두번째 for에 맞춰서 idx 추가 필요
+                tempobjPos = self.objsPos[det_idx + 1]
+                tempobjSize = self.objsSize[det_idx + 1]
 
                 # index = np.asarray(np.where(val['data']['clusters'] == idx))
                 # print(i, 'cluster 개수 : ', len(index[0]))
