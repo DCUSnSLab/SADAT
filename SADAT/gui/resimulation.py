@@ -39,6 +39,9 @@ class reSimulation(QDialog):
         # List for Replay via replay output file
         self.outputdata = None
 
+        # Flag for initial load output file check
+        self.isloadoutput = False
+
     def initUI(self):
 
         # rosbag file open UI
@@ -253,8 +256,6 @@ class reSimulation(QDialog):
             self.mytimer.start(10)  # 차트 갱신 주기
             self.mytimer.timeout.connect(self.get_data)
 
-            self.show()
-
             # ros 파일에서 velodyne_points 메시지만 불러오는 부분
 
     def getbagfile(self):
@@ -317,8 +318,44 @@ class reSimulation(QDialog):
         print(self.slidebar.value())
 
     def replay(self):
+        # TODO: Replay data through Thread and update planview
+
         print("Replay called.")
 
-        # TODO
-        # - set QSlider value to 0
-        # - data replay via slider movement
+        box_cnt = list()
+
+        if self.isloadoutput == False:
+            self.slidebar.setValue(0)
+            self.isloadoutput = True
+
+        print(len(self.outputdata))
+        for idx, val in enumerate(self.outputdata):
+
+            self.resetObjPos()
+
+            # print("idx")
+            # print(idx)
+            print("val[det]")
+            print(val['det'])
+
+            for key, value in val['det'].items():
+                print("det")
+                print(value)
+                tempobjPos = self.objsPos[idx + 1]
+                tempobjSize = self.objsSize[idx + 1]
+
+                # index = np.asarray(np.where(val['data']['clusters'] == idx))
+                # print(i, 'cluster 개수 : ', len(index[0]))
+                x = value['x']
+                y = value['y']
+                x_size = value['x_size']
+                y_size = value['y_size']
+
+                # car size bounding box
+                box_cnt.append(idx + 1)
+                tempobjPos[0] = x
+                tempobjPos[1] = y
+                tempobjSize[0] = x_size
+                tempobjSize[1] = y_size
+
+            time.sleep(0.1)
