@@ -42,6 +42,8 @@ class reSimulation(QDialog):
         # Flag for initial load output file check
         self.isloadoutput = False
 
+        self.logplayindex = 0
+
     def initUI(self):
 
         # rosbag file open UI
@@ -162,7 +164,19 @@ class reSimulation(QDialog):
                 obj.setVisible(True)
                 obj.setRect((objpos[0]) - (objsize[0] / 2), (objpos[1]) - (objsize[1] / 2), objsize[0], objsize[1])
 
-    def customAlgorithm(self, output_idx, points):
+    def customAlgorithm(self, output_idx, data, points):
+        """
+        알고리즘 적용을 위한 인터페이스 역할을 수행할 수 있어야 함.
+        Detection
+        input
+            - points
+        return
+            - Object(s)
+                - x
+                - y
+                - x_size
+                - y_size
+        """
 
         idx = np.random.randint(len(points), size=2500)
         points = points[idx, :]
@@ -176,11 +190,24 @@ class reSimulation(QDialog):
         """
         self.tempdbscan(points)
 
+        print("self.clusterLabel")
+        print(type(self.clusterLabel))
+        print(self.clusterLabel)
+
         # 그래프의 좌표 출력을 위해 pos 데이터에 최종 points 저장
         self.pos = points
 
         # self.algorithmOutput[str(output_idx)]['data'] = dict(enumerate(points.flatten(), 1))
 
+        # 만약 self.tempdbscan(points) 결과가 없으면, 아래에서 append 하지 않도록 코드 작성
+        self.algorithmOutput.append({
+            'time': {
+                'secs': data.timestamp.secs,
+                'nsecs': data.timestamp.nsecs
+            },
+            'det': {},
+            'data': {}
+        })
 
         self.algorithmOutput[output_idx]['data'] = {
             'min': np.min(points),
@@ -228,10 +255,6 @@ class reSimulation(QDialog):
             os[0] = 0
             os[1] = 0
 
-    def closeEvent(self, event):
-        print('closed')
-        self.bagthreadFlag = False
-
     def loadbagfile(self):
         # print("loadbagfile")
         self.filename = QFileDialog.getOpenFileName(self, 'Open rosbag file', '/home/ros/rosbag')[0]
@@ -278,17 +301,17 @@ class reSimulation(QDialog):
             points[:, 2] = pc['z']
             points[:, 3] = pc['intensity']
 
-            self.algorithmOutput.append({
-                'time': {
-                    'secs': data.timestamp.secs,
-                    'nsecs': data.timestamp.nsecs
-                },
-                'det': {},
-                'data': {}
-            })
+            # self.algorithmOutput.append({
+            #     'time': {
+            #         'secs': data.timestamp.secs,
+            #         'nsecs': data.timestamp.nsecs
+            #     },
+            #     'det': {},
+            #     'data': {}
+            # })
 
             self.resetObjPos()
-            self.customAlgorithm(idx, points)
+            self.customAlgorithm(idx, data, points)
 
             time.sleep(0.1) # 재생 주기 설정
 
@@ -296,7 +319,7 @@ class reSimulation(QDialog):
 
         jsonoutput = json.dumps(self.algorithmOutput, sort_keys=True, indent=4)
 
-        with open("output.json", "w") as outfile:
+        with open("output_2.json", "w") as outfile:
             outfile.write(jsonoutput)
 
         print("output file generated.")
@@ -316,6 +339,7 @@ class reSimulation(QDialog):
     def slidercallback(self):
         print("Slidebar current val")
         print(self.slidebar.value())
+        self.logplayindex = self.slidebar.value()
 
     def replay(self):
         # TODO: Replay data through Thread and update planview
@@ -328,7 +352,7 @@ class reSimulation(QDialog):
         self.mytimer.timeout.connect(self.get_data)
 
     def getoutputdata(self):
-        print("Replay called.")
+        # print("Replay called.")
 
         box_cnt = list()
 
@@ -336,8 +360,14 @@ class reSimulation(QDialog):
             self.slidebar.setValue(0)
             self.isloadoutput = True
 
+        print("Total Len")
         print(len(self.outputdata))
         for idx, val in enumerate(self.outputdata):
+            print("idx", idx)
+            # idx = self.logplayindex
+            # self.logplayindex = idx
+
+            self.slidebar.setValue(idx)
 
             self.resetObjPos()
 
@@ -348,8 +378,6 @@ class reSimulation(QDialog):
                 tempobjPos = self.objsPos[det_idx + 1]
                 tempobjSize = self.objsSize[det_idx + 1]
 
-                # index = np.asarray(np.where(val['data']['clusters'] == idx))
-                # print(i, 'cluster 개수 : ', len(index[0]))
                 x = value['x']
                 y = value['y']
                 x_size = value['x_size']
