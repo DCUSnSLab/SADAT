@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QAction, QDialog, QPlainTextEdit, QGridLayout, QLabel, QPushButton, QFileDialog, QComboBox, \
-    QSlider
+    QSlider, QVBoxLayout, QHBoxLayout
 from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QObject, Qt, QThread, QTimer
 
@@ -15,6 +15,9 @@ import json
 from sklearn.neighbors import KDTree
 from sklearn.cluster import DBSCAN
 
+from msgs.Inputpointcloud import Inputpoints
+from msgs.Algorithmoutput import Algorithmoutput
+
 from threading import Thread
 
 class reSimulation(QDialog):
@@ -29,7 +32,7 @@ class reSimulation(QDialog):
         self.filename = None
 
         self.setWindowTitle('ReSimulation')
-        self.setGeometry(300, 300, 300, 200)
+        self.setGeometry(600, 600, 600, 800)
         self.show()
         self.initUI()
 
@@ -46,57 +49,83 @@ class reSimulation(QDialog):
 
     def initUI(self):
 
-        # rosbag file open UI
-
-        self.text1 = QPlainTextEdit('Published Topics')
         self.gridlayout = QGridLayout()
         self.setLayout(self.gridlayout)
+        # rosbag file open UI
+        self.fileloadlayout = QHBoxLayout()
 
         self.openbagfile = QPushButton('Load rosbag File', self)
+        self.openbagfile.setFixedWidth(170)
         self.openbagfile.clicked.connect(self.loadbagfile)
 
         self.selectedfile = QLabel()
 
-        self.gridlayout.addWidget(self.openbagfile, 0, 0)
-        self.gridlayout.addWidget(self.selectedfile, 0, 1)
+        self.fileloadlayout.addWidget(self.openbagfile)
+        self.fileloadlayout.addWidget(self.selectedfile)
+        self.gridlayout.addLayout(self.fileloadlayout, 0, 0)
 
         # Algorithm Category UI
 
         self.algocate = QComboBox(self)
+        self.algocatelayout = QHBoxLayout()
 
         self.algocate.addItem("Algo Category 1")
         self.algocate.addItem("Algo Category 2")
         self.algocate.addItem("Algo Category 3")
         self.algocate.addItem("Algo Category 4")
 
-        self.gridlayout.addWidget(QLabel('Algorithm Category : '), 1, 0)
-        self.gridlayout.addWidget(self.algocate, 1, 1)
+        self.algocate.setFixedWidth(170)
+        self.algocatelayout.addWidget(self.algocate)
+        self.algocatelayout.addWidget(QLabel('Algorithm Category : '))
+
+        self.gridlayout.addLayout(self.algocatelayout, 3, 0)
 
         # Implemented Algorithm UI
 
         self.algolist = QComboBox(self)
+        self.algolistlayout = QHBoxLayout()
 
         self.algolist.addItem("Algo 1")
         self.algolist.addItem("Algo 2")
         self.algolist.addItem("Algo 3")
         self.algolist.addItem("Algo 4")
 
-        self.gridlayout.addWidget(QLabel('Test Algorithm : '), 2, 0)
-        self.gridlayout.addWidget(self.algolist, 2, 1)
+        self.algolist.setFixedWidth(170)
+        self.algolistlayout.addWidget(self.algolist)
+        self.algolistlayout.addWidget(QLabel('Test Algorithm : '))
+        self.gridlayout.addLayout(self.algolistlayout, 5, 0)
 
         # Resimulation execute
 
         self.resimulate = QPushButton('Algorithm Test', self)
         self.resimulate.clicked.connect(self.resimulation)
-        self.gridlayout.addWidget(self.resimulate, 3, 0)
+        self.gridlayout.addWidget(self.resimulate, 6, 0)
 
         # Load replay output file
 
         self.loadreplay = QPushButton('Load output file', self)
         self.loadreplay.clicked.connect(self.loadreplayoutput)
-        self.gridlayout.addWidget(self.loadreplay, 3, 1)
+        self.gridlayout.addWidget(self.loadreplay, 7, 0)
 
         # Resim Visualization UI
+
+        # Playback control UI
+        self.replaybtn = QPushButton('Replay / Pause', self)
+        self.stepoverbtn = QPushButton('Step over', self)
+        self.stepdownbtn = QPushButton('Step down', self)
+
+        # playback control flags
+
+        self.ispaused = False
+
+        self.playbacklayout = QHBoxLayout()
+        self.playbacklayout.addWidget(self.replaybtn)
+        self.playbacklayout.addWidget(self.stepoverbtn)
+        self.playbacklayout.addWidget(self.stepdownbtn)
+
+        self.replaybtn.clicked.connect(self.replay)
+        # self.gridlayout.addWidget(self.replaybtn, 8, 0)
+        self.gridlayout.addLayout(self.playbacklayout, 8, 0)
 
         # Slider UI
         self.slidebar = QSlider(Qt.Horizontal, self)
@@ -104,22 +133,17 @@ class reSimulation(QDialog):
         self.slidebar.setMinimum(0)
 
         self.slidebar.valueChanged.connect(self.slidercallback)
-        self.gridlayout.addWidget(self.slidebar, 4, 0)
+        self.gridlayout.addWidget(self.slidebar, 9, 0)
 
         # point cloud 출력용
         self.canvas = pyqtgraph.GraphicsLayoutWidget()
-        self.gridlayout.addWidget(self.canvas, 5, 0)
+        self.gridlayout.addWidget(self.canvas, 10, 0)
         self.view = self.canvas.addViewBox()
         self.view.setAspectLocked(True)
         self.view.disableAutoRange()
         self.view.scaleBy(s=(20, 20))
         grid = pyqtgraph.GridItem()
         self.view.addItem(grid)
-
-        # Replay button UI
-        self.replaybtn = QPushButton('Replay', self)
-        self.replaybtn.clicked.connect(self.replay)
-        self.gridlayout.addWidget(self.replaybtn, 5, 1)
 
         self.spt = pyqtgraph.ScatterPlotItem(pen=pyqtgraph.mkPen(width=1, color='r'), symbol='o', size=2)
         self.view.addItem(self.spt)
@@ -166,6 +190,9 @@ class reSimulation(QDialog):
 
     def customAlgorithm(self, output_idx, data, points):
         """
+        알고리즘 적용을 위한 추상 클래스 구현 후 해당 클래스를 통한 Interface만 정의하면 될 것 같습니다.
+        입력, 출력 데이터를 위한 클래스 정의 필요
+
         알고리즘 적용을 위한 인터페이스 역할을 수행할 수 있어야 함.
         Detection
         input
@@ -180,6 +207,9 @@ class reSimulation(QDialog):
 
         idx = np.random.randint(len(points), size=2500)
         points = points[idx, :]
+
+        print("points 타입")
+        print(type(points))
 
         box_cnt = list()
 
@@ -345,6 +375,7 @@ class reSimulation(QDialog):
         # TODO: Replay data through Thread and update planview
 
         self.logthread = Thread(target=self.getoutputdata)
+        self.logthread.daemon = True
         self.logthread.start()
 
         self.mytimer = QTimer()
