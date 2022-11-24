@@ -25,7 +25,6 @@ class reSimulation(QDialog):
         super().__init__(parent)
         self.parent = parent
         self.simulator = self.parent.simulator
-
         # Bounding box list via algorithm result
         self.detectionBbox = None
 
@@ -36,6 +35,9 @@ class reSimulation(QDialog):
         self.show()
         self.initUI()
 
+        # ros thread for play loaded rosbag data
+        self.bagthread = Thread(target=self.getbagfile)
+
         # List for create Resimulation replay output file
         self.algorithmOutput = list()
 
@@ -44,6 +46,11 @@ class reSimulation(QDialog):
 
         # Flag for initial load output file check
         self.isloadoutput = False
+
+        # playback control flags
+
+        self.ispaused = True
+
 
         self.logplayindex = 0
 
@@ -113,10 +120,6 @@ class reSimulation(QDialog):
         self.replaybtn = QPushButton('Replay / Pause', self)
         self.stepoverbtn = QPushButton('Step over', self)
         self.stepdownbtn = QPushButton('Step down', self)
-
-        # playback control flags
-
-        self.ispaused = False
 
         self.playbacklayout = QHBoxLayout()
         self.playbacklayout.addWidget(self.replaybtn)
@@ -295,15 +298,20 @@ class reSimulation(QDialog):
         if self.filename == None:
             print("No any file selected!")
             pass
-        else:
+        elif self.ispaused == False:
+            self.bagthreadFlag = False
+            # self.bagthread
+        elif self.ispaused == True:
             print("resimulation")
             # load bagfile
             self.bag_file = rosbag.Bag(self.filename)
 
             # ros thread
             self.bagthreadFlag = True
-            self.bagthread = Thread(target=self.getbagfile)
+
             self.bagthread.start()
+            self.ispaused = False
+
             # Graph Timer 시작
             self.mytimer = QTimer()
             self.mytimer.start(10)  # 차트 갱신 주기
