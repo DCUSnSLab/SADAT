@@ -31,6 +31,20 @@ zed-ros-interface
   $ source ./devel/setup.bash
 ```
 
+## Python dependency installation (Do not use requirements.txt file)
+```
+pip install vispy
+pip install opencv-python-headless
+pip install pyqt5==5.14.2
+pip install serial
+pip install pyqtgraph==0.12.1
+pip install rospkg==1.2.9
+```
+Pycharm을 통해 실행할 때
+File - Settings - Project: - Project Structure 항목에서
+Content Root 경로에 ROS Python 패키지 경로를 추가해줘야함
+/opt/ros/(ROS distro)/lib/python3/dist-packages
+
 ## Version Information
 - v0.2 : [SADAT v0.2](http://itgit.cu.ac.kr/AutonomousDriving/SADAT/post/5)
 - v0.1
